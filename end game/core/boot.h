@@ -2,7 +2,7 @@
 #include <inc.h>
 static void __stdcall init_thread()
 {
-	sdk::player::player = new sdk::player::c_player();
+	sdk::player::player_ = new ::sdk::player::c_player();
 	sdk::util::log = new sdk::util::c_log();
 	sdk::util::math = new sdk::util::c_math();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);

@@ -14,11 +14,19 @@ namespace sdk
 		class c_player
 		{
 		private:
-
+			template<class T>
+			T get(uint64_t a, uint64_t b)
+			{
+				return *(T*)(a + b);
+			}
+			s_self_actor_proxy* self;
 		public:
-			bool		update();
-			uint64_t	gself_actor_ptr();
+			bool				update();
+			bool				gself_valid();
+			s_self_actor_proxy* gself();
+			util::c_vector3     gpos(uint64_t a);
 		};
-		extern c_player* player;
+		extern c_player* player_;
+		template<class T>
 	}
 }
