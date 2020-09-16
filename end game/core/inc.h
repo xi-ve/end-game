@@ -35,6 +35,9 @@
 #include <values.h>
 #include "..\\sdk\rendering\font_wrapper\FW1FontWrapper.h"
 #include "..\\sdk\rendering\shader.h"
+#include "..\\lib\imgui\imgui.h"
+#include "..\\lib\imgui\imgui_impl_dx11.h"
+#include "..\\sdk\rendering\menu\menu.h"
 #include "..\\sdk\rendering\render.h"
 #include "..\\sdk\util\log.h"
 #include "..\\sdk\util\bytebuffer.h"

@@ -26,10 +26,10 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 		sdk::util::log->add("init d3d11 ok", sdk::util::e_info, true);
 	});
 
-	//ImplHookDX11_Present(g_pd3dDevice, g_pd3dContext, g_pSwapChain);
+	
 	if (sdk::render::render->IsRenderClassInitialized())
 	{
-		sdk::render::render->DrawBox(25, 25, 275, 275, 0xff00ff00, 0xff00ff00);
+		sdk::render::render->RenderText(15, 15, 0xff00ff00, (char*)"28802    a new era");
 	}
 
 	return phookD3D11Present(pSwapChain, SyncInterval, Flags);

@@ -7,6 +7,7 @@ static void __stdcall init_thread()
 	sdk::util::math = new sdk::util::c_math();
 	lib::d3d11 = new lib::c_d3d11();
 	sdk::render::render = new sdk::render::c_render();
+	sdk::menu::menu = new sdk::menu::c_menu();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }

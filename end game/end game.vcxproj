@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
+    <IncludePath>$(ProjectDir)lib\imgui;$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
     <LibraryPath>$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -150,6 +150,10 @@
     <ClCompile Include="core\workers.cpp" />
     <ClCompile Include="fn\hooks.cpp" />
     <ClCompile Include="lib\d3d\d3d11.cpp" />
+    <ClCompile Include="lib\imgui\imgui.cpp" />
+    <ClCompile Include="lib\imgui\imgui_demo.cpp" />
+    <ClCompile Include="lib\imgui\imgui_draw.cpp" />
+    <ClCompile Include="lib\imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="sdk\engine\funcs.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBAInterface.cpp" />
@@ -176,6 +180,7 @@
     <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRendererInterface.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\FW1FontWrapper.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\FW1Precompiled.cpp" />
+    <ClCompile Include="sdk\rendering\menu\menu.cpp" />
     <ClCompile Include="sdk\rendering\render.cpp" />
     <ClCompile Include="sdk\util\math.cpp" />
     <ClCompile Include="sdk\player\player.cpp" />
@@ -189,6 +194,13 @@
     <ClInclude Include="core\workers.h" />
     <ClInclude Include="fn\hooks.h" />
     <ClInclude Include="lib\d3d\d3d11.h" />
+    <ClInclude Include="lib\imgui\imconfig.h" />
+    <ClInclude Include="lib\imgui\imgui.h" />
+    <ClInclude Include="lib\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="lib\imgui\imgui_internal.h" />
+    <ClInclude Include="lib\imgui\stb_rect_pack.h" />
+    <ClInclude Include="lib\imgui\stb_textedit.h" />
+    <ClInclude Include="lib\imgui\stb_truetype.h" />
     <ClInclude Include="lib\mh\mh.h" />
     <ClInclude Include="sdk\engine\funcs.h" />
     <ClInclude Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.h" />
@@ -209,6 +221,7 @@
     <ClInclude Include="sdk\rendering\font_wrapper\FW1Precompiled.h" />
     <ClInclude Include="sdk\rendering\fx\d3dx11effect.h" />
     <ClInclude Include="sdk\rendering\fx\d3dxGlobal.h" />
+    <ClInclude Include="sdk\rendering\menu\menu.h" />
     <ClInclude Include="sdk\rendering\render.h" />
     <ClInclude Include="sdk\rendering\shader.h" />
     <ClInclude Include="sdk\util\math.h" />
