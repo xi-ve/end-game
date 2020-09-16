@@ -40,6 +40,13 @@ async def sub(ctx):
         
     await ctx.send(embed=embed)
 @bot.command()
+async def ban(ctx,user: discord.Member,reason):
+    query = "UPDATE `login` SET l_banned = %s WHERE l_discord = %s;"
+    cursor.execute(query, [reason,user.id, ])
+    await ctx.send("done....")
+    await bot.get_channel(755541623437393971).send(f'<@{ctx.author.id}> ({ctx.author.id}) banned <@{user.id}> ({user.id}) for following reason {reason}')
+
+@bot.command()
 async def add(ctx,user: discord.User,time,time_type):
     if time_type != "days" and time_type != "hours":
         await ctx.send("$add <@user> <time> <days|hours>")
