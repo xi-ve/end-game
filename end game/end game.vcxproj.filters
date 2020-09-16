@@ -36,6 +36,90 @@
     <ClCompile Include="sdk\util\math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sdk\engine\funcs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\d3d\d3d11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBAInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTargetInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1Factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FactoryInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FontWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FontWrapperInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphAtlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphAtlasInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphProviderInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStatesInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphSheet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphSheetInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawerInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1StateSaver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextGeometryInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRendererInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\FW1FontWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdk\rendering\font_wrapper\FW1Precompiled.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -68,8 +152,75 @@
     <ClInclude Include="core\inc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sdk\engine\funcs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\d3d\d3d11.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1Factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1FontWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphAtlas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphSheet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1StateSaver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1TextGeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1TextRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1CompileSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1FontWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1Precompiled.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\fx\d3dx11effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdk\rendering\fx\d3dxGlobal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\mh\mh_lib.lib" />
+    <Library Include="sdk\rendering\fx\Effects11.lib" />
   </ItemGroup>
 </Project>

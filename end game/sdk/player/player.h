@@ -19,14 +19,15 @@ namespace sdk
 			{
 				return *(T*)(a + b);
 			}
-			s_self_actor_proxy* self;
+			s_self_actor_proxy* self = nullptr;
 		public:
 			bool				update();
 			bool				gself_valid();
 			s_self_actor_proxy* gself();
 			util::c_vector3     gpos(uint64_t a);
+			BYTE				gtype(uint64_t a) { return this->get<BYTE>(a, core::offsets::actor::actor_proxy_type); }
+			int					gkey (uint64_t a) { return this->get<int> (a, core::offsets::actor::actor_proxy_key);  }
 		};
 		extern c_player* player_;
-		template<class T>
 	}
 }

@@ -5,6 +5,7 @@ bool sdk::player::c_player::update()
 	if (a == NULL) { this->self = 0; return false; }
 	auto t = new sdk::player::s_self_actor_proxy();
 	t->ptr = a;
+	t->pos = this->gpos(a);
 	this->self = t;
 	return true;
 }

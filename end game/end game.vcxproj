@@ -41,15 +41,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -74,14 +74,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)core;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)lib\mh;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
+    <LibraryPath>$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
+    <LibraryPath>$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,6 +135,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +149,34 @@
     <ClCompile Include="core\core.cpp" />
     <ClCompile Include="core\workers.cpp" />
     <ClCompile Include="fn\hooks.cpp" />
+    <ClCompile Include="lib\d3d\d3d11.cpp" />
+    <ClCompile Include="sdk\engine\funcs.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBAInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTargetInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1Factory.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FactoryInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FontWrapper.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FontWrapperInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphAtlas.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphAtlasInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphProvider.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphProviderInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStates.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStatesInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphSheet.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphSheetInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawer.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawerInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1StateSaver.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextGeometry.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextGeometryInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRenderer.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRendererInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\FW1FontWrapper.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\FW1Precompiled.cpp" />
+    <ClCompile Include="sdk\rendering\render.cpp" />
     <ClCompile Include="sdk\util\math.cpp" />
     <ClCompile Include="sdk\player\player.cpp" />
     <ClCompile Include="sdk\util\bytebuffer.cpp" />
@@ -156,7 +188,29 @@
     <ClInclude Include="core\values.h" />
     <ClInclude Include="core\workers.h" />
     <ClInclude Include="fn\hooks.h" />
+    <ClInclude Include="lib\d3d\d3d11.h" />
     <ClInclude Include="lib\mh\mh.h" />
+    <ClInclude Include="sdk\engine\funcs.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1Factory.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1FontWrapper.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphAtlas.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphProvider.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStates.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphSheet.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawer.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1Object.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1StateSaver.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1TextGeometry.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1TextRenderer.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1CompileSettings.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1FontWrapper.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1Precompiled.h" />
+    <ClInclude Include="sdk\rendering\fx\d3dx11effect.h" />
+    <ClInclude Include="sdk\rendering\fx\d3dxGlobal.h" />
+    <ClInclude Include="sdk\rendering\render.h" />
+    <ClInclude Include="sdk\rendering\shader.h" />
     <ClInclude Include="sdk\util\math.h" />
     <ClInclude Include="sdk\player\player.h" />
     <ClInclude Include="sdk\util\bytebuffer.h" />
@@ -164,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\mh\mh_lib.lib" />
+    <Library Include="sdk\rendering\fx\Effects11.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
