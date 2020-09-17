@@ -6,7 +6,12 @@ namespace sdk
 	{
 		class c_menu
 		{
+		private:
+			bool was_setup = false;
+			bool menu_active = false;
 		public:
+			void work();
+			void sactive();
 		};
 		extern c_menu* menu;
 	}

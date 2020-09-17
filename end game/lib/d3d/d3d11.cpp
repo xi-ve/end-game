@@ -15,6 +15,54 @@ D3D11ClearRenderTargetViewHook  phookD3D11ClearRenderTargetViewHook = nullptr;
 
 uint64_t* pSwapChainVTable = nullptr;
 uint64_t* pDeviceContextVTable = nullptr;
+using namespace ImGui;
+WNDPROC	oWndProc;
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
+
+	const auto getButtonToggle = [uMsg, wParam](int& bButton, int vKey)
+	{
+		if (wParam != vKey) return;
+
+		if (uMsg == WM_KEYDOWN)
+			bButton = !bButton;
+	};
+
+	if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) sdk::menu::menu->sactive();
+
+	switch (uMsg)
+	{
+	case WM_LBUTTONDOWN:
+		GetIO().MouseDown[0] = true; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_LBUTTONUP:
+		GetIO().MouseDown[0] = false; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_RBUTTONDOWN:
+		GetIO().MouseDown[1] = true; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_RBUTTONUP:
+		GetIO().MouseDown[1] = false; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_MBUTTONDOWN:
+		GetIO().MouseDown[2] = true; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_MBUTTONUP:
+		GetIO().MouseDown[2] = false; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_MOUSEWHEEL:
+		GetIO().MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f; return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	case WM_MOUSEMOVE:
+		GetIO().MousePos.x = (signed short)(lParam);
+		GetIO().MousePos.y = (signed short)(lParam >> 16);
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		break;
+	}
+	return CallWindowProc(oWndProc, hwnd, uMsg, wParam, lParam);
+}
 
 HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
@@ -24,11 +72,14 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 		g_pd3dDevice->GetImmediateContext(&g_pd3dContext);
 		sdk::render::render->InitializeRenderClass(g_pd3dDevice, g_pd3dContext, 16, (char*)"Consolas", 0);
 		sdk::util::log->add("init d3d11 ok", sdk::util::e_info, true);
+		ImGui_ImplDX11_Init(g_hWnd, g_pd3dDevice, g_pd3dContext);
+		oWndProc = (WNDPROC)SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, (__int3264)(LONG_PTR)WndProc);
 	});
 
 	
 	if (sdk::render::render->IsRenderClassInitialized())
 	{
+		sdk::menu::menu->work();
 		sdk::render::render->RenderText(15, 15, 0xff00ff00, (char*)"28802    a new era");
 	}
 
