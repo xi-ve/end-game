@@ -40,4 +40,8 @@ sdk::util::c_vector3 sdk::player::c_player::gpos(uint64_t a)
 	}
 	return b;
 }
+float sdk::player::c_player::ghp(uint64_t a)
+{
+	return sdk::engine::d_actor_get_hp(a);
+}
 sdk::player::c_player* sdk::player::player_;

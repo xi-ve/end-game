@@ -151,6 +151,7 @@ DWORD __stdcall hook_dx11()
 	if (MH_EnableHook((DWORD*)pSwapChainVTable[50]) != MH_OK) { return 1; }
 
 	sdk::util::log->add("d3d11 hooking completed", sdk::util::e_info, true);
+	lib::d3d11->h = g_hWnd;
 
 	DWORD old_protect;
 	VirtualProtect(phookD3D11Present, 2, PAGE_EXECUTE_READWRITE, &old_protect);
