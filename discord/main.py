@@ -6,6 +6,7 @@ bot = commands.Bot(command_prefix='$')
 
 dbh = mysql.connector.connect(host='localhost',database='bdo',user='root',password='')
 cursor = dbh.cursor(prepared=True)
+dbh.autocommit = True
 
 
 
@@ -22,6 +23,28 @@ def check(user_id):
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
 
+
+@bot.command()
+async def sub(ctx):
+    query = 'SELECT l_exp FROM login WHERE l_discord = %s'
+    cursor.execute(query, [ctx.author.id, ])
+    l_exp = cursor.fetchone()[0]
+    date_1 = datetime.datetime.now()
+    if l_exp > date_1:
+        embed = discord.Embed(color=0x00afb0)
+        embed.add_field(name="You still got a valid subscription!", value="It will expire at: " + l_exp.strftime('%Y-%m-%d %H:%M:%S'), inline=False)
+        
+    else:
+        embed = discord.Embed(color=0xFF0000)
+        embed.add_field(name="You subscription has expired!", value="It expired at: " + l_exp.strftime('%Y-%m-%d %H:%M:%S'), inline=False)
+        
+    await ctx.send(embed=embed)
+@bot.command()
+async def ban(ctx,user: discord.Member,reason):
+    query = "UPDATE `login` SET l_banned = %s WHERE l_discord = %s;"
+    cursor.execute(query, [reason,user.id, ])
+    await ctx.send("done....")
+    await bot.get_channel(755541623437393971).send(f'<@{ctx.author.id}> ({ctx.author.id}) banned <@{user.id}> ({user.id}) for following reason {reason}')
 
 @bot.command()
 async def add(ctx,user: discord.User,time,time_type):
@@ -53,7 +76,6 @@ async def add(ctx,user: discord.User,time,time_type):
 
         query = "UPDATE `login` SET l_exp = %s WHERE l_discord = %s;"
         cursor.execute(query, [end_date.strftime('%Y-%m-%d %H:%M:%S'),user.id, ])
-        dbh.commit()
         embed = discord.Embed(color=0x00afb0)
         embed.add_field(name="You got a subscription!", value="We increased the time of the account linked to your discord.", inline=False)
         embed.set_footer(text=f"Duration: {time} {time_type} Expires: " + end_date.strftime('%Y-%m-%d %H:%M:%S'))
@@ -75,13 +97,21 @@ async def on_message(message):
                 end_date = date_1 + datetime.timedelta(days=int(tasks[user][1]))
             else:
                 end_date = date_1 + datetime.timedelta(hours=int(tasks[user][1]))
+            query = 'SELECT COUNT(l_id) FROM login WHERE l_user = %s'
+            cursor.execute(query, [message.content, ])
+            user_count = cursor.fetchone()[0]
+            if user_count != 0:
+                embed = discord.Embed(color=0xFF0000)
+                embed.add_field(name="Failed!", value="The registration failed, there is already a user with your name!", inline=False)
+                await message.channel.send(embed=embed)
+                return        
             query = "INSERT INTO `login` (`l_id`, `l_user`, `l_discord`, `l_pass`, `l_hwid`, `l_exp`, `l_banned`) VALUES (NULL, %s, %s, NULL, '', %s, NULL);"
             cursor.execute(query, [message.content,message.author.id,end_date.strftime('%Y-%m-%d %H:%M:%S'), ])
-            dbh.commit()
             embed = discord.Embed(color=0x00afb0)
             embed.add_field(name="Done!", value="You can now login into the Loader with your username!, The password you provide on your first login will be set!", inline=False)
             embed.set_footer(text="expires: " + end_date.strftime('%Y-%m-%d %H:%M:%S'))
             await message.channel.send(embed=embed)
             await bot.get_channel(755541623437393971).send(f'<@{message.author.id}> ({message.author.id}) registed with "{message.content}" as the username.Subscription expires at: '+ end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            tasks.pop(user)
     await bot.process_commands(message)
 bot.run('NzU1NzgxMjQzMzc0NjY1NzI4.X2ISIg.f2YpVHcdnlqC5UV8aBTbwzz-eCU')
