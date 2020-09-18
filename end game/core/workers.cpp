@@ -1,18 +1,7 @@
 #include <inc.h>
 void __stdcall core::core_cheat_worker()
 {
-	while (1337 != 420)
-	{
-		/*player routines*/
-		if (!sdk::player::player_->update()) continue;
-		/*cheat routines*/		
-		if (GetAsyncKeyState(VK_NUMPAD1) & 1)
-		{
-			FreeConsole();
-			AllocConsole(); freopen("CONIN$", "r", stdin); freopen("CONOUT$", "w", stdout); freopen("CONOUT$", "w", stderr);
-			sdk::util::log->add("rebound console");
-		}
-	}
+
 }
 std::string core::get_vtable_name(uint64_t address)
 {

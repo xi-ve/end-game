@@ -80,6 +80,7 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 	if (sdk::render::render->IsRenderClassInitialized())
 	{
 		sdk::menu::menu->work();
+		sys::visuals->work();
 		sdk::render::render->RenderText(15, 15, 0xff00ff00, (char*)"28802    a new era");
 	}
 
@@ -101,7 +102,6 @@ BOOL CALLBACK find_wnd(HWND h, LPARAM p)
 	GetWindowThreadProcessId(h, &lpdwProcessId);
 	if (lpdwProcessId == p)
 	{
-		sdk::util::log->add("found hwnd", sdk::util::e_info, true);
 		g_hWnd = h;
 		return FALSE;
 	}
@@ -111,7 +111,7 @@ DWORD __stdcall hook_dx11()
 {
 	while (g_hWnd == nullptr)
 	{
-		std::this_thread::sleep_for(std::chrono::seconds(10));
+		std::this_thread::sleep_for(std::chrono::seconds(5));
 		EnumWindows(find_wnd, GetProcessId(GetCurrentProcess()));
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 		EnumWindows(find_wnd, GetProcessId(GetCurrentProcess()));

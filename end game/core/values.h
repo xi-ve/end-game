@@ -58,8 +58,8 @@ namespace core
 		{
 			//FromClient_SelfPlayerExpChanged
 			static uint64_t actor_self = 0x143D09E90;
-			//EventChattingMessageUpdate
-			static uint64_t actor_list_start = 0x143CFDEB0;
+			//48 8D 15 ? ? ? ? 48 8D 4D EF E8 ? ? ? ? 90 4C 8B 75 F7 
+			static uint64_t actor_list_start = 0x143D09A20;
 			static uint64_t actor_list_end = actor_list_start + 0x8;
 			//struct offsets
 			static uint64_t actor_proxy_key = 0x58;

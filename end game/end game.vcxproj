@@ -186,6 +186,8 @@
     <ClCompile Include="sdk\player\player.cpp" />
     <ClCompile Include="sdk\util\bytebuffer.cpp" />
     <ClCompile Include="sdk\util\log.cpp" />
+    <ClCompile Include="sys\cfg.cpp" />
+    <ClCompile Include="sys\visual.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h" />
@@ -228,6 +230,8 @@
     <ClInclude Include="sdk\player\player.h" />
     <ClInclude Include="sdk\util\bytebuffer.h" />
     <ClInclude Include="sdk\util\log.h" />
+    <ClInclude Include="sys\cfg.h" />
+    <ClInclude Include="sys\visual.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\mh\mh_lib.lib" />

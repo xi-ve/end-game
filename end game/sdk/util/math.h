@@ -57,6 +57,12 @@ namespace sdk
 					a.z == z) return true;
 				return false;
 			}
+			bool valid()
+			{
+				if (isnan(x) || isnan(y) || isnan(z)) return false;
+				if (x == 0.f && y == 0.f && z == 0.f) return false;
+				return true;
+			}
 			float x, y, z;
 		};
 		class c_math

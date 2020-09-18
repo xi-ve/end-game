@@ -1,10 +1,12 @@
 #include <inc.h>
 //
 static fn::t_packet_outbound fn::o_packet_outbound;
+static fn::t_lua_to_string fn::o_lua_to_string;
 //
 bool fn::setup()
 {
 	if (!fn::hook((void*)core::offsets::hk::packet_outbound, &fn::f_packet_outbound, (void**)&fn::o_packet_outbound)) return false;
+	if (!fn::hook((void*)core::offsets::hk::lua_to_string, &fn::f_lua_to_string, (void**)&fn::o_lua_to_string)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
 }
@@ -15,7 +17,7 @@ bool fn::hook(LPVOID offset, LPVOID exchangee, LPVOID* backup)
 	sdk::util::log->add(std::string(sdk::util::log->as_hex((uint64_t)offset)).append(" -> ").append(sdk::util::log->as_hex((uint64_t)exchangee)), sdk::util::e_info, true);
 	return true;
 }
-uint64_t fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc, uint8_t unk, uint64_t unk2, const CHAR* xkey)
+uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc, uint8_t unk, uint64_t unk2, const CHAR* xkey)
 {
 	if (!pack )	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 	//__int16* a = (__int16*)pack; if (a == nullptr) return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey); auto b = *a;
@@ -25,4 +27,17 @@ uint64_t fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc, uint8_t u
 	//					.append(" size  : ").append(std::to_string(size)) \
 	//					.append(" packet: ").append(buf.printHex()), sdk::util::e_info, true);	
 	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
+}
+
+uint64_t __fastcall fn::f_lua_to_string(uint64_t a1)
+{
+	if (!a1) return fn::o_lua_to_string(a1);
+	//
+	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
+	if (!self_actor_proxy) return fn::o_lua_to_string(a1);
+	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
+	if (!can_play) return fn::o_lua_to_string(a1);
+	sdk::player::player_->update_actors();
+	//
+	return fn::o_lua_to_string(a1);
 }

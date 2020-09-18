@@ -37,6 +37,7 @@
 #include "..\\sdk\rendering\shader.h"
 #include "..\\lib\imgui\imgui.h"
 #include "..\\lib\imgui\imgui_impl_dx11.h"
+#include "..\\sys\cfg.h"
 #include "..\\sdk\rendering\menu\menu.h"
 #include "..\\sdk\rendering\render.h"
 #include "..\\sdk\util\log.h"
@@ -45,6 +46,7 @@
 #include "..\\sdk\\util\math.h"
 #include "..\\sdk\\engine\funcs.h"
 #include "..\\sdk\player\player.h"
+#include "..\\sys\visual.h"
 #include "..\\lib\d3d\d3d11.h"
 #include <workers.h>
 #include <boot.h>

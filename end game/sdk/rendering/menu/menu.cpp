@@ -9,10 +9,10 @@ void sdk::menu::c_menu::work()
 		this->was_setup = true;
 	}
 	if (!this->menu_active) return;
-	ImGui::Begin("test-page", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Begin("28802-dev", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
 	{
-		ImGui::Text("Testwwwwwwwwwwwwww");
-		if (ImGui::Button("test")) sdk::util::log->add("pog");
+		ImGui::Text(std::string("actors:").append(std::to_string(sdk::player::player_->actors.size())).c_str());
+		
 		ImGui::End();
 	}
 	//
