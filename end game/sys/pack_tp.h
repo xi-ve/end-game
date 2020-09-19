@@ -5,11 +5,7 @@ namespace sys
 	extern void __stdcall tp_thread();
 	class c_pack_tp
 	{
-		public:
-		void send_packet(ByteBuffer p, int opc, int size)
-		{
-			if (param5 != 0) fn::f_packet_outbound(&p.buf[0], size, 1, 0, param5, "eee");
-		}
+	public:
 		void send_pos_tp(sdk::util::c_vector3 pos, uint64_t self)
 		{
 			auto packet = packet_copy;
@@ -22,7 +18,7 @@ namespace sys
 			/*set up z*/
 			for (auto obj : x_pos) packet.putFloat(pos.z, obj + 8);
 			/*send pack*/
-			send_packet(packet, packet_id, packet.buf.size());
+			fn::send_packet(packet, packet_id, (int)packet.buf.size());
 		}
 		bool                 _doneTp = 0;
 		bool                 _alt = 0;
@@ -80,9 +76,8 @@ namespace sys
 			_doneTp = 0;
 			_setTp = 1;
 			CreateThread(0, 0, (LPTHREAD_START_ROUTINE)tp_thread, 0, 0, 0);
-			sdk::util::log->add("starting");
 		}
-	public:
+
 		ByteBuffer packet_copy;
 		std::vector<int> x_pos;
 		int time_signature = 0;
@@ -90,7 +85,7 @@ namespace sys
 		bool get_packet_again = true;
 		uint64_t param5;
 
-		void set_tp();
+		void capture_packet(ByteBuffer buf, uint64_t pack, int size, int opcode);
 	};
 	extern c_pack_tp* pack_tp;
 }

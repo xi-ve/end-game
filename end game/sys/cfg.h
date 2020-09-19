@@ -24,6 +24,7 @@ namespace sys
 			}
 			default: break;
 			}
+			sdk::util::log->add(std::string(a).append(":").append(b).append(":").append(c).append(":").append(std::to_string(t)), sdk::util::e_info, true);
 		}
 		std::string table;
 		std::string val;
@@ -39,6 +40,7 @@ namespace sys
 		s_cfg_v* gvar(std::string t, std::string v);
 		void read();
 		void save();
+		void vars();
 	};
 	extern c_config* config;
 }

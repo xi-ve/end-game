@@ -1,11 +1,4 @@
 #include <inc.h>
-
-void sys::c_pack_tp::set_tp()
-{
-	this->teleport_to_marker();
-}
-sys::c_pack_tp* sys::pack_tp;
-
 void __stdcall sys::tp_thread()
 {
 	pack_tp->_poslist.clear();
@@ -47,8 +40,8 @@ void __stdcall sys::tp_thread()
 				}
 				else
 				{
-					pack_tp->_poslist.push_back(sdk::util::c_vector3(pack_tp->_endPos.x * 100, (pack_tp->_endPos.y * 100) + 400, pack_tp->_endPos.z * 100));
-					pack_tp->send_pos_tp(sdk::util::c_vector3(pack_tp->_endPos.x * 100, (pack_tp->_endPos.y * 100) + 400, pack_tp->_endPos.z * 100), _self);
+					pack_tp->_poslist.push_back(sdk::util::c_vector3(pack_tp->_endPos.x * 100, (pack_tp->_endPos.y * 100) + 600, pack_tp->_endPos.z * 100));
+					pack_tp->send_pos_tp(sdk::util::c_vector3(pack_tp->_endPos.x * 100, (pack_tp->_endPos.y * 100) + 600, pack_tp->_endPos.z * 100), _self);
 
 					pack_tp->_doneTp = 1;
 					pack_tp->_endPos.clear();
@@ -63,3 +56,43 @@ void __stdcall sys::tp_thread()
 		else break;
 	}
 }
+void sys::c_pack_tp::capture_packet(ByteBuffer buf, uint64_t pack, int size, int opcode)
+{
+	if (sys::pack_tp->get_packet_again && size <= 450 && size >= 300)
+	{
+		sys::pack_tp->x_pos.clear();
+		auto self = *(uint64_t*)(core::offsets::actor::actor_self);
+		if (!self) return;
+		if (!sdk::player::player_->get<BYTE>(self, core::offsets::actor::actor_can_play)) return;
+		auto pos = sdk::player::player_->gpos(self);
+		auto t_min = GetTickCount64() - 5000;
+		auto t_max = GetTickCount64() + 5000;
+		for (auto c = 0; c < size; c++)
+		{
+			auto as_uulong = *(uint64_t*)((uint64_t)pack + c);
+			if (as_uulong >= t_min && as_uulong <= t_max)
+			{
+				sys::pack_tp->time_signature = c;
+				break;
+			}
+		}
+		for (auto c = 0; c < size; c++)
+		{
+			auto as_flt = *(float*)((uint64_t)pack + c);
+			if ((int)as_flt == (int)pos.x)
+			{
+				sys::pack_tp->x_pos.push_back(c);
+			}
+		}
+		if (sys::pack_tp->x_pos.size() < 9) 
+		{
+			sys::pack_tp->x_pos.clear(); 
+			return;
+		}
+		sys::pack_tp->packet_copy = buf;
+		sys::pack_tp->packet_id = opcode;
+		sys::pack_tp->get_packet_again = false;
+		sdk::util::log->add(std::string("found packet:").append(std::to_string(opcode)).append(" pos count:").append(std::to_string(sys::pack_tp->x_pos.size())), sdk::util::e_info, true);
+	}
+}
+sys::c_pack_tp* sys::pack_tp;

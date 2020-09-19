@@ -18,6 +18,7 @@ static void __stdcall init_thread()
 	auto hk_status = fn::setup(); if (hk_status == false) { sdk::util::log->add("failed hooking!", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
 	//
 	sys::config->read();
+	sys::config->vars();//base
 	lib::d3d11->setup();
 	//
 	sdk::util::log->add("done init_thread", sdk::util::e_info, true);

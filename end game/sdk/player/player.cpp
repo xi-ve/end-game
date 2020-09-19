@@ -39,15 +39,11 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 		}
 		else if (t == 9)
 		{
-			auto n = *(sdk::player::c_proxy_name*)(p);
-			if (!n.name_ptr) continue;
 			auto pos = this->gpos(p);
 			auto k = *(int*)(p + core::offsets::actor::actor_proxy_key);
-			auto hp = sdk::engine::d_actor_get_hp(p);
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, sdk::player::player_->gpos(self));
-			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
-			strc.hp = hp; strc.key = k; strc.name = a_str; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d;
+			strc.hp = 0; strc.key = k; strc.name = ""; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d;
 			tmp_list_corpses.push_back(strc);
 		}
 	}

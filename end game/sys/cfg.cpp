@@ -9,7 +9,7 @@ bool sys::c_config::proc(std::string a, std::string b, std::string c)
 }
 sys::s_cfg_v* sys::c_config::gvar(std::string t, std::string v)
 {
-	for (auto a : this->cfg_list) if (a->table.find(t) && a->val.find(v)) return a;	
+	for (auto a : this->cfg_list) if (strstr(a->table.c_str(), t.c_str()) && strstr(a->val.c_str(), v.c_str())) return a;	
 	return nullptr;
 }
 void sys::c_config::read()
@@ -63,5 +63,10 @@ void sys::c_config::save()
 		}
 	}
 	t.close();
+}
+void sys::c_config::vars()
+{
+	this->proc("packet", "ibypass_trial", "1");
+	this->proc("packet", "iteleport_gen2", "1");
 }
 sys::c_config* sys::config;
