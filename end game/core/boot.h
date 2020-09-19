@@ -11,6 +11,7 @@ static void __stdcall init_thread()
 	sys::config = new sys::c_config();
 	sys::visuals = new sys::c_visuals();
 	sys::pack_tp = new sys::c_pack_tp();
+	fn::patcher = new fn::c_patcher();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
@@ -20,6 +21,7 @@ static void __stdcall init_thread()
 	sys::config->read();
 	sys::config->vars();//base
 	lib::d3d11->setup();
+	fn::patcher->create_patches();
 	//
 	sdk::util::log->add("done init_thread", sdk::util::e_info, true);
 }
