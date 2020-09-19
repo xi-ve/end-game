@@ -46,6 +46,7 @@
 #include "..\\sdk\\util\math.h"
 #include "..\\sdk\\engine\funcs.h"
 #include "..\\sdk\player\player.h"
+#include "..\\sys\pack_tp.h"
 #include "..\\sys\visual.h"
 #include "..\\lib\d3d\d3d11.h"
 #include <workers.h>

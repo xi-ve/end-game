@@ -47,8 +47,8 @@ namespace sdk
 			{
 				return *(T*)(a + b);
 			}
-			bool						update_actors();
-			util::c_vector3				gpos(uint64_t a);
+			bool						update_actors(uint64_t self);
+			util::c_vector3				gpos(uint64_t a, bool raw = false);
 			BYTE						gtype(uint64_t a) { return this->get<BYTE>(a, core::offsets::actor::actor_proxy_type); }
 			int							gkey (uint64_t a) { return this->get<int> (a, core::offsets::actor::actor_proxy_key);  }
 			float						ghp(uint64_t a);

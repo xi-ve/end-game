@@ -62,6 +62,7 @@ namespace core
 			static uint64_t actor_list_start = 0x143D09A20;
 			static uint64_t actor_list_end = actor_list_start + 0x8;
 			//struct offsets
+			static uint64_t actor_was_looted = 0x468;
 			static uint64_t actor_proxy_key = 0x58;
 			static uint64_t actor_proxy_type = 0x5C;
 			static uint64_t actor_char_ctrl = 0x410;

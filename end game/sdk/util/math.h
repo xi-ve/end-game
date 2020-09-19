@@ -63,6 +63,14 @@ namespace sdk
 				if (x == 0.f && y == 0.f && z == 0.f) return false;
 				return true;
 			}
+			void clear()
+			{
+				x = 0; y = 0; z = 0;
+			}
+			c_vector3 mult()
+			{
+				return c_vector3(x*100.f, y*100.f, z*100.f);
+			}
 			float x, y, z;
 		};
 		class c_math

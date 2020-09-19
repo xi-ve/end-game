@@ -10,6 +10,7 @@ static void __stdcall init_thread()
 	sdk::menu::menu = new sdk::menu::c_menu();
 	sys::config = new sys::c_config();
 	sys::visuals = new sys::c_visuals();
+	sys::pack_tp = new sys::c_pack_tp();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
