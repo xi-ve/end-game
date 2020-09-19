@@ -38,8 +38,9 @@ namespace sdk
 		};
 		/*player utils*/
 		class c_player
-		{
+		{			
 		public:
+			bool thread_working = false;
 			std::deque<s_blank_proxy> actors = std::deque<s_blank_proxy>();
 			std::deque<s_blank_proxy> corpses = std::deque<s_blank_proxy>();
 			template<class T>

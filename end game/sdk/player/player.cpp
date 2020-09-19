@@ -8,6 +8,7 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 	if (se_delta < 1) { this->actors.clear(); this->corpses.clear(); return false; }
 	auto tmp_list = std::deque<sdk::player::s_blank_proxy>();
 	auto tmp_list_corpses = std::deque<sdk::player::s_blank_proxy>();
+	auto spos = sdk::player::player_->gpos(self);
 	for (auto c = 0; c < se_delta * 8; c += sizeof(uint64_t))
 	{
 		auto p = *(uint64_t*)(s + c);
@@ -32,7 +33,7 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 			auto k = *(int*)(p + core::offsets::actor::actor_proxy_key);
 			auto hp = sdk::engine::d_actor_get_hp(p);
 			auto strc = sdk::player::s_blank_proxy();
-			auto dst_3d = sdk::util::math->gdst_3d(pos, sdk::player::player_->gpos(self));
+			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
 			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
 			strc.hp = hp; strc.key = k; strc.name = a_str; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d;
 			tmp_list.push_back(strc);
@@ -42,7 +43,7 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 			auto pos = this->gpos(p);
 			auto k = *(int*)(p + core::offsets::actor::actor_proxy_key);
 			auto strc = sdk::player::s_blank_proxy();
-			auto dst_3d = sdk::util::math->gdst_3d(pos, sdk::player::player_->gpos(self));
+			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
 			strc.hp = 0; strc.key = k; strc.name = ""; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d;
 			tmp_list_corpses.push_back(strc);
 		}

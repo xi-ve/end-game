@@ -1,7 +1,15 @@
 #include <inc.h>
-void __stdcall core::core_cheat_worker()
+void core::core_cheat_worker()
 {
-
+	while (1337)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		auto self = *(uint64_t*)(core::offsets::actor::actor_self);
+		if (!self) { sdk::player::player_->thread_working = 0; return; }
+		auto playable = *(BYTE*)(self + core::offsets::actor::actor_can_play);
+		if (!playable) { sdk::player::player_->thread_working = 0; return; }
+		sdk::player::player_->update_actors(self);
+	}
 }
 std::string core::get_vtable_name(uint64_t address)
 {

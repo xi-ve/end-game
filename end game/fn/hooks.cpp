@@ -50,7 +50,6 @@ uint64_t __fastcall fn::f_lua_to_string(uint64_t a1)
 	if (!self_actor_proxy) return fn::o_lua_to_string(a1);
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) return fn::o_lua_to_string(a1);
-	sdk::player::player_->update_actors(self_actor_proxy);
 	//
 	return fn::o_lua_to_string(a1);
 }

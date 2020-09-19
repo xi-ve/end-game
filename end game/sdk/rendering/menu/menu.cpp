@@ -13,7 +13,9 @@ void sdk::menu::c_menu::work()
 	{
 		static auto ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
 		static auto iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
+		static auto ientity_update = sys::config->gvar("debug", "ientity_update");
 
+		ImGui::Checkbox("Entity updates", (bool*)&ientity_update->iv);
 		ImGui::Checkbox("Trial bypass", (bool*)&ibypass_trial->iv);
 
 		ImGui::Checkbox("TGEN2", (bool*)&iteleport_gen2->iv); ImGui::SameLine();

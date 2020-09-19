@@ -7,7 +7,7 @@ void sys::c_visuals::monster_proxy_debug()
 	if (!sdk::util::math->w2s(sdk::player::player_->gpos(this->self), sv)) return;
 	for (auto b : a)
 	{
-		if (!b.pos.valid() || b.ptr == NULL || b.type != 9 || b.hp <= 0 || b.rlt_dst >= 1000.f) continue;
+		if (!b.pos.valid() || b.ptr == NULL || b.type != 1 || b.rlt_dst >= 1000.f) continue;
 		auto v = sdk::util::c_vector3();
 		if (!sdk::util::math->w2s(b.pos, v)) continue;
 		if (!v.valid()) continue;
@@ -20,7 +20,7 @@ void sys::c_visuals::work()
 {
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) return;
-	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
+	auto can_play = *(BYTE*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) return;
 	this->self = self_actor_proxy;
 	this->monster_proxy_debug();
