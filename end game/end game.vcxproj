@@ -183,12 +183,14 @@
     <ClCompile Include="sdk\rendering\font_wrapper\FW1FontWrapper.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\FW1Precompiled.cpp" />
     <ClCompile Include="sdk\rendering\menu\menu.cpp" />
+    <ClCompile Include="sdk\rendering\menu\m_packet.cpp" />
     <ClCompile Include="sdk\rendering\render.cpp" />
     <ClCompile Include="sdk\util\math.cpp" />
     <ClCompile Include="sdk\player\player.cpp" />
     <ClCompile Include="sdk\util\bytebuffer.cpp" />
     <ClCompile Include="sdk\util\log.cpp" />
     <ClCompile Include="sys\cfg.cpp" />
+    <ClCompile Include="sys\loot.cpp" />
     <ClCompile Include="sys\pack_tp.cpp" />
     <ClCompile Include="sys\visual.cpp" />
   </ItemGroup>
@@ -228,6 +230,7 @@
     <ClInclude Include="sdk\rendering\fx\d3dx11effect.h" />
     <ClInclude Include="sdk\rendering\fx\d3dxGlobal.h" />
     <ClInclude Include="sdk\rendering\menu\menu.h" />
+    <ClInclude Include="sdk\rendering\menu\m_packet.h" />
     <ClInclude Include="sdk\rendering\render.h" />
     <ClInclude Include="sdk\rendering\shader.h" />
     <ClInclude Include="sdk\util\math.h" />
@@ -235,6 +238,7 @@
     <ClInclude Include="sdk\util\bytebuffer.h" />
     <ClInclude Include="sdk\util\log.h" />
     <ClInclude Include="sys\cfg.h" />
+    <ClInclude Include="sys\loot.h" />
     <ClInclude Include="sys\pack_tp.h" />
     <ClInclude Include="sys\visual.h" />
   </ItemGroup>

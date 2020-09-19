@@ -66,6 +66,7 @@ void sys::c_config::save()
 }
 void sys::c_config::vars()
 {
+	this->proc("loot", "ienable", "1");
 	this->proc("packet", "ibypass_trial", "1");
 	this->proc("packet", "iteleport_gen2", "1");
 	this->proc("debug", "ientity_update", "1");

@@ -27,7 +27,7 @@ namespace sdk
 		struct s_blank_proxy
 		{
 			std::string			 name;
-			uint64_t			 ptr;
+			uint64_t			 ptr = 0;
 			sdk::util::c_vector3 pos;
 			int					 type;
 			int					 key;

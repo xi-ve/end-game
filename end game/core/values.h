@@ -46,13 +46,15 @@ namespace core
 			//getGradeType
 			static uint64_t loot_get_rarity = 0x140BA2A70;
 			//40 53 48 83 EC 50 48 C7 44 24 ? ? ? ? ? 48 8D 91 ? ? ? ? 83 3A 00 75 0D 48 8D 05 ? ? ? ? 48 83 C4 50 5B C3 48 8D 59 68 48 C7 43 ? ? ? ? ? 
-			static uint64_t loot_get_name = 0x140A81550;
+			static uint64_t loot_get_name = 0x140BA28E0;
 			//looting_getItem
-			static uint64_t loot_get_base = 0x14094D7E0;
+			static uint64_t loot_get_base = 0x140A52EC0;
 			//looting_slotClick
 			static uint64_t loot_click_slot = 0x140A53380;
 			//looting_getItemCount
 			static uint64_t loot_item_count = 0x140A53000;
+			//40 57 48 83 EC 60 48 C7 44 24 ? ? ? ? ? 48 89 5C 24 ? 48 89 B4 24 ? ? ? ? 48 8B F9  // EventChangedSelfPlayerActionVariable
+			static uint64_t loot_deadactor = 0x140845750;
 		}
 		namespace actor
 		{

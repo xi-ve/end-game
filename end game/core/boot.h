@@ -12,6 +12,8 @@ static void __stdcall init_thread()
 	sys::visuals = new sys::c_visuals();
 	sys::pack_tp = new sys::c_pack_tp();
 	fn::patcher = new fn::c_patcher();
+	sys::loot = new sys::c_loot();
+	sdk::menu::m_packet = new sdk::menu::c_m_packet();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }

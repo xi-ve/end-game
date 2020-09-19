@@ -20,7 +20,7 @@ bool fn::hook(LPVOID offset, LPVOID exchangee, LPVOID* backup)
 }
 void fn::send_packet(ByteBuffer p, int opc, int size)
 {
-	if (sys::pack_tp->param5 != 0) fn::f_packet_outbound(&p.buf[0], size, 1, 0, sys::pack_tp->param5, "eee");
+	if (sys::pack_tp->param5 != 0) fn::o_packet_outbound(&p.buf[0], size, 1, 0, sys::pack_tp->param5, "eee");
 }
 uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc, uint8_t unk, uint64_t unk2, const CHAR* xkey)
 {
@@ -35,10 +35,12 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	if (ibypass_trial->iv)				if (b == 5875) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
 
-	/*sdk::util::log->add(std::string(__FUNCTION__) \
+	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
+
+	sdk::util::log->add(std::string(__FUNCTION__) \
 		.append(" opcode: ").append(std::to_string(b)) \
 		.append(" size  : ").append(std::to_string(size)) \
-		.append(" packet: ").append(buf.printHex()), sdk::util::e_info, true);*/
+		.append(" packet: ").append(buf.printHex()), sdk::util::e_info, true);
 	
 	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 }
@@ -50,11 +52,14 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	executing = true;
 	auto v = fn::o_lua_to_string(a1);
 	//
+	static auto iloot_enable = sys::config->gvar("loot", "ienable");
+	//
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) { executing = false; return v; }
 	sdk::player::player_->update_actors(self_actor_proxy);
+	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	executing = false;
 	//
 	return v;
