@@ -2,6 +2,7 @@
 //
 static fn::t_packet_outbound fn::o_packet_outbound;
 static fn::t_lua_to_string fn::o_lua_to_string;
+static bool fn::executing = false;
 //
 bool fn::setup()
 {
@@ -42,14 +43,19 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 }
 
-uint64_t __fastcall fn::f_lua_to_string(uint64_t a1)
+uint64_t __fastcall fn::f_lua_to_string(void* a1)
 {
 	if (!a1) return fn::o_lua_to_string(a1);
+	if (executing) return fn::o_lua_to_string(a1);
+	executing = true;
+	auto v = fn::o_lua_to_string(a1);
 	//
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
-	if (!self_actor_proxy) return fn::o_lua_to_string(a1);
+	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
-	if (!can_play) return fn::o_lua_to_string(a1);
+	if (!can_play) { executing = false; return v; }
+	sdk::player::player_->update_actors(self_actor_proxy);
+	executing = false;
 	//
-	return fn::o_lua_to_string(a1);
+	return v;
 }

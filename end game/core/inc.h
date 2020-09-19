@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iostream>
 #include <thread>
+#include <atomic>
 #include <d3d11.h>
 #include <mutex>
 #include <d3dx11.h>

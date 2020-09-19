@@ -1,11 +1,11 @@
 #include <inc.h>
-bool sdk::player::c_player::update_actors(uint64_t self)
+void sdk::player::c_player::update_actors(uint64_t self)
 {
 	auto s = *(uint64_t*)(core::offsets::actor::actor_list_start);
 	auto e = *(uint64_t*)(core::offsets::actor::actor_list_end);
-	if (s == NULL || e == NULL) return false;
+	if (s == NULL || e == NULL) return;
 	auto se_delta = (e - s) / sizeof(decltype(s));
-	if (se_delta < 1) { this->actors.clear(); this->corpses.clear(); return false; }
+	if (se_delta < 1) { this->actors.clear(); this->corpses.clear(); return; }
 	auto tmp_list = std::deque<sdk::player::s_blank_proxy>();
 	auto tmp_list_corpses = std::deque<sdk::player::s_blank_proxy>();
 	auto spos = sdk::player::player_->gpos(self);
@@ -13,6 +13,8 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 	{
 		auto p = *(uint64_t*)(s + c);
 		if (!p) continue;
+		auto k = *(int*)(p + core::offsets::actor::actor_proxy_key);
+		if (!k) continue;
 		auto t = *(BYTE*)(p + core::offsets::actor::actor_proxy_type);
 		if (t == 0 || t == 1)
 		{
@@ -30,7 +32,6 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 			auto n = *(sdk::player::c_proxy_name*)(p);
 			if (!n.name_ptr) continue;
 			auto pos = this->gpos(p);
-			auto k = *(int*)(p + core::offsets::actor::actor_proxy_key);
 			auto hp = sdk::engine::d_actor_get_hp(p);
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
@@ -48,11 +49,11 @@ bool sdk::player::c_player::update_actors(uint64_t self)
 			tmp_list_corpses.push_back(strc);
 		}
 	}
-	if (tmp_list.size()) { this->actors.clear(); this->actors = tmp_list; }
+	if (tmp_list.size()) { this->actors = tmp_list; }
 	else this->actors.clear();
-	if (tmp_list_corpses.size()) { this->corpses.clear(); this->corpses = tmp_list_corpses; }
+	if (tmp_list_corpses.size()) { this->corpses = tmp_list_corpses; }
 	else this->corpses.clear();
-	return true;
+	return;
 }
 sdk::util::c_vector3 sdk::player::c_player::gpos(uint64_t a, bool raw)
 {

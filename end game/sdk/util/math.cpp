@@ -16,7 +16,7 @@ float sdk::util::c_math::gdst_1d(float f, float t)
 }
 bool sdk::util::c_math::w2s(c_vector3 p, c_vector3& r)
 {
-	auto gf = [&](uint64_t p) -> auto
+	auto gf = [&](uint64_t p) -> float
 	{
 		return *(float*)(p);
 	};

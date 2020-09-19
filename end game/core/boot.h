@@ -23,7 +23,7 @@ static void __stdcall init_thread()
 	lib::d3d11->setup();
 	fn::patcher->create_patches();
 	//
-	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)core::core_cheat_worker, 0, 0, 0); 
+	//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)core::core_cheat_worker, 0, 0, 0); 
 	//
 	sdk::util::log->add("done init_thread", sdk::util::e_info, true);
 }

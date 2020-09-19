@@ -3,11 +3,11 @@ void core::core_cheat_worker()
 {
 	while (1337)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		auto self = *(uint64_t*)(core::offsets::actor::actor_self);
-		if (!self) { sdk::player::player_->thread_working = 0; return; }
+		if (!self) continue; 
 		auto playable = *(BYTE*)(self + core::offsets::actor::actor_can_play);
-		if (!playable) { sdk::player::player_->thread_working = 0; return; }
+		if (!playable) continue;
 		sdk::player::player_->update_actors(self);
 	}
 }

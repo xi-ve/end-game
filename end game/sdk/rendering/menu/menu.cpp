@@ -22,6 +22,10 @@ void sdk::menu::c_menu::work()
 		ImGui::Checkbox("Setup TGEN2", &sys::pack_tp->get_packet_again);
 		if (iteleport_gen2->iv && !sys::pack_tp->get_packet_again) if (ImGui::Button("TGEN2 to marker")) sys::pack_tp->teleport_to_marker();
 
+		//
+		ImGui::Text(std::string("Proxies:").append(std::to_string(sdk::player::player_->actors.size())).c_str());
+		ImGui::Text(std::string("DeadActors:").append(std::to_string(sdk::player::player_->corpses.size())).c_str());
+
 		ImGui::End();
 	}
 	//
