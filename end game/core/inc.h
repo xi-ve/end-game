@@ -43,6 +43,7 @@
 #include "..\\sys\cfg.h"
 #include "..\\sdk\util\bytebuffer.h"
 #include "..\\fn\hooks.h"
+#include "..\\lib\imgui\imgui_internal.h"
 #include "..\\sdk\rendering\menu\m_packet.h"
 #include "..\\sdk\rendering\menu\menu.h"
 #include "..\\sdk\rendering\render.h"
