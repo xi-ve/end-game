@@ -51,6 +51,38 @@ namespace sdk
 			int durability;
 			int max_durability;
 		};
+		class s_pet_data
+		{
+		public:
+		private:
+			char pad_0x0000[0x8]; //0x0000
+		public:
+			__int64 i; //0x0008 
+			wchar_t n[16]; //0x0010 
+		private:
+			char pad_0x0030[0x30]; //0x0030
+		public:
+			__int32 N00001520; //0x0060 
+			__int32 h; //0x0064 
+		private:
+			char pad_0x0068[0x20]; //0x0068
+
+		}; //Size=0x0088
+		class s_pet_data_s
+		{
+		public:
+			__int64 i; //0x0000 
+			unsigned char N00000D7C; //0x0008 
+			unsigned char N00000D9C; //0x0009 
+			wchar_t n[16]; //0x000A 
+		private:
+			char pad_0x002A[0x26]; //0x002A
+		public:
+			__int32 h; //0x0050 
+		private:
+			char pad_0x0054[0xC]; //0x0054
+
+		}; //Size=0x0060
 		/*player utils*/
 		class c_player
 		{
@@ -59,6 +91,8 @@ namespace sdk
 			std::deque<s_blank_proxy> actors = std::deque<s_blank_proxy>();
 			std::deque<s_blank_proxy> corpses = std::deque<s_blank_proxy>();
 			std::deque<s_item_info> inventory_items = std::deque<s_item_info>();
+			std::deque<s_pet_data> unsealed_pets = std::deque<s_pet_data>();
+			std::deque<s_pet_data_s> sealed_pets = std::deque<s_pet_data_s>();
 			template<class T>
 			T get(uint64_t a, uint64_t b)
 			{
@@ -66,6 +100,7 @@ namespace sdk
 			}
 			void						update_inventory(uint64_t self);
 			void						update_actors(uint64_t self);
+			void						update_pets(uint64_t self);
 			util::c_vector3				gpos(uint64_t a, bool raw = false);
 			BYTE						gtype(uint64_t a) { return this->get<BYTE>(a, core::offsets::actor::actor_proxy_type); }
 			int							gkey(uint64_t a)  { return this->get<int>(a, core::offsets::actor::actor_proxy_key);   }

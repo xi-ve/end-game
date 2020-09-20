@@ -87,6 +87,51 @@ void sdk::player::c_player::update_actors(uint64_t self)
 	else this->corpses.clear();
 	return;
 }
+void sdk::player::c_player::update_pets(uint64_t self)
+{
+	auto gunsealed = [&]() -> std::deque<sdk::player::s_pet_data>
+	{
+		auto pmin = *(uint64_t*)(core::offsets::actor::unsealed_pet_start);
+		auto pmax = *(uint64_t*)(core::offsets::actor::unsealed_pet_end);
+		if (!pmin || !pmax) return {};
+		auto d = (pmax - pmin) / sizeof(uint64_t);
+		if (d == 0) return {};
+		auto list = std::deque<sdk::player::s_pet_data>();
+		for (auto a = 0; a < d * 8; a += sizeof(uint64_t))
+		{
+			auto p = *(uint64_t*)(pmin + a);
+			if (!p) continue;
+			auto strc = *(sdk::player::s_pet_data*)(p);
+			if (!strc.i) continue;
+			list.push_back(strc);
+		}
+		return list;
+	};
+	auto gsealed = [&]() -> std::deque<sdk::player::s_pet_data_s>
+	{
+		auto pmin = *(uint64_t*)(core::offsets::actor::sealed_pet_start);
+		auto pmax = *(uint64_t*)(core::offsets::actor::sealed_pet_end);
+		if (!pmin || !pmax) return {};
+		auto d = (pmax - pmin) / sizeof(uint64_t);
+		if (d == 0) return {};
+		auto list = std::deque<sdk::player::s_pet_data_s>();
+		for (auto a = 0; a < d * 8; a += sizeof(uint64_t))
+		{
+			auto p = *(uint64_t*)(pmin + a);
+			if (!p) continue;
+			auto strc = *(sdk::player::s_pet_data_s*)(p);
+			if (!strc.i) continue;
+			list.push_back(strc);
+		}
+		return list;
+	};
+	auto ul = gunsealed();
+	auto sl = gsealed();
+	if (ul.empty()) this->unsealed_pets.clear();
+	else this->unsealed_pets = ul;
+	if (sl.empty()) this->sealed_pets.clear();
+	else this->sealed_pets = sl;
+}
 sdk::util::c_vector3 sdk::player::c_player::gpos(uint64_t a, bool raw)
 {
 	auto b = util::c_vector3(1234,1234,1234);

@@ -65,6 +65,7 @@ void sdk::menu::c_menu::work()
 		this->tab(0, "pack-fn"		, 18);
 		this->tab(1, "pack-bypasses", 18);
 		this->tab(2, "looting"		, 18);
+		this->tab(3, "debug-info"	, 18);
 		switch (this->ctab)
 		{
 		case 0://pack-fn
@@ -112,6 +113,60 @@ void sdk::menu::c_menu::work()
 						if (ImGui::Button("clear-whitelist")) sys::loot->read_whitelist(); ImGui::SameLine();
 						if (ImGui::Button("clear-blacklist")) sys::loot->read_blacklist();
 					}
+				}
+			}
+			break;
+		}
+		case 3://debug
+		{
+			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
+			if (!self) { ImGui::Text("only available ingame"); break; }
+			ImGui::Text(std::string("unsealed-pets:").append(std::to_string(sdk::player::player_->unsealed_pets.size())).c_str());
+			ImGui::Text(std::string("sealed-pets  :").append(std::to_string(sdk::player::player_->sealed_pets.size())).c_str());
+	
+			if (ImGui::Button("unseal-test-0"))
+			{
+				sdk::util::log->add("unsealing test", sdk::util::e_info, true);
+				auto f = sdk::player::player_->unsealed_pets.front();
+				ByteBuffer b;
+				b.putShort(3825);
+				b.putLong(f.i);
+				fn::send_packet(b, 3825, 10);
+
+				std::stringstream v;  v << "unseal packet: ";
+				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
+				sdk::util::log->add(v.str(), sdk::util::e_info, true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("seal-test-0"))
+			{
+				sdk::util::log->add("sealing test", sdk::util::e_info, true);
+				auto f = sdk::player::player_->sealed_pets.front();
+
+				ByteBuffer b;
+				b.putShort(3045);
+				b.putLong(f.i);
+				b.putShort(0x1b74);
+				fn::send_packet(b, 3045, 12);
+
+				std::stringstream v;  v << "seal packet: ";
+				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
+				sdk::util::log->add(v.str(), sdk::util::e_info, true);
+			}
+			if (sdk::player::player_->sealed_pets.size())
+			{
+				for (auto a : sdk::player::player_->sealed_pets)
+				{
+					auto aws = std::wstring(a.n); auto as = std::string(aws.begin(), aws.end());
+					ImGui::Text(std::string("(sealed)   pet:").append(as).append(" id:").append(std::to_string(a.i)).append(" hunger:").append(std::to_string(a.h)).c_str());
+				}
+			}
+			if (sdk::player::player_->unsealed_pets.size())
+			{
+				for (auto a : sdk::player::player_->unsealed_pets)
+				{
+					auto aws = std::wstring(a.n); auto as = std::string(aws.begin(), aws.end());
+					ImGui::Text(std::string("(unsealed) pet:").append(as).append(" id:").append(std::to_string(a.i)).append(" hunger:").append(std::to_string(a.h)).c_str());
 				}
 			}
 			break;

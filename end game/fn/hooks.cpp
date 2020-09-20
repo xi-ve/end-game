@@ -37,10 +37,10 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
 
-	sdk::util::log->add(std::string(__FUNCTION__) \
+	/*sdk::util::log->add(std::string(__FUNCTION__) \
 		.append(" opcode: ").append(std::to_string(b)) \
 		.append(" size  : ").append(std::to_string(size)) \
-		.append(" packet: ").append(buf.printHex()), sdk::util::e_info, true);
+		.append(" packet: ").append(buf.printHex()), sdk::util::e_info, true);*/
 	
 	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 }
@@ -63,6 +63,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (!can_play) { executing = false; return v; }
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);
+	sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	if (GetAsyncKeyState(VK_NUMPAD0) & 1) sys::cursor_tp->work(self_actor_proxy);
 	if (GetAsyncKeyState(VK_F5) & 1)
