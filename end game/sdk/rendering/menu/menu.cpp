@@ -1,4 +1,21 @@
 #include <inc.h>
+namespace ImGui
+{
+	static auto vector_getter = [](void* vec, int idx, const char** out_text)
+	{
+		auto& vector = *static_cast<std::vector<std::string>*>(vec);
+		if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
+		*out_text = vector.at(idx).c_str();
+		return true;
+	};
+
+	bool Combo2(const char* label, int* currIndex, std::vector<std::string>& values)
+	{
+		if (values.empty()) { return false; }
+		return Combo(label, currIndex, vector_getter,
+			static_cast<void*>(&values), values.size());
+	}
+}
 void sdk::menu::c_menu::tab(size_t Index, const char* Text, int height)
 {
 	static const size_t TabWidth = 100;
@@ -36,6 +53,7 @@ void sdk::menu::c_menu::work()
 	//
 	if (!this->was_setup)
 	{
+		
 		ImGui::StyleColorsDark();
 		this->was_setup = true;
 	}
@@ -43,6 +61,7 @@ void sdk::menu::c_menu::work()
 
 	ImGui::Begin("  28802  ", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
 	{
+		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
 		this->tab(0, "pack-fn"		, 18);
 		this->tab(1, "pack-bypasses", 18);
 		this->tab(2, "looting"		, 18);
@@ -52,6 +71,8 @@ void sdk::menu::c_menu::work()
 		{
 			static auto iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
 			ImGui::Checkbox("teleport-gen2", (bool*)&iteleport_gen2->iv);
+			ImGui::Checkbox("teleport-setup", (bool*)&sys::pack_tp->get_packet_again);
+			if (ImGui::Button("teleport-to-marker")) sys::pack_tp->teleport_to_marker();
 			break;
 		}
 		case 1://pack-bypasses
@@ -63,7 +84,36 @@ void sdk::menu::c_menu::work()
 		case 2://looting
 		{			
 			static auto iloot_enable = sys::config->gvar("loot", "ienable");
+			static auto iloot_enable_filter = sys::config->gvar("loot", "ienable_filter");
+			static auto grey = sys::config->gvar("auto_loot", "ipick_grey");
+			static auto green = sys::config->gvar("auto_loot", "ipick_green");
+			static auto blue = sys::config->gvar("auto_loot", "ipick_blue");
+			static auto orange = sys::config->gvar("auto_loot", "ipick_orange");
+			static auto yellow = sys::config->gvar("auto_loot", "ipick_yellow");
 			ImGui::Checkbox("enable", (bool*)&iloot_enable->iv);
+			ImGui::Checkbox("use-filter", (bool*)&iloot_enable_filter->iv);
+
+			ImGui::Checkbox("pick-grey", (bool*)&grey->iv); ImGui::SameLine();
+			ImGui::Checkbox("pick-green", (bool*)&green->iv);
+			ImGui::Checkbox("pick-blue", (bool*)&blue->iv); ImGui::SameLine();
+			ImGui::Checkbox("pick-orange", (bool*)&orange->iv);
+			ImGui::Checkbox("pick-yellow", (bool*)&yellow->iv);
+			if (s)
+			{
+				if (*(BYTE*)(s + core::offsets::actor::actor_can_play))
+				{
+					auto il = sdk::player::player_->ginv();
+					if (il.size() > 2)
+					{
+						static auto selected_whitelist = 0;
+						ImGui::Combo2("select-item", &selected_whitelist, il);
+						if (ImGui::Button("add-item-to-whitelist")) sys::loot->add_whitelist(sdk::player::player_->gitm_by_name(il[selected_whitelist])); ImGui::SameLine();
+						if (ImGui::Button("add-item-to-blacklist")) sys::loot->add_blacklist(sdk::player::player_->gitm_by_name(il[selected_whitelist]));
+						if (ImGui::Button("clear-whitelist")) sys::loot->read_whitelist(); ImGui::SameLine();
+						if (ImGui::Button("clear-blacklist")) sys::loot->read_blacklist();
+					}
+				}
+			}
 			break;
 		}
 		default: break;
@@ -100,5 +150,6 @@ void sdk::menu::c_menu::work()
 void sdk::menu::c_menu::sactive()
 {
 	this->menu_active = !this->menu_active;
+	if (!this->menu_active) sys::config->save();
 }
 sdk::menu::c_menu* sdk::menu::menu;

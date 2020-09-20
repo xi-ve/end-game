@@ -7,6 +7,7 @@ namespace sys
 	private:
 		uint64_t self;
 		void monster_proxy_debug();
+		void portal();
 	public:
 		void work();
 	};

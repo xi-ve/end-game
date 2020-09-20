@@ -13,6 +13,7 @@ static void __stdcall init_thread()
 	sys::pack_tp = new sys::c_pack_tp();
 	fn::patcher = new fn::c_patcher();
 	sys::loot = new sys::c_loot();
+	sys::cursor_tp = new sys::c_cursor_tp();
 	sdk::menu::m_packet = new sdk::menu::c_m_packet();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
@@ -23,6 +24,7 @@ static void __stdcall init_thread()
 	sys::config->read();
 	sys::config->vars();//base
 	lib::d3d11->setup();
+	sys::loot->read_blacklist(); sys::loot->read_whitelist();
 	fn::patcher->create_patches();
 	//
 	//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)core::core_cheat_worker, 0, 0, 0); 

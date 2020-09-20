@@ -55,6 +55,8 @@ namespace core
 			static uint64_t loot_item_count = 0x140A53000;
 			//40 57 48 83 EC 60 48 C7 44 24 ? ? ? ? ? 48 89 5C 24 ? 48 89 B4 24 ? ? ? ? 48 8B F9  // EventChangedSelfPlayerActionVariable
 			static uint64_t loot_deadactor = 0x140845750;
+			//
+			static uint64_t inv_get_item = 0x140A4FF20;
 		}
 		namespace actor
 		{
@@ -71,6 +73,7 @@ namespace core
 			static uint64_t actor_mov_base = 0x8;
 			static uint64_t actor_char_scene = 0x10;
 			static uint64_t actor_networked_move = 0x198;
+			static uint64_t actor_animation_speed = 0x4C0;
 			static uint64_t actor_mov_cx = 0x120;
 			static uint64_t actor_mov_cy = actor_mov_cx+0x4;
 			static uint64_t actor_mov_cz = actor_mov_cy+0x4;
@@ -79,7 +82,7 @@ namespace core
 			static uint64_t actor_mov_pure_z = actor_mov_pure_y+0x4;
 			static uint64_t actor_inv_base = 0x1F00;
 			static uint64_t actor_inv_left = actor_inv_base + 0x18;
-			static uint64_t actor_inv_max = actor_inv_left + 0x19;
+			static uint64_t actor_inv_max = actor_inv_left + 0x1;
 			static uint64_t actor_can_play = actor_inv_base - 0xB;
 			static uint64_t actor_cursor_3d_x = 0x5CF8;
 			static uint64_t actor_cursor_3d_y = actor_cursor_3d_x+0x4;

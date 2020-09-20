@@ -3,6 +3,7 @@
 namespace sys
 {
 	extern void __stdcall tp_thread();
+	extern void __stdcall tp_thread_rz();
 	class c_pack_tp
 	{
 	public:
@@ -76,6 +77,20 @@ namespace sys
 			_doneTp = 0;
 			_setTp = 1;
 			CreateThread(0, 0, (LPTHREAD_START_ROUTINE)tp_thread, 0, 0, 0);
+		}
+		void teleport_to_cursor(uint64_t s)
+		{
+			auto x = *(float*)(s + core::offsets::actor::actor_cursor_3d_x);
+			auto y = *(float*)(s + core::offsets::actor::actor_cursor_3d_y);
+			auto z = *(float*)(s + core::offsets::actor::actor_cursor_3d_z);
+			auto cv = sdk::util::c_vector3(x, y, z);
+
+			auto pos = sdk::player::player_->gpos(s);
+			_startPos = sdk::util::c_vector3(pos.x / 100, pos.y / 100, pos.z / 100);
+			_endPos = sdk::util::c_vector3(cv.x / 100, cv.y / 100, cv.z / 100);
+			_doneTp = 0;
+			_setTp = 1;
+			CreateThread(0, 0, (LPTHREAD_START_ROUTINE)tp_thread_rz, 0, 0, 0);
 		}
 
 		ByteBuffer packet_copy;

@@ -190,6 +190,7 @@
     <ClCompile Include="sdk\util\bytebuffer.cpp" />
     <ClCompile Include="sdk\util\log.cpp" />
     <ClCompile Include="sys\cfg.cpp" />
+    <ClCompile Include="sys\cursor_tp.cpp" />
     <ClCompile Include="sys\loot.cpp" />
     <ClCompile Include="sys\pack_tp.cpp" />
     <ClCompile Include="sys\visual.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="sdk\util\bytebuffer.h" />
     <ClInclude Include="sdk\util\log.h" />
     <ClInclude Include="sys\cfg.h" />
+    <ClInclude Include="sys\cursor_tp.h" />
     <ClInclude Include="sys\loot.h" />
     <ClInclude Include="sys\pack_tp.h" />
     <ClInclude Include="sys\visual.h" />

@@ -14,6 +14,7 @@ namespace sdk
 		public:
 			void work();
 			void sactive();
+			bool gactive() { return this->menu_active; };
 		};
 		extern c_menu* menu;
 	}

@@ -48,18 +48,31 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 uint64_t __fastcall fn::f_lua_to_string(void* a1)
 {
 	if (!a1) return fn::o_lua_to_string(a1);
+	static auto execution_time = ULONGLONG(0);
 	if (executing) return fn::o_lua_to_string(a1);
 	executing = true;
 	auto v = fn::o_lua_to_string(a1);
 	//
 	static auto iloot_enable = sys::config->gvar("loot", "ienable");
 	//
+	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
+	else { executing = false; return fn::o_lua_to_string(a1); }
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) { executing = false; return v; }
 	sdk::player::player_->update_actors(self_actor_proxy);
+	sdk::player::player_->update_inventory(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
+	if (GetAsyncKeyState(VK_NUMPAD0) & 1) sys::cursor_tp->work(self_actor_proxy);
+	if (GetAsyncKeyState(VK_F5) & 1)
+	{
+		auto c = *(uint64_t*)(self_actor_proxy + core::offsets::actor::actor_char_ctrl);
+		auto s = *(uint64_t*)(c + core::offsets::actor::actor_char_scene);
+		auto cur = *(float*)(s + core::offsets::actor::actor_animation_speed);
+		if (cur == 1.f) *(float*)(s + core::offsets::actor::actor_animation_speed) = 8000;
+		else *(float*)(s + core::offsets::actor::actor_animation_speed) = 1.f;
+	}
 	executing = false;
 	//
 	return v;

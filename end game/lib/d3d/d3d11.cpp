@@ -31,7 +31,6 @@ LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	};
 
 	if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) sdk::menu::menu->sactive();
-
 	switch (uMsg)
 	{
 	case WM_LBUTTONDOWN:
@@ -61,6 +60,7 @@ LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		break;
 	}
+
 	return CallWindowProc(oWndProc, hwnd, uMsg, wParam, lParam);
 }
 
@@ -75,7 +75,6 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 		ImGui_ImplDX11_Init(g_hWnd, g_pd3dDevice, g_pd3dContext);
 		oWndProc = (WNDPROC)SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, (__int3264)(LONG_PTR)WndProc);
 	});
-
 	
 	if (sdk::render::render->IsRenderClassInitialized())
 	{

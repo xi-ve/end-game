@@ -1,5 +1,6 @@
 #pragma once
 #include <inc.h>
+
 namespace sdk
 {
 	namespace menu

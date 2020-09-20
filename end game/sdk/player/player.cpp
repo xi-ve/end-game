@@ -1,4 +1,47 @@
 #include <inc.h>
+void sdk::player::c_player::update_inventory(uint64_t self)
+{
+	auto ib = *(uint64_t*)(self + core::offsets::actor::actor_inv_base);
+	if (!ib) return;
+	auto im = *(byte*)(self + core::offsets::actor::actor_inv_max);
+	auto il = *(byte*)(self + core::offsets::actor::actor_inv_left);
+	struct s_item_q
+	{
+		s_item_q(uint64_t a, int b)
+		{
+			p = a; s = b;
+		}
+		uint64_t p;
+		int      s;
+	};
+	std::deque<s_item_q>	i_proc; std::deque<s_item_info> i_info;
+	uint64_t i_cur = 0;
+	for (byte c = 0; c < im; c++)
+	{
+		if (!i_cur) i_cur += 0x170;
+		else i_cur += 0xc0;
+		i_proc.emplace_back((uint64_t)ib + i_cur, c);
+	}
+	typedef uint64_t(__fastcall* t_get_item_wrapper)(byte, byte);
+	static auto d_get_item_wrapper = (t_get_item_wrapper)core::offsets::fn::inv_get_item;
+	typedef const CHAR* (__fastcall* gname)(uint64_t);
+	static gname name = (gname)core::offsets::fn::loot_get_name;
+	for (auto a : i_proc)
+	{
+		if (!a.p) continue;
+		auto i_nid = *(uint64_t*)(a.p + 0x10);
+		auto i_id = *(uint16_t*)(a.p + 0x18);
+		auto i_c = *(int*)(a.p + 0x20);
+		auto i_d = *(uint16_t*)(a.p + 0x30);
+		auto i_dm = *(uint16_t*)(a.p + 0x32);
+		auto i_w = d_get_item_wrapper(0, a.s + 2);
+		if (!i_w) continue;
+		auto i_n = name(i_w + 0x8);
+		i_info.emplace_back(a.p, i_id, i_c, i_d, i_dm, a.s, i_nid, i_n);
+	}
+	i_proc.clear();
+	this->inventory_items = i_info;
+}
 void sdk::player::c_player::update_actors(uint64_t self)
 {
 	auto s = *(uint64_t*)(core::offsets::actor::actor_list_start);
@@ -18,17 +61,6 @@ void sdk::player::c_player::update_actors(uint64_t self)
 		auto t = *(BYTE*)(p + core::offsets::actor::actor_proxy_type);
 		if (t == 0 || t == 1)
 		{
-			/*
-			std::string			 name;
-			uint64_t			 ptr;
-			sdk::util::c_vector3 pos;
-			int					 type;
-			int					 key;
-			float				 rlt_dst;
-			int					 key_target;
-			int					 hp;
-			BYTE				 state;
-			*/
 			auto n = *(sdk::player::c_proxy_name*)(p);
 			if (!n.name_ptr) continue;
 			auto pos = this->gpos(p);
@@ -81,5 +113,16 @@ sdk::util::c_vector3 sdk::player::c_player::gpos(uint64_t a, bool raw)
 float sdk::player::c_player::ghp(uint64_t a)
 {
 	return sdk::engine::d_actor_get_hp(a);
+}
+std::vector<std::string> sdk::player::c_player::ginv()
+{
+	auto r = std::vector<std::string>();
+	for (auto a : this->inventory_items) r.push_back(a.name);
+	return r;
+}
+int sdk::player::c_player::gitm_by_name(std::string n)
+{
+	for (auto a : this->inventory_items) if (strstr(a.name.c_str(), n.c_str())) return a.item_index;
+	return 0;
 }
 sdk::player::c_player* sdk::player::player_;
