@@ -156,6 +156,9 @@
     <ClCompile Include="sys\cursor_tp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sys\pet_boost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -297,6 +300,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sys\cursor_tp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\pet_boost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

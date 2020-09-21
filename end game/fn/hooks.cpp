@@ -37,6 +37,14 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
 
+	/*if (b == 4995)
+	{
+		fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
+		auto br = sys::pet_boost->work((uint64_t)pack);
+		fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
+		return 0;
+	}*/
+
 	/*sdk::util::log->add(std::string(__FUNCTION__) \
 		.append(" opcode: ").append(std::to_string(b)) \
 		.append(" size  : ").append(std::to_string(size)) \
@@ -54,6 +62,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto v = fn::o_lua_to_string(a1);
 	//
 	static auto iloot_enable = sys::config->gvar("loot", "ienable");
+	static auto ikey_ctp = sys::config->gvar("keybinds", "itp_key");
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
 	else { executing = false; return fn::o_lua_to_string(a1); }
@@ -65,7 +74,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	sdk::player::player_->update_inventory(self_actor_proxy);
 	sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
-	if (GetAsyncKeyState(VK_NUMPAD0) & 1) sys::cursor_tp->work(self_actor_proxy);
+	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
 	if (GetAsyncKeyState(VK_F5) & 1)
 	{
 		auto c = *(uint64_t*)(self_actor_proxy + core::offsets::actor::actor_char_ctrl);

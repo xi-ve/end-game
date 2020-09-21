@@ -102,7 +102,7 @@ void sdk::player::c_player::update_pets(uint64_t self)
 			auto p = *(uint64_t*)(pmin + a);
 			if (!p) continue;
 			auto strc = *(sdk::player::s_pet_data*)(p);
-			if (!strc.i) continue;
+			if (!strc.i || strc.i <= 0 || !strc.n || wcslen(strc.n) <= 1 || strc.h <= 0 || strc.h > 400) continue;
 			list.push_back(strc);
 		}
 		return list;
@@ -120,7 +120,7 @@ void sdk::player::c_player::update_pets(uint64_t self)
 			auto p = *(uint64_t*)(pmin + a);
 			if (!p) continue;
 			auto strc = *(sdk::player::s_pet_data_s*)(p);
-			if (!strc.i) continue;
+			if (!strc.i || strc.i <= 0 || !strc.n || wcslen(strc.n) <= 1 || strc.h <= 0 || strc.h > 400) continue;
 			list.push_back(strc);
 		}
 		return list;

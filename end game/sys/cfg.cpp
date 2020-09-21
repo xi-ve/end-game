@@ -79,5 +79,6 @@ void sys::c_config::vars()
 	this->proc("auto_loot", "ipick_yellow", "1");
 	this->proc("auto_loot", "ienable", "1");
 	this->proc("auto_loot", "ienable_filter", "1");
+	this->proc("keybinds", "itp_key", "96");
 }
 sys::c_config* sys::config;

@@ -94,7 +94,7 @@ namespace sdk
 			std::deque<s_pet_data> unsealed_pets = std::deque<s_pet_data>();
 			std::deque<s_pet_data_s> sealed_pets = std::deque<s_pet_data_s>();
 			template<class T>
-			T get(uint64_t a, uint64_t b)
+			T							get(uint64_t a, uint64_t b)
 			{
 				return *(T*)(a + b);
 			}

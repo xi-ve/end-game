@@ -193,6 +193,7 @@
     <ClCompile Include="sys\cursor_tp.cpp" />
     <ClCompile Include="sys\loot.cpp" />
     <ClCompile Include="sys\pack_tp.cpp" />
+    <ClCompile Include="sys\pet_boost.cpp" />
     <ClCompile Include="sys\visual.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +243,7 @@
     <ClInclude Include="sys\cursor_tp.h" />
     <ClInclude Include="sys\loot.h" />
     <ClInclude Include="sys\pack_tp.h" />
+    <ClInclude Include="sys\pet_boost.h" />
     <ClInclude Include="sys\visual.h" />
   </ItemGroup>
   <ItemGroup>

@@ -153,6 +153,25 @@ void sdk::menu::c_menu::work()
 				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
 				sdk::util::log->add(v.str(), sdk::util::e_info, true);
 			}
+			ImGui::SameLine();
+			if (ImGui::Button("speed-test-0"))
+			{
+				sdk::util::log->add("speed test", sdk::util::e_info, true);
+				auto f = sdk::player::player_->unsealed_pets.front();
+				ByteBuffer b;
+				b.putShort(3332);
+				b.putShort(0x1b74);
+				b.putLong(f.i);
+				b.put(2);
+				b.putEmptyBytes(3);
+				b.put(0xc0);
+				b.putEmptyBytes(1);
+				fn::send_packet(b, 3332, 18);
+
+				std::stringstream v;  v << "speed packet: ";
+				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
+				sdk::util::log->add(v.str(), sdk::util::e_info, true);
+			}
 			if (sdk::player::player_->sealed_pets.size())
 			{
 				for (auto a : sdk::player::player_->sealed_pets)
