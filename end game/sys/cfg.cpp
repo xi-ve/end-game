@@ -77,6 +77,7 @@ void sys::c_config::vars()
 	this->proc("packet", "ibypass_trial", "1");
 	this->proc("packet", "iteleport_gen2", "1");
 	this->proc("debug", "ientity_update", "1");
+	this->proc("debug", "ientity_alt", "0");
 	this->proc("auto_loot", "string_whitelist_config", "");
 	this->proc("auto_loot", "string_blacklist_config", "");
 	this->proc("auto_loot", "ipick_grey", "1");

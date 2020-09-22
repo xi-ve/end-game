@@ -60,8 +60,6 @@ void sdk::menu::c_menu::work()
 	}
 	if (!this->menu_active) return;
 
-	ImGui::ShowDemoWindow();
-
 	ImGui::Begin("  28802  ", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
 	{
 		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
@@ -200,6 +198,8 @@ void sdk::menu::c_menu::work()
 				}
 			}
 
+			static auto ient_alt = sys::config->gvar("debug", "ientity_alt");
+			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
 			if (ImGui::Button("re-console"))
 			{
 				FreeConsole();

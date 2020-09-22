@@ -115,6 +115,7 @@ uint64_t sys::c_loot::hnear()
 	for (auto a : sdk::player::player_->corpses)
 	{
 		if (!a.ptr) continue;
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted)) continue;
 		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, sp);
 		if (rd <= l && rd <= 300)
@@ -188,7 +189,6 @@ void sys::c_loot::work(uint64_t self)
 	typedef bool(__fastcall* inmob)(uint64_t);
 	static inmob imob = (inmob)core::offsets::fn::loot_deadactor;
 	auto n = this->hnear(); if (!n) return; 
-	if (*(BYTE*)(n + core::offsets::actor::actor_was_looted)) return; 
 	this->spack(*(int*)(n + core::offsets::actor::actor_proxy_key));
 	auto i = icnt();		if (!i) return;
 	static auto ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");

@@ -24,7 +24,7 @@ void fn::send_packet(ByteBuffer p, int opc, int size)
 }
 uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc, uint8_t unk, uint64_t unk2, const CHAR* xkey)
 {
-	if (!pack)	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
+	if (!pack) return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 	__int16* a = (__int16*)pack; if (a == nullptr) return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey); auto b = *a;
 	ByteBuffer buf; for (auto c = 0; c < size; c++) buf.put(*(uint8_t*)((uint64_t)pack + c));
 	sys::pack_tp->param5 = unk2;
@@ -65,7 +65,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	static auto ikey_ctp = sys::config->gvar("keybinds", "itp_key");
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
-	else { executing = false; return fn::o_lua_to_string(a1); }
+	else { executing = false; return v; }
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
