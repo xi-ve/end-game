@@ -20,8 +20,10 @@ WNDPROC	oWndProc;
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
+	if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) sdk::menu::menu->sactive();
 
+	ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
+	
 	const auto getButtonToggle = [uMsg, wParam](int& bButton, int vKey)
 	{
 		if (wParam != vKey) return;
@@ -30,7 +32,6 @@ LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bButton = !bButton;
 	};
 
-	if (uMsg == WM_KEYDOWN && wParam == VK_INSERT) sdk::menu::menu->sactive();
 	switch (uMsg)
 	{
 	case WM_LBUTTONDOWN:
@@ -69,10 +70,13 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 	std::call_once(g_isInitialized, [&]() 
 	{
 		pSwapChain->GetDevice(__uuidof(g_pd3dDevice), reinterpret_cast<void**>(&g_pd3dDevice));
-		g_pd3dDevice->GetImmediateContext(&g_pd3dContext);
+		g_pd3dDevice->GetImmediateContext(&g_pd3dContext);		
+		ImGui::CreateContext();
+		ImGui_ImplWin32_Init(g_hWnd);
+		auto r = ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dContext);
+		if (!r) sdk::util::log->add("imgui gay", sdk::util::e_info,  true);
 		sdk::render::render->InitializeRenderClass(g_pd3dDevice, g_pd3dContext, 16, (char*)"Consolas", 0);
 		sdk::util::log->add("init d3d11 ok", sdk::util::e_info, true);
-		ImGui_ImplDX11_Init(g_hWnd, g_pd3dDevice, g_pd3dContext);
 		oWndProc = (WNDPROC)SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, (__int3264)(LONG_PTR)WndProc);
 	});
 	

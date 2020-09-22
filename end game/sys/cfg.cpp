@@ -32,7 +32,14 @@ void sys::c_config::read()
 		auto second_var = cpy;
 		s.erase(0, f + 1);
 		cpy = s;
-		this->proc(first_var, second_var, s);
+		if (!this->proc(first_var, second_var, s))
+		{
+			auto x = this->gvar(first_var, second_var);
+			if (x->t == 1) x->iv = std::stoi(s);
+			if (x->t == 2) x->fv = std::stof(s);
+			if (x->t == 0) x->val = s;
+			continue;
+		}
 	}
 	t.close();
 }

@@ -2,11 +2,11 @@
 bool sys::c_loot::read_whitelist()
 {
 	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
-	if (whitelist->val.size())
+	if (whitelist->rval.size())
 	{
 		/*itemid;itemid*/
 		this->whitelist.clear();
-		auto str = whitelist->val;
+		auto str = whitelist->rval;
 		while (str.size())
 		{
 			auto cpy = str;
@@ -26,11 +26,11 @@ bool sys::c_loot::read_whitelist()
 bool sys::c_loot::read_blacklist()
 {
 	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
-	if (blacklist->val.size())
+	if (blacklist->rval.size())
 	{
 		/*itemid;itemid*/
 		this->blacklist.clear();
-		auto str = blacklist->val;
+		auto str = blacklist->rval;
 		while (str.size())
 		{
 			auto cpy = str;
@@ -53,26 +53,28 @@ void sys::c_loot::add_whitelist(int idx)
 {
 	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
 	for (auto obj : this->whitelist) if (obj == idx) { return; }
-	whitelist->val.append(std::string(std::to_string(idx).append(";")));
+	sdk::util::log->add(std::string("adding:").append(std::to_string(idx)).append(" conf:").append(sdk::util::log->as_hex((uint64_t)whitelist)), sdk::util::e_info, true);
+	whitelist->rval.append(std::string(std::to_string(idx).append(";")));
 	this->whitelist.push_back(idx);
 }
 void sys::c_loot::add_blacklist(int idx)
 {
 	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
 	for (auto obj : this->blacklist) if (obj == idx) { return; }
-	blacklist->val.append(std::string(std::to_string(idx).append(";")));
+	sdk::util::log->add(std::string("adding:").append(std::to_string(idx)).append(" conf:").append(sdk::util::log->as_hex((uint64_t)blacklist)), sdk::util::e_info, true);
+	blacklist->rval.append(std::string(std::to_string(idx).append(";")));
 	this->blacklist.push_back(idx);
 }
 void sys::c_loot::reset_whitelist()
 {
 	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
-	whitelist->val.clear();
+	whitelist->rval.clear();
 	this->whitelist.clear();
 }
 void sys::c_loot::reset_blacklist()
 {
 	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
-	blacklist->val.clear();
+	blacklist->rval.clear();
 	this->blacklist.clear();
 }
 void sys::c_loot::spack(int k)
@@ -109,8 +111,19 @@ sys::s_looting_item sys::c_loot::gctx(uint64_t p)
 }
 uint64_t sys::c_loot::hnear()
 {
-	auto l = 9999.f; auto b = uint64_t(0);
-	for (auto a : sdk::player::player_->corpses) if (a.rlt_dst < l && a.rlt_dst <= 250.f) { b = a.ptr; l = a.rlt_dst; }
+	auto l = 9999.f; auto b = uint64_t(0); auto sp = sdk::player::player_->gpos(this->self);
+	for (auto a : sdk::player::player_->corpses)
+	{
+		if (!a.ptr) continue;
+		auto ap = sdk::player::player_->gpos(a.ptr);
+		auto rd = sdk::util::math->gdst_3d(ap, sp);
+		if (rd <= l && rd <= 300)
+		{
+			l = rd;
+			b = a.ptr;
+			continue;
+		}
+	}
 	this->last_ent = b;
 	return b;
 }
@@ -174,9 +187,10 @@ void sys::c_loot::work(uint64_t self)
 	static gicnt icnt = (gicnt)core::offsets::fn::loot_item_count;
 	typedef bool(__fastcall* inmob)(uint64_t);
 	static inmob imob = (inmob)core::offsets::fn::loot_deadactor;
-	auto n = this->hnear(); if (!n) return; this->spack(*(int*)(n + core::offsets::actor::actor_proxy_key));
+	auto n = this->hnear(); if (!n) return; 
+	if (*(BYTE*)(n + core::offsets::actor::actor_was_looted)) return; 
+	this->spack(*(int*)(n + core::offsets::actor::actor_proxy_key));
 	auto i = icnt();		if (!i) return;
-	if (*(BYTE*)(n + core::offsets::actor::actor_was_looted)) return;
 	static auto ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
 	for (auto b = 0; b < i; b++)
 	{

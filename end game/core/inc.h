@@ -37,6 +37,7 @@
 #include "..\\sdk\rendering\font_wrapper\FW1FontWrapper.h"
 #include "..\\sdk\rendering\shader.h"
 #include "..\\lib\imgui\imgui.h"
+#include "..\\lib\\imgui\imgui_impl_win32.h"
 #include "..\\lib\imgui\imgui_impl_dx11.h"
 #include "..\\fn\patches.h"
 #include "..\\sdk\util\log.h"
