@@ -55,6 +55,7 @@
 #include "..\\sys\\cursor_tp.h"
 #include "..\\sys\\pet_boost.h"
 #include "..\\sys\loot.h"
+#include "..\\sys\\roar_bot.h"
 #include "..\\sys\visual.h"
 #include "..\\lib\d3d\d3d11.h"
 #include <workers.h>

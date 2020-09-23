@@ -83,6 +83,16 @@ namespace sdk
 			char pad_0x0054[0xC]; //0x0054
 
 		}; //Size=0x0060
+		struct s_trace
+		{
+			s_trace() { start_point.clear(), end_point.clear(); set_end.clear(); end_distance = 0; };
+			s_trace(sdk::util::c_vector3 s, sdk::util::c_vector3 e, float f, bool t, sdk::util::c_vector3 v) { start_point = s; end_point = e; end_distance = f; success = t; set_end = v; };
+			sdk::util::c_vector3 start_point;
+			sdk::util::c_vector3 end_point;
+			sdk::util::c_vector3 set_end;
+			float          end_distance;
+			bool		   success = 0;
+		};
 		/*player utils*/
 		class c_player
 		{
@@ -107,6 +117,9 @@ namespace sdk
 			float						ghp(uint64_t a);
 			std::vector<std::string>	ginv();
 			int							gitm_by_name(std::string n);
+			float						grot(uint64_t s);
+			util::c_vector3				ray_cast_rvec(util::c_vector3 pos1, util::c_vector3 pos2);
+			s_trace						trace(sdk::util::c_vector3 f, sdk::util::c_vector3 t, uint64_t s, float h, int fl = 34, bool a = true);
 		};
 		extern c_player* player_;
 	}

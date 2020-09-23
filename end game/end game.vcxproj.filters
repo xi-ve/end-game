@@ -165,6 +165,9 @@
     <ClCompile Include="lib\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sys\roar_bot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -321,6 +324,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\imgui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\roar_bot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

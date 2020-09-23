@@ -176,4 +176,74 @@ int sdk::player::c_player::gitm_by_name(std::string n)
 	for (auto a : this->inventory_items) if (strstr(a.name.c_str(), n.c_str())) return a.item_index;
 	return 0;
 }
+float sdk::player::c_player::grot(uint64_t s)
+{
+	auto a = *(uint64_t*)(s + core::offsets::actor::actor_char_ctrl);
+	if (!a) return 0;
+	auto b = *(uint64_t*)(a + 0x10);
+	if (!b) return 0;
+	return *(float*)(b + 0x43c);
+}
+sdk::util::c_vector3 sdk::player::c_player::ray_cast_rvec(sdk::util::c_vector3 pos1, sdk::util::c_vector3 pos2)
+{
+	auto r_vec = sdk::util::c_vector3(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z);
+	if (!r_vec.valid()) return r_vec;
+
+	auto v1 = r_vec;
+	auto v2 = r_vec.x;
+	auto v3 = r_vec.y;
+	auto v4 = r_vec.z;
+	auto v5 = (float)((float)(v2 * v2) + (float)(v3 * v3)) + (float)(v4 * v4);
+	if (v5 != 0.0)
+	{
+		auto v6 = sqrtf(v5);
+		r_vec.x = v2 * (float)(1.0 / v6);
+		r_vec.y = v3 * (float)(1.0 / v6);
+		r_vec.z = v4 * (float)(1.0 / v6);
+	}
+	return r_vec;
+}
+sdk::player::s_trace sdk::player::c_player::trace(sdk::util::c_vector3 f, sdk::util::c_vector3 t, uint64_t s, float h, int fl, bool a)
+{
+	auto r = s_trace();
+	//
+	typedef uint64_t(__fastcall* tc)(__int64 a1, float a2[3], float a3, float a4[3], float a5, float a6[3], float& a7, unsigned int a8);
+	static auto dc = (tc)core::offsets::fn::cast_ray;
+	r.end_distance = 0.f;
+	auto p1n = sdk::util::c_vector3(f.x + 1, f.y + h, f.z + 1);
+	auto p2n = sdk::util::c_vector3();
+	if (a) p2n = sdk::util::c_vector3(t.x + 1, t.y + h, t.z + 1);
+	else p2n = sdk::util::c_vector3(t.x + 1, t.y + 20, t.z + 1);
+	auto dst = sdk::util::math->gdst_3d(p1n, p2n);
+	auto rv = this->ray_cast_rvec(p1n, p2n);
+	float p1[3];    float p2[3];
+	p1[0] = p1n.x;  p2[0] = rv.x;
+	p1[1] = p1n.y;  p2[1] = rv.y;
+	p1[2] = p1n.z;  p2[2] = rv.z;
+	auto pc = *(uint64_t*)(core::offsets::cl::client_base);
+	if (!pc) return r;
+	auto _18 = *(uint64_t*)(pc + 0x18);
+	if (!_18) return r;
+	auto _D8 = *(uint64_t*)(_18 + 0xD8);
+	if (!_D8) return r;
+	float _a6[3]; float _a7 = 0.f;
+	auto cast = dc(_D8, p1, 15, p2, dst, _a6, _a7, fl);
+	if (cast) r.success = 0;
+	else r.success = 1;
+	if (!r.success)
+	{
+		r.start_point = sdk::player::player_->gpos(s); r.start_point.y += h;
+		r.end_distance = _a7;
+		r.end_point = sdk::util::c_vector3(_a6[0], _a6[1], _a6[2]);
+	}
+	else
+	{
+		r.start_point = sdk::player::player_->gpos(s); r.start_point.y += h;
+		r.end_distance = dst;
+		r.end_point = sdk::util::c_vector3(t.x,t.y + 20,t.z);
+	}
+	r.set_end = sdk::util::c_vector3(p2n.x, p2n.y, p2n.z);
+	//
+	return r;
+}
 sdk::player::c_player* sdk::player::player_;

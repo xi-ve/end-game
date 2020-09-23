@@ -80,10 +80,10 @@ void sys::c_loot::reset_blacklist()
 void sys::c_loot::spack(int k)
 {
 	ByteBuffer a;
-	a.putShort(6219);
-	a.putEmptyBytes(3);
+	a.putShort(6220);
+	a.putEmptyBytes(4);
 	a.putInt(k);
-	fn::send_packet(a, 6219, 9);
+	fn::send_packet(a, 6220, 10);
 }
 uint64_t sys::c_loot::gitem(int s)
 {

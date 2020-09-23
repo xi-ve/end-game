@@ -66,8 +66,9 @@ void sdk::menu::c_menu::work()
 		this->tab(0, "pack-fn"		, 18);
 		this->tab(1, "pack-bypasses", 18);
 		this->tab(2, "looting"		, 18);
-		this->tab(3, "menu"		    , 18);
-		this->tab(4, "debug-info"	, 18);
+		this->tab(3, "menu"			, 18);
+		this->tab(4, "roar-bot"	    , 18);
+		this->tab(5, "debug-info"	, 18);
 		switch (this->ctab)
 		{
 		case 0://pack-fn
@@ -126,7 +127,15 @@ void sdk::menu::c_menu::work()
 			ImGui::Text(std::string("ikey_tp:").append(std::to_string(ikey_ctp->iv)).c_str());
 			break;
 		}
-		case 4://debug
+		case 4:
+		{
+			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->grind.size())).c_str());
+			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->store.size())).c_str());
+			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->allowed_sell_items.size())).c_str());
+			if (ImGui::Button("load test.p")) sys::roar_bot->load("test.p");
+			break;
+		}
+		case 5://debug
 		{
 			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 			if (!self) { ImGui::Text("only available ingame"); break; }
@@ -200,13 +209,7 @@ void sdk::menu::c_menu::work()
 
 			static auto ient_alt = sys::config->gvar("debug", "ientity_alt");
 			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
-			if (ImGui::Button("re-console"))
-			{
-				FreeConsole();
-				AllocConsole();
-				SetConsoleTitleA("uwu my owo");
-				freopen("CONIN$", "r", stdin); freopen("CONOUT$", "w", stdout); freopen("CONOUT$", "w", stderr);
-			}
+			ImGui::SliderInt("filter", &sys::visuals->filter, 1, 100);
 			break;
 		}
 		default: break;

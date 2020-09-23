@@ -16,6 +16,7 @@ static void __stdcall init_thread()
 	sys::cursor_tp = new sys::c_cursor_tp();
 	sdk::menu::m_packet = new sdk::menu::c_m_packet();
 	sys::pet_boost = new sys::c_pet_boost();
+	sys::roar_bot = new sys::c_roar_bot();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }

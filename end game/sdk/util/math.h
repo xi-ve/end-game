@@ -71,7 +71,13 @@ namespace sdk
 			{
 				return c_vector3(x*100.f, y*100.f, z*100.f);
 			}
+			bool hasZero()
+			{
+				if (x == 0 || y == 0 || z == 0) return true;
+				return false;
+			}
 			float x, y, z;
+			int pause;
 		};
 		class c_math
 		{
