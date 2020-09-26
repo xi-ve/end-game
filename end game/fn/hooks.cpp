@@ -113,6 +113,7 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const cha
 		|| strstr(arg2, _QuickSlot75577653_dec.c_str())
 		|| strstr(arg2, _Hide75577648_dec.c_str())
 		|| strstr(arg2, _collect75577651_dec.c_str())
+		|| strstr(arg2, "Lua")
 		|| arg2[0] == '\0'
 		|| arg3 > 45) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
 	if (sys::roar_bot->glua_actions)

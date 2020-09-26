@@ -79,6 +79,30 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 
 	return false;
 }
+bool sys::c_roar_bot::snear()
+{
+	auto p = sdk::player::player_->gpos(this->self); auto ldst = 9999.f; sdk::util::c_vector3 lv;
+	for (auto a : this->grind)
+	{
+		auto d = sdk::util::math->gdst_3d(p,a);
+		if (d <= ldst)
+		{
+			ldst = d;
+			lv = a;
+		}
+	}
+	this->repath(0, 0);
+	for (auto a : this->grind)
+	{
+		if (!a.cmp(lv)) this->grind.pop_front();
+		else 
+		{
+			sdk::util::log->add("set start to nearest pos");
+			break;
+		}
+	}
+	return true;
+}
 void sys::c_roar_bot::gpoint()
 {
 	auto p = sdk::player::player_->gpos(this->self);
@@ -96,8 +120,17 @@ void sys::c_roar_bot::spoint()
 	if (!f.is_open()) return;
 	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "NONE" << "}{" << "NONE" << "}" << "\n";
 	f.close();
-	this->grind.push_back(p);
-	sdk::util::log->add("gpoint add", sdk::util::e_info, true);
+	sdk::util::log->add("spoint add", sdk::util::e_info, true);
+}
+void sys::c_roar_bot::sepoint()
+{
+	auto p = sdk::player::player_->gpos(this->self);
+	std::ofstream f(this->pathname, std::ios::app);
+	if (!f.is_open()) return;
+	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
+	f.close();
+	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
+	sdk::util::log->add("sepoint add", sdk::util::e_info, true);
 }
 void sys::c_roar_bot::gppoint(float t)
 {
@@ -126,7 +159,7 @@ void sys::c_roar_bot::record()
 		if (this->recording_g) this->gpoint();
 	}
 }
-void sys::c_roar_bot::load(std::string p)
+void sys::c_roar_bot::load()
 {
 	auto parse_position = [&](std::string l) -> sdk::util::c_vector3
 	{
@@ -235,7 +268,7 @@ void sys::c_roar_bot::load(std::string p)
 		return std::stoi(line);
 	};
 	this->grind.clear();
-	std::ifstream v(p); std::string s;
+	std::ifstream v(this->pathname); std::string s;
 	if (!v.is_open()) return;
 	while (std::getline(v, s))
 	{
@@ -302,7 +335,15 @@ void sys::c_roar_bot::snpc(std::string a)
 }
 void sys::c_roar_bot::sscr(std::string a)
 {
-	sdk::util::log->add(std::string("sscr:").append(a), sdk::util::e_info, true);
 	this->s_scr = a;
+}
+std::vector<std::string> sys::c_roar_bot::gnpcs()
+{
+	auto r = std::vector<std::string>();
+	for (auto a : sdk::player::player_->npcs)
+	{
+		r.push_back(a.name);
+	}
+	return r;
 }
 sys::c_roar_bot* sys::roar_bot;

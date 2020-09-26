@@ -40,6 +40,7 @@
 #include "..\\lib\\imgui\imgui_impl_win32.h"
 #include "..\\lib\imgui\imgui_impl_dx11.h"
 #include "..\\fn\patches.h"
+#include "..\\sdk\util\file.h"
 #include "..\\sdk\util\log.h"
 #include "..\\sys\cfg.h"
 #include "..\\sdk\util\bytebuffer.h"

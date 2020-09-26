@@ -17,6 +17,7 @@ static void __stdcall init_thread()
 	sdk::menu::m_packet = new sdk::menu::c_m_packet();
 	sys::pet_boost = new sys::c_pet_boost();
 	sys::roar_bot = new sys::c_roar_bot();
+	sdk::util::file = new sdk::util::c_file();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
@@ -26,10 +27,8 @@ static void __stdcall init_thread()
 	sys::config->read();
 	sys::config->vars();//base
 	lib::d3d11->setup();
+	sdk::util::file->update();
 	sys::loot->read_blacklist(); sys::loot->read_whitelist();
 	fn::patcher->create_patches();
-	//
-	//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)core::core_cheat_worker, 0, 0, 0); 
-	//
 	sdk::util::log->add("done init_thread", sdk::util::e_info, true);
 }

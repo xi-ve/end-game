@@ -2,6 +2,7 @@
 bool sys::c_loot::read_whitelist()
 {
 	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
+	if (!whitelist) sdk::util::log->add("whitelist is null", sdk::util::e_info, true);
 	if (whitelist->rval.size())
 	{
 		/*itemid;itemid*/
@@ -26,6 +27,7 @@ bool sys::c_loot::read_whitelist()
 bool sys::c_loot::read_blacklist()
 {
 	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
+	if (!blacklist) sdk::util::log->add("blacklist is null", sdk::util::e_info, true);
 	if (blacklist->rval.size())
 	{
 		/*itemid;itemid*/

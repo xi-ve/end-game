@@ -100,6 +100,7 @@ namespace sdk
 			bool thread_working = false;
 			std::deque<s_blank_proxy> actors = std::deque<s_blank_proxy>();
 			std::deque<s_blank_proxy> corpses = std::deque<s_blank_proxy>();
+			std::deque<s_blank_proxy> npcs = std::deque<s_blank_proxy>();
 			std::deque<s_item_info> inventory_items = std::deque<s_item_info>();
 			std::deque<s_pet_data> unsealed_pets = std::deque<s_pet_data>();
 			std::deque<s_pet_data_s> sealed_pets = std::deque<s_pet_data_s>();

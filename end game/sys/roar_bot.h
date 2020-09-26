@@ -41,19 +41,21 @@ namespace sys
 		bool loot_near(sdk::util::c_vector3 o);
 		//
 		void gpoint();
-		void spoint();
 		//
 	public:
 		bool dwork, glua_actions; std::vector<std::string> last_lua_actions;
 		//
 		void gppoint(float t);
+		void spoint();
+		void sepoint();
 		//
 		sdk::util::c_vector3 lp;
-		char*pathname;
+		std::string pathname;
 		bool recording_g, recording_s;
 		void record();
-		void load(std::string p);
+		void load();
 		void work(uint64_t s);
+		bool snear();
 		//
 		void snpc(std::string a);
 		void sscr(std::string a);
@@ -61,6 +63,8 @@ namespace sys
 		int gpsize() { return (int)this->grind.size(); }
 		int gssize() { return (int)this->store.size(); }
 		int assize() { return (int)this->allowed_sell_items.size(); }
+		//
+		std::vector<std::string> gnpcs();
 		//
 		std::deque<sdk::util::c_vector3> g_p() { return this->grind; }
 	};

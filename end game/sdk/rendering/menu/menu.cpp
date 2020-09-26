@@ -8,7 +8,12 @@ namespace ImGui
 		*out_text = vector.at(idx).c_str();
 		return true;
 	};
-
+	void Button_new_b2(const char* label, bool& value, const char* tooltip = "")
+	{
+		if (value) { ImGui::TextColored(ImVec4(0, 255, 0, 255), "[ON ]"); ImGui::SameLine(); if (ImGui::SmallButton(label)) value = !value; }
+		else { ImGui::TextColored(ImVec4(255, 0, 0, 255), "[OFF]"); ImGui::SameLine(); if (ImGui::SmallButton(label)) value = !value; }
+		if (tooltip != "") if (ImGui::IsItemHovered()) ImGui::SetTooltip(tooltip);
+	}
 	bool Combo2(const char* label, int* currIndex, std::vector<std::string>& values)
 	{
 		if (values.empty()) { return false; }
@@ -95,13 +100,13 @@ void sdk::menu::c_menu::work()
 			static auto blue = sys::config->gvar("auto_loot", "ipick_blue");
 			static auto orange = sys::config->gvar("auto_loot", "ipick_orange");
 			static auto yellow = sys::config->gvar("auto_loot", "ipick_yellow");
-			ImGui::Checkbox("enable", (bool*)&iloot_enable->iv);
+			ImGui::Checkbox("enable", (bool*)&iloot_enable->iv); ImGui::SameLine();
 			ImGui::Checkbox("use-filter", (bool*)&iloot_enable_filter->iv);
 
 			ImGui::Checkbox("pick-grey", (bool*)&grey->iv); ImGui::SameLine();
-			ImGui::Checkbox("pick-green", (bool*)&green->iv);
+			ImGui::Checkbox("pick-green", (bool*)&green->iv); ImGui::SameLine();
 			ImGui::Checkbox("pick-blue", (bool*)&blue->iv); ImGui::SameLine();
-			ImGui::Checkbox("pick-orange", (bool*)&orange->iv);
+			ImGui::Checkbox("pick-orange", (bool*)&orange->iv); ImGui::SameLine();
 			ImGui::Checkbox("pick-yellow", (bool*)&yellow->iv);
 			if (s)
 			{
@@ -132,14 +137,21 @@ void sdk::menu::c_menu::work()
 		{
 			static auto ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
 			static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-			static auto t = 1.1f; static char ct[128] = "path.x";
-			ImGui::Checkbox("toggle", &sys::roar_bot->dwork);
+			static auto t = 1.1f; static char ct[128] = "path.x"; static auto ps = 0; static auto si = 0; static auto ni = 0;
+			if (!sys::roar_bot->dwork) if (ImGui::Button("toggle on")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
+			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) sys::roar_bot->dwork = false;
 			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
 			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->gssize())).c_str()); ImGui::SameLine();
 			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->assize())).c_str());
-			ImGui::InputText("path-name", ct, 128); ImGui::SameLine(); sys::roar_bot->pathname = ct; ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
+			ImGui::InputText("path-name", ct, 128); ImGui::SameLine(); if (ImGui::Button("set-path##ct")) sys::roar_bot->pathname = ct;
+			if (!sdk::util::file->roar_paths.empty())
+			{
+				ImGui::Combo2("##path-select", &ps, sdk::util::file->roar_paths); ImGui::SameLine();
+				if (ImGui::Button("set-path##cs")) sys::roar_bot->pathname = sdk::util::file->roar_paths[ps];
+			}
+			ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
 			ImGui::SliderInt("bot-loot-range", &ibot_lootrange->iv, 300, 800);
-			if (ImGui::Button("load path")) sys::roar_bot->load(ct);
+			if (ImGui::Button("load path")) sys::roar_bot->load();
 			if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
 			if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
 			if (sys::roar_bot->recording_g)
@@ -147,11 +159,20 @@ void sdk::menu::c_menu::work()
 				ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
 				if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
 			}
-			ImGui::Checkbox("test-get-lua", &sys::roar_bot->glua_actions);
-			if (!sys::roar_bot->last_lua_actions.empty())
+			if (si == 0 && sys::roar_bot->recording_s) if (ImGui::Button("done-store-path")) si++;
+			if (si == 1 && sys::roar_bot->recording_s)
+			{
+				auto npcs = sys::roar_bot->gnpcs(); 
+				if (npcs.size()) 
+				{
+					ImGui::Combo2("##select-npc", &ni, npcs);
+					if (ImGui::Button("set-npc")) { sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sepoint(); si++; }
+				}
+			}
+			if (si == 2 && !sys::roar_bot->last_lua_actions.empty() && sys::roar_bot->recording_s)
 			{
 				static auto is_scr = 0;
-				ImGui::Combo2("script", &is_scr, sys::roar_bot->last_lua_actions);
+				ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
 				if (ImGui::Button("set-scr")) sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]);
 			}
 			break;
@@ -172,54 +193,6 @@ void sdk::menu::c_menu::work()
 			ImGui::Text(std::string("unsealed-pets:").append(std::to_string(sdk::player::player_->unsealed_pets.size())).c_str());
 			ImGui::Text(std::string("sealed-pets  :").append(std::to_string(sdk::player::player_->sealed_pets.size())).c_str());
 
-			if (ImGui::Button("unseal-test-0"))
-			{
-				sdk::util::log->add("unsealing test", sdk::util::e_info, true);
-				auto f = sdk::player::player_->unsealed_pets.front();
-				ByteBuffer b;
-				b.putShort(3825);
-				b.putLong(f.i);
-				fn::send_packet(b, 3825, 10);
-
-				std::stringstream v;  v << "unseal packet: ";
-				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
-				sdk::util::log->add(v.str(), sdk::util::e_info, true);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("seal-test-0"))
-			{
-				sdk::util::log->add("sealing test", sdk::util::e_info, true);
-				auto f = sdk::player::player_->sealed_pets.front();
-
-				ByteBuffer b;
-				b.putShort(3045);
-				b.putLong(f.i);
-				b.putShort(0x1b74);
-				fn::send_packet(b, 3045, 12);
-
-				std::stringstream v;  v << "seal packet: ";
-				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
-				sdk::util::log->add(v.str(), sdk::util::e_info, true);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("speed-test-0"))
-			{
-				sdk::util::log->add("speed test", sdk::util::e_info, true);
-				auto f = sdk::player::player_->unsealed_pets.front();
-				ByteBuffer b;
-				b.putShort(3332);
-				b.putShort(0x1b74);
-				b.putLong(f.i);
-				b.put(2);
-				b.putEmptyBytes(3);
-				b.put(0xc0);
-				b.putEmptyBytes(1);
-				fn::send_packet(b, 3332, 18);
-
-				std::stringstream v;  v << "speed packet: ";
-				for (auto c = 0; c < b.buf.size(); c++) v << std::hex << (int)b.buf[c] << " ";
-				sdk::util::log->add(v.str(), sdk::util::e_info, true);
-			}
 			if (sdk::player::player_->sealed_pets.size())
 			{
 				for (auto a : sdk::player::player_->sealed_pets)
@@ -242,13 +215,14 @@ void sdk::menu::c_menu::work()
 			ImGui::SliderInt("filter", &sys::visuals->filter, 1, 100);
 
 			auto max_weight = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
-			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
-
 			auto inv_weight = *(int*)(self + core::offsets::actor::actor_inv_raw_weight) / 10000;
 			auto inv_gear_weight = *(int*)(self + core::offsets::actor::actor_inv_gear_weight) / 10000;
+			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
 			ImGui::Text(std::string("inv w:").append(std::to_string(inv_weight)).c_str());
 			ImGui::Text(std::string("gear w:").append(std::to_string(inv_gear_weight)).c_str());
 
+			ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
+			for (auto a : n) ImGui::Text(a.c_str());
 
 			break;
 		}

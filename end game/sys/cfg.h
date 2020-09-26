@@ -41,6 +41,7 @@ namespace sys
 		void read();
 		void save();
 		void vars();
+		int gsize() { return this->cfg_list.size(); }
 	};
 	extern c_config* config;
 }

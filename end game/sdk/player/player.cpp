@@ -57,6 +57,7 @@ void sdk::player::c_player::update_actors(uint64_t self)
 	if (se_delta < 1) { this->actors.clear(); this->corpses.clear(); return; }
 	auto tmp_list = std::deque<sdk::player::s_blank_proxy>();
 	auto tmp_list_corpses = std::deque<sdk::player::s_blank_proxy>();
+	auto tmp_list_npcs = std::deque<sdk::player::s_blank_proxy>();
 	auto spos = sdk::player::player_->gpos(self);
 	for (auto c = 0; c < se_delta * 8; c += sizeof(uint64_t))
 	{
@@ -87,11 +88,26 @@ void sdk::player::c_player::update_actors(uint64_t self)
 			strc.hp = 0; strc.key = k; strc.name = ""; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d; strc.state = 1;
 			tmp_list_corpses.push_back(strc);
 		}
+		else if (t == 2)
+		{
+			auto n = *(sdk::player::c_proxy_name*)(p);
+			if (!n.name_ptr) continue;
+			auto pos = this->gpos(p);
+			auto hp = sdk::engine::d_actor_get_hp(p);
+			auto strc = sdk::player::s_blank_proxy();
+			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
+			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
+			auto state = *(BYTE*)(p + core::offsets::actor::actor_is_dead);
+			strc.hp = hp; strc.key = k; strc.name = a_str; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d; strc.state = state;
+			tmp_list_npcs.push_back(strc);
+		}
 	}
 	if (tmp_list.size()) { this->actors = tmp_list; }
 	else this->actors.clear();
 	if (tmp_list_corpses.size()) { this->corpses = tmp_list_corpses; }
 	else this->corpses.clear();
+	if (tmp_list_npcs.size()) { this->npcs = tmp_list_npcs; }
+	else this->npcs.clear();
 	return;
 }
 void sdk::player::c_player::update_pets(uint64_t self)

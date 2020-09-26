@@ -31,9 +31,7 @@ bool sys::c_pet_boost::work(uint64_t pack)
 	auto s = *(uint64_t*)(pack + 12);
 	if (s <= 0) return false;
 	//
-	this->make_petspeed(s);
 	this->make_unseal(s);
-	this->make_petspeed(s);
 	this->make_seal(s);
 	this->make_petspeed(s);
 	//
