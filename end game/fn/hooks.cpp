@@ -2,12 +2,17 @@
 //
 static fn::t_packet_outbound fn::o_packet_outbound;
 static fn::t_lua_to_string fn::o_lua_to_string;
+static fn::t_lua_dobuffer fn::o_lua_dobuffer;
 static bool fn::executing = false;
 //
 bool fn::setup()
 {
+	void* asdf;
 	if (!fn::hook((void*)core::offsets::hk::packet_outbound, &fn::f_packet_outbound, (void**)&fn::o_packet_outbound)) return false;
 	if (!fn::hook((void*)core::offsets::hk::lua_to_string, &fn::f_lua_to_string, (void**)&fn::o_lua_to_string)) return false;
+	if (!fn::hook((void*)core::offsets::hk::lua_do_buffer, &fn::f_lua_dobuffer, (void**)&fn::o_lua_dobuffer)) return false;
+	if (!fn::hook((void*)0x140AE62B0, &fn::f_self_gm, (void**)&asdf)) return false;
+	if (!fn::hook((void*)0x140AE62F0, &fn::f_self_gm, (void**)&asdf)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
 }
@@ -32,7 +37,7 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	static auto ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
 	static auto iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
 
-	if (ibypass_trial->iv)				if (b == 5875) return 0;
+	if (ibypass_trial->iv)				if (b == 5471) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
@@ -74,6 +79,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	sdk::player::player_->update_inventory(self_actor_proxy);
 	sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
+	sys::roar_bot->work(self_actor_proxy);
 	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
 	if (GetAsyncKeyState(VK_F5) & 1)
 	{
@@ -86,4 +92,37 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	executing = false;
 	//
 	return v;
+}
+uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const char* arg4) 
+{
+	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
+	static auto str6_14785_Update17 = new s_str_container(std::vector<int>{92, 121, 109, 104, 125, 108}); /*Update*/ static auto _Update1487014964_dec = str6_14785_Update17->get(); static auto str5_21568_Frame16 = new s_str_container(std::vector<int>{79, 123, 104, 100, 108}); /*Frame*/ static auto _Frame1487014963_dec = str5_21568_Frame16->get(); static auto str3_14785_Ani14 = new s_str_container(std::vector<int>{72, 103, 96}); /*Ani*/ static auto _Ani1487014961_dec = str3_14785_Ani14->get();
+	static auto str4_7420_Over14 = new s_str_container(std::vector<int>{70, 127, 108, 123}); /*Over*/ static auto _Over75057595_dec = str4_7420_Over14->get(); static auto str7_7472_MouseOn17 = new s_str_container(std::vector<int>{68, 102, 124, 122, 108, 70, 103}); /*MouseOn*/ static auto _MouseOn75577651_dec = str7_7472_MouseOn17->get(); static auto str7_20197_Tooltip18 = new s_str_container(std::vector<int>{93, 102, 102, 101, 125, 96, 121}); /*Tooltip*/ static auto _Tooltip75577651_dec = str7_20197_Tooltip18->get(); static auto str7_7472_ToolTip17 = new s_str_container(std::vector<int>{93, 102, 102, 101, 93, 96, 121}); /*ToolTip*/ static auto _ToolTip75577651_dec = str7_7472_ToolTip17->get(); static auto str3_20197_ANI14 = new s_str_container(std::vector<int>{72, 71, 64}); /*ANI*/ static auto _ANI75577647_dec = str3_20197_ANI14->get(); static auto str3_7472_Ani13 = new s_str_container(std::vector<int>{72, 103, 96}); /*Ani*/ static auto _Ani75577647_dec = str3_7472_Ani13->get(); static auto str6_20197_Update17 = new s_str_container(std::vector<int>{92, 121, 109, 104, 125, 108}); /*Update*/ static auto _Update75577650_dec = str6_20197_Update17->get(); static auto str5_7472_Frame15 = new s_str_container(std::vector<int>{79, 123, 104, 100, 108}); /*Frame*/ static auto _Frame75577649_dec = str5_7472_Frame15->get(); static auto str4_20197_Help15 = new s_str_container(std::vector<int>{65, 108, 101, 121}); /*Help*/ static auto _Help75577648_dec = str4_20197_Help15->get(); static auto str6_7472_Pushed16 = new s_str_container(std::vector<int>{89, 124, 122, 97, 108, 109}); /*Pushed*/ static auto _Pushed75577650_dec = str6_7472_Pushed16->get(); static auto str4_20197_Chat15 = new s_str_container(std::vector<int>{74, 97, 104, 125}); /*Chat*/ static auto _Chat75577648_dec = str4_20197_Chat15->get(); static auto str5_7472_quest15 = new s_str_container(std::vector<int>{120, 124, 108, 122, 125}); /*quest*/ static auto _quest75577649_dec = str5_7472_quest15->get(); static auto str5_20197_Quest16 = new s_str_container(std::vector<int>{88, 124, 108, 122, 125}); /*Quest*/ static auto _Quest75577649_dec = str5_20197_Quest16->get(); static auto str10_7472_MenuRemake21 = new s_str_container(std::vector<int>{68, 108, 103, 124, 91, 108, 100, 104, 98, 108}); /*MenuRemake*/ static auto _MenuRemake75577654_dec = str10_7472_MenuRemake21->get(); static auto str4_20197_Icon15 = new s_str_container(std::vector<int>{64, 106, 102, 103}); /*Icon*/ static auto _Icon75577648_dec = str4_20197_Icon15->get(); static auto str9_7472_QuickSlot19 = new s_str_container(std::vector<int>{88, 124, 96, 106, 98, 90, 101, 102, 125}); /*QuickSlot*/ static auto _QuickSlot75577653_dec = str9_7472_QuickSlot19->get(); static auto str4_20197_Hide15 = new s_str_container(std::vector<int>{65, 96, 109, 108}); /*Hide*/ static auto _Hide75577648_dec = str4_20197_Hide15->get(); static auto str7_7472_collect17 = new s_str_container(std::vector<int>{106, 102, 101, 101, 108, 106, 125}); /*collect*/ static auto _collect75577651_dec = str7_7472_collect17->get();
+	if (strstr(arg2, _Over75057595_dec.c_str())
+		|| strstr(arg2, _MouseOn75577651_dec.c_str())
+		|| strstr(arg2, _Tooltip75577651_dec.c_str()) || strstr(arg2, _ToolTip75577651_dec.c_str())
+		|| strstr(arg2, _ANI75577647_dec.c_str()) || strstr(arg2, _Ani75577647_dec.c_str())
+		|| strstr(arg2, _Update75577650_dec.c_str())
+		|| strstr(arg2, _Frame75577649_dec.c_str())
+		|| strstr(arg2, _Help75577648_dec.c_str())
+		|| strstr(arg2, _Pushed75577650_dec.c_str())
+		|| strstr(arg2, _Chat75577648_dec.c_str())
+		|| strstr(arg2, _quest75577649_dec.c_str()) || strstr(arg2, _Quest75577649_dec.c_str())
+		|| strstr(arg2, _MenuRemake75577654_dec.c_str())
+		|| strstr(arg2, _Icon75577648_dec.c_str())
+		|| strstr(arg2, _QuickSlot75577653_dec.c_str())
+		|| strstr(arg2, _Hide75577648_dec.c_str())
+		|| strstr(arg2, _collect75577651_dec.c_str())
+		|| arg2[0] == '\0'
+		|| arg3 > 45) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
+	if (sys::roar_bot->glua_actions)
+	{
+		sys::roar_bot->last_lua_actions.push_back(arg2);
+	}
+	return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
+}
+
+bool fn::f_self_gm()
+{
+	return 1;
 }

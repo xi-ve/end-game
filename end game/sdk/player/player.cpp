@@ -74,7 +74,8 @@ void sdk::player::c_player::update_actors(uint64_t self)
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
 			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
-			strc.hp = hp; strc.key = k; strc.name = a_str; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d;
+			auto state = *(BYTE*)(p + core::offsets::actor::actor_is_dead);
+			strc.hp = hp; strc.key = k; strc.name = a_str; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d; strc.state = state;
 			tmp_list.push_back(strc);
 		}
 		else if (t == 9)
@@ -83,7 +84,7 @@ void sdk::player::c_player::update_actors(uint64_t self)
 			auto k = *(int*)(p + core::offsets::actor::actor_proxy_key);
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
-			strc.hp = 0; strc.key = k; strc.name = ""; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d;
+			strc.hp = 0; strc.key = k; strc.name = ""; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d; strc.state = 1;
 			tmp_list_corpses.push_back(strc);
 		}
 	}

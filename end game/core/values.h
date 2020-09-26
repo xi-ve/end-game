@@ -10,6 +10,8 @@ namespace core
 			static uint64_t packet_outbound = 0x140D99040;
 			//tostring
 			static uint64_t lua_to_string = 0x141DB2CB0;
+			//48 83 EC 38 48 89 54 24 ? 48 8D 15 ? ? ? ? 
+			static uint64_t lua_do_buffer = 0x141DB4C10;
 		}
 		namespace patch
 		{
@@ -78,6 +80,7 @@ namespace core
 			static uint64_t actor_char_scene = 0x10;
 			static uint64_t actor_networked_move = 0x198;
 			static uint64_t actor_animation_speed = 0x4C0;
+			static uint64_t actor_is_dead = 0x1F0;
 			static uint64_t actor_mov_cx = 0x120;
 			static uint64_t actor_mov_cy = actor_mov_cx+0x4;
 			static uint64_t actor_mov_cz = actor_mov_cy+0x4;
@@ -91,6 +94,10 @@ namespace core
 			static uint64_t actor_cursor_3d_x = 0x5CF8;
 			static uint64_t actor_cursor_3d_y = actor_cursor_3d_x+0x4;
 			static uint64_t actor_cursor_3d_z = actor_cursor_3d_y+0x4;
+			static uint64_t actor_inv_raw_weight = 0x1EF8;
+			static uint64_t actor_inv_max_weight = 0x1098;
+			static uint64_t actor_guild_name = 0x1102;
+			static uint64_t actor_inv_gear_weight = 0x2130;
 		}
 	}
 }

@@ -74,8 +74,8 @@ void sys::c_config::save()
 void sys::c_config::vars()
 {
 	this->proc("loot", "ienable", "1");
-	this->proc("packet", "ibypass_trial", "1");
-	this->proc("packet", "iteleport_gen2", "1");
+	this->proc("packet", "ibypass_trial", "0");
+	this->proc("packet", "iteleport_gen2", "0");
 	this->proc("debug", "ientity_update", "1");
 	this->proc("debug", "ientity_alt", "0");
 	this->proc("auto_loot", "string_whitelist_config", "");
@@ -87,6 +87,13 @@ void sys::c_config::vars()
 	this->proc("auto_loot", "ipick_yellow", "1");
 	this->proc("auto_loot", "ienable", "1");
 	this->proc("auto_loot", "ienable_filter", "1");
+	this->proc("visuals", "ienable_roar_path", "1");
+	this->proc("visuals", "ienable_roar_path_pauses", "0");
+	this->proc("visuals", "ienable_portal", "1");
+	this->proc("visuals", "ienable_debug", "0");
+	this->proc("roar_bot", "ibot_timescale", "350");
+	this->proc("roar_bot", "ibot_lootrange", "400");
+	this->proc("roar_bot", "iloot_tp", "1");
 	this->proc("keybinds", "itp_key", "96");
 }
 sys::c_config* sys::config;

@@ -54,7 +54,7 @@ void sdk::menu::c_menu::work()
 	ImGui::NewFrame();
 	//
 	if (!this->was_setup)
-	{		
+	{
 		ImGui::StyleColorsDark();
 		this->was_setup = true;
 	}
@@ -63,12 +63,13 @@ void sdk::menu::c_menu::work()
 	ImGui::Begin("  28802  ", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
 	{
 		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
-		this->tab(0, "pack-fn"		, 18);
+		this->tab(0, "pack-fn", 18);
 		this->tab(1, "pack-bypasses", 18);
-		this->tab(2, "looting"		, 18);
-		this->tab(3, "menu"			, 18);
-		this->tab(4, "roar-bot"	    , 18);
-		this->tab(5, "debug-info"	, 18);
+		this->tab(2, "looting", 18);
+		this->tab(3, "menu", 18);
+		this->tab(4, "roar-bot", 18);
+		this->tab(5, "visuals", 18);
+		this->tab(6, "debug-info", 18);
 		switch (this->ctab)
 		{
 		case 0://pack-fn
@@ -86,7 +87,7 @@ void sdk::menu::c_menu::work()
 			break;
 		}
 		case 2://looting
-		{			
+		{
 			static auto iloot_enable = sys::config->gvar("loot", "ienable");
 			static auto iloot_enable_filter = sys::config->gvar("loot", "ienable_filter");
 			static auto grey = sys::config->gvar("auto_loot", "ipick_grey");
@@ -122,26 +123,55 @@ void sdk::menu::c_menu::work()
 		}
 		case 3://menu
 		{
-			if (ImGui::Button("reload config")) sys::config->read();	
+			if (ImGui::Button("reload config")) sys::config->read();
 			static auto ikey_ctp = sys::config->gvar("keybinds", "itp_key");
 			ImGui::Text(std::string("ikey_tp:").append(std::to_string(ikey_ctp->iv)).c_str());
 			break;
 		}
-		case 4:
+		case 4://roar-bot
 		{
-			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->grind.size())).c_str());
-			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->store.size())).c_str());
-			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->allowed_sell_items.size())).c_str());
-			if (ImGui::Button("load test.p")) sys::roar_bot->load("test.p");
+			static auto ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
+			static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+			static auto t = 1.1f; static char ct[128] = "path.x";
+			ImGui::Checkbox("toggle", &sys::roar_bot->dwork);
+			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
+			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->gssize())).c_str()); ImGui::SameLine();
+			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->assize())).c_str());
+			ImGui::InputText("path-name", ct, 128); ImGui::SameLine(); sys::roar_bot->pathname = ct; ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
+			ImGui::SliderInt("bot-loot-range", &ibot_lootrange->iv, 300, 800);
+			if (ImGui::Button("load path")) sys::roar_bot->load(ct);
+			if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
+			if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
+			if (sys::roar_bot->recording_g)
+			{
+				ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
+				if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
+			}
+			ImGui::Checkbox("test-get-lua", &sys::roar_bot->glua_actions);
+			if (!sys::roar_bot->last_lua_actions.empty())
+			{
+				static auto is_scr = 0;
+				ImGui::Combo2("script", &is_scr, sys::roar_bot->last_lua_actions);
+				if (ImGui::Button("set-scr")) sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]);
+			}
 			break;
 		}
-		case 5://debug
+		case 5://visuals
+		{
+			static auto iroar_path = sys::config->gvar("visuals", "ienable_roar_path");
+			static auto iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
+			static auto ienable_portal = sys::config->gvar("visuals", "ienable_portal");
+			static auto ienable_debug = sys::config->gvar("visuals", "ienable_debug");
+			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv);
+			break;
+		}
+		case 6://debug
 		{
 			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 			if (!self) { ImGui::Text("only available ingame"); break; }
 			ImGui::Text(std::string("unsealed-pets:").append(std::to_string(sdk::player::player_->unsealed_pets.size())).c_str());
 			ImGui::Text(std::string("sealed-pets  :").append(std::to_string(sdk::player::player_->sealed_pets.size())).c_str());
-	
+
 			if (ImGui::Button("unseal-test-0"))
 			{
 				sdk::util::log->add("unsealing test", sdk::util::e_info, true);
@@ -210,6 +240,16 @@ void sdk::menu::c_menu::work()
 			static auto ient_alt = sys::config->gvar("debug", "ientity_alt");
 			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
 			ImGui::SliderInt("filter", &sys::visuals->filter, 1, 100);
+
+			auto max_weight = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
+			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
+
+			auto inv_weight = *(int*)(self + core::offsets::actor::actor_inv_raw_weight) / 10000;
+			auto inv_gear_weight = *(int*)(self + core::offsets::actor::actor_inv_gear_weight) / 10000;
+			ImGui::Text(std::string("inv w:").append(std::to_string(inv_weight)).c_str());
+			ImGui::Text(std::string("gear w:").append(std::to_string(inv_gear_weight)).c_str());
+
+
 			break;
 		}
 		default: break;
