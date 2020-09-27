@@ -19,7 +19,7 @@ namespace sdk
 				this->file_stream = std::ofstream("end_game_log.txt");
 				if (!this->file_stream.is_open()) { this->array("failure creating file stream!"); }
 				else this->add("file stream created", e_log_type::e_info, true);
-				if (this->console) { AllocConsole(); freopen("CONIN$", "r", stdin); freopen("CONOUT$", "w", stdout); freopen("CONOUT$", "w", stderr); }
+				if (this->console) { }
 				this->file_stream.close();
 			};
 		private:

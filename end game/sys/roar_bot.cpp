@@ -81,20 +81,21 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 }
 bool sys::c_roar_bot::snear()
 {
+	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
 	auto p = sdk::player::player_->gpos(this->self); auto ldst = 9999.f; sdk::util::c_vector3 lv;
-	for (auto a : this->grind)
+	this->repath(0, 0);
+	for (auto a : this->cur_route)
 	{
-		auto d = sdk::util::math->gdst_3d(p,a);
-		if (d <= ldst)
+		auto d = sdk::util::math->gdst_3d(p,a.pos);
+		if (d < ldst)
 		{
 			ldst = d;
-			lv = a;
+			lv = a.pos;
 		}
 	}
-	this->repath(0, 0);
-	for (auto a : this->grind)
+	for (auto a : this->cur_route)
 	{
-		if (!a.cmp(lv)) this->grind.pop_front();
+		if (!a.pos.cmp(lv)) this->grind.pop_front();
 		else 
 		{
 			sdk::util::log->add("set start to nearest pos");
@@ -102,6 +103,16 @@ bool sys::c_roar_bot::snear()
 		}
 	}
 	return true;
+}
+void sys::c_roar_bot::reset()
+{
+	this->cur_route.clear();
+	this->p_mode = 0;
+	this->reversed = 0;
+	this->s_npc = "NONE";
+	this->s_scr = "NONE";
+	this->lp.clear();
+	this->repath(0, 0);
 }
 void sys::c_roar_bot::gpoint()
 {

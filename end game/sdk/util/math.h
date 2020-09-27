@@ -52,9 +52,9 @@ namespace sdk
 			c_vector3(float a, float b, float c) { x = a; y = b; z = c; }
 			bool cmp(c_vector3 a)
 			{
-				if (a.x == x &&
-					a.y == y &&
-					a.z == z) return true;
+				if ((int)a.x == (int)x &&
+					(int)a.y == (int)y &&
+					(int)a.z == (int)z) return true;
 				return false;
 			}
 			bool valid()

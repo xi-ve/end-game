@@ -14,6 +14,9 @@ void core::core_cheat_worker()
 std::string core::get_vtable_name(uint64_t address)
 {
 	uint64_t base = 0x140000000;
+
+	if (address < base) return "";
+
 	auto negated = address -= 0x8;
 
 	if (negated == NULL) return "";

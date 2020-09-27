@@ -56,6 +56,7 @@ namespace sys
 		void load();
 		void work(uint64_t s);
 		bool snear();
+		void reset();
 		//
 		void snpc(std::string a);
 		void sscr(std::string a);

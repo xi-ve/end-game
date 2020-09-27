@@ -3,6 +3,9 @@
 static fn::t_packet_outbound fn::o_packet_outbound;
 static fn::t_lua_to_string fn::o_lua_to_string;
 static fn::t_lua_dobuffer fn::o_lua_dobuffer;
+static fn::t_strc_pack fn::o_strc_pack;
+static fn::t_proxy_deadbody fn::o_proxy_deadbody;
+static fn::t_proxy_delete fn::o_proxy_delete;
 static bool fn::executing = false;
 //
 bool fn::setup()
@@ -11,6 +14,8 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::packet_outbound, &fn::f_packet_outbound, (void**)&fn::o_packet_outbound)) return false;
 	if (!fn::hook((void*)core::offsets::hk::lua_to_string, &fn::f_lua_to_string, (void**)&fn::o_lua_to_string)) return false;
 	if (!fn::hook((void*)core::offsets::hk::lua_do_buffer, &fn::f_lua_dobuffer, (void**)&fn::o_lua_dobuffer)) return false;
+	if (!fn::hook((void*)0x1407BCF80, &fn::f_proxy_deadbody, (void**)&fn::o_proxy_deadbody)) return false;
+	if (!fn::hook((void*)0x1407A6300, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
 	if (!fn::hook((void*)0x140AE62B0, &fn::f_self_gm, (void**)&asdf)) return false;
 	if (!fn::hook((void*)0x140AE62F0, &fn::f_self_gm, (void**)&asdf)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
@@ -50,10 +55,11 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 		return 0;
 	}*/
 
-	/*sdk::util::log->add(std::string(__FUNCTION__) \
-		.append(" opcode: ").append(std::to_string(b)) \
-		.append(" size  : ").append(std::to_string(size)) \
-		.append(" packet: ").append(buf.printHex()), sdk::util::e_info, true);*/
+	//sdk::util::log->add(std::string(__FUNCTION__) \
+	//	.append(" opcode: ").append(std::to_string(b)) \
+	//	.append(" size  : ").append(std::to_string(size)) \
+	//	//.append(" packet: ").append(buf.printHex()),
+	//	,sdk::util::e_info, true);
 	
 	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 }
@@ -77,7 +83,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (!can_play) { executing = false; return v; }
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);
-	sdk::player::player_->update_pets(self_actor_proxy);
+	//sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);
 	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
@@ -126,4 +132,45 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const cha
 bool fn::f_self_gm()
 {
 	return 1;
+}
+
+uint64_t fn::f_strc_pack(uint64_t a)
+{
+	auto r = fn::o_strc_pack(a);
+
+	auto ptr = *(uint64_t*)(a + 0x13e0);
+	if (!ptr) return r;
+	auto tb = core::get_vtable_name(*(uint64_t*)(ptr));
+	if (!tb.empty()) sdk::util::log->add(std::string("a:").append(sdk::util::log->as_hex(a)).append(" tb:").append(tb), sdk::util::e_info, true);
+
+	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex(a)).append(" r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
+	return r;
+}
+
+uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
+{
+	auto r = fn::o_proxy_deadbody(a, b, c);
+	//
+	//sdk::util::log->add(std::string("[f_proxy_deadbody] r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
+	sys::loot->loot_proxys.push_back(r);
+	//
+	return r;
+}
+
+bool fn::f_proxy_delete(uint64_t a, int b)
+{
+	if (sys::loot->loot_proxys.size())
+	{
+		for (auto f = 0; f < sys::loot->loot_proxys.size(); f++)
+		{
+			auto c = sys::loot->loot_proxys[f]; if (!c) continue;
+			auto k = *(int*)(c + core::offsets::actor::actor_proxy_key);
+			if (k == b) sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f);
+		}
+	}
+	auto r = fn::o_proxy_delete(a, b);
+	//
+	//sdk::util::log->add(std::string("[f_proxy_delete] a:").append(sdk::util::log->as_hex(a)).append(" b:").append(sdk::util::log->as_hex(b)).append(" r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
+	//
+	return r;
 }

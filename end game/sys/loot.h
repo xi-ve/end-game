@@ -24,6 +24,7 @@ namespace sys
 		uint64_t					hnear();
 		bool						pick(s_looting_item ctx);
 	public:
+		std::vector<uint64_t>       loot_proxys;
 		bool	 read_whitelist();
 		bool	 read_blacklist();
 		void     add_whitelist(int idx);

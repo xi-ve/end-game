@@ -113,8 +113,9 @@ sys::s_looting_item sys::c_loot::gctx(uint64_t p)
 }
 uint64_t sys::c_loot::hnear()
 {
-	auto l = 9999.f; auto b = uint64_t(0); auto sp = sdk::player::player_->gpos(this->self);
-	for (auto a : sdk::player::player_->corpses)
+	if (this->loot_proxys.empty()) return 0;
+	auto l = 9999.f; auto rr = uint64_t(0); auto sp = sdk::player::player_->gpos(this->self);
+	/*for (auto a : sdk::player::player_->corpses)
 	{
 		if (!a.ptr) continue;
 		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted)) continue;
@@ -126,9 +127,25 @@ uint64_t sys::c_loot::hnear()
 			b = a.ptr;
 			continue;
 		}
+	}*/
+	for (auto b = 0; b < this->loot_proxys.size(); b++)
+	{
+		auto a = this->loot_proxys[b];
+		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		{  
+			this->loot_proxys.erase(this->loot_proxys.begin() + b);
+			continue;
+		}
+		auto ap = sdk::player::player_->gpos(a);
+		auto rd = sdk::util::math->gdst_3d(ap, sp);
+		if (rd <= l && rd <= 300)
+		{
+			l = rd;
+			rr = a;
+			continue;
+		}
 	}
-	this->last_ent = b;
-	return b;
+	return rr;
 }
 bool sys::c_loot::pick(s_looting_item ctx)
 {

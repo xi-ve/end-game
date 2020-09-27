@@ -124,6 +124,14 @@ void sdk::menu::c_menu::work()
 					}
 				}
 			}
+			if (!sys::loot->loot_proxys.empty())
+			{
+				ImGui::Text("loot-acs"); ImGui::Separator();
+				for (auto b : sys::loot->loot_proxys)
+				{
+					ImGui::Text(std::string("actor:").append(sdk::util::log->as_hex(b)).c_str());
+				}
+			}
 			break;
 		}
 		case 3://menu
@@ -139,7 +147,7 @@ void sdk::menu::c_menu::work()
 			static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 			static auto t = 1.1f; static char ct[128] = "path.x"; static auto ps = 0; static auto si = 0; static auto ni = 0;
 			if (!sys::roar_bot->dwork) if (ImGui::Button("toggle on")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
-			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) sys::roar_bot->dwork = false;
+			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); }
 			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
 			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->gssize())).c_str()); ImGui::SameLine();
 			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->assize())).c_str());
@@ -159,7 +167,7 @@ void sdk::menu::c_menu::work()
 				ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
 				if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
 			}
-			if (si == 0 && sys::roar_bot->recording_s) if (ImGui::Button("done-store-path")) si++;
+			if (si == 0 && sys::roar_bot->recording_s) { if (ImGui::Button("done-store-path")) si++; }
 			if (si == 1 && sys::roar_bot->recording_s)
 			{
 				auto npcs = sys::roar_bot->gnpcs(); 
@@ -175,6 +183,7 @@ void sdk::menu::c_menu::work()
 				ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
 				if (ImGui::Button("set-scr")) sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]);
 			}
+			
 			break;
 		}
 		case 5://visuals
@@ -188,8 +197,35 @@ void sdk::menu::c_menu::work()
 		}
 		case 6://debug
 		{
+			if (ImGui::Button("test-op"))
+			{
+				auto ptr = uint64_t(0x143D2F8C0);
+				while (ptr != NULL)
+				{
+					if (ptr == NULL) break;
+					auto xx = *(uint64_t*)ptr;
+					if (xx == NULL) break;
+					auto name_t = core::get_vtable_name(xx);
+					auto opc = *(int*)(ptr + 0x8);
+					ptr += 0x110;
+
+					if (*(uint64_t*)(ptr) >= 0x14fffffff || *(uint64_t*)(ptr) == NULL)
+					{
+						ptr += 0x10;
+						auto t = core::get_vtable_name(xx);
+						if (t == "") break;
+					}
+					sdk::util::log->add(std::string("op:").append(std::to_string(opc)).append(" t:").append(name_t), sdk::util::e_info, true);
+				}
+			}
 			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
-			if (!self) { ImGui::Text("only available ingame"); break; }
+			if (!self) 
+			{
+				ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
+				for (auto a : n) ImGui::Text(a.c_str());
+
+				break;
+			}
 			ImGui::Text(std::string("unsealed-pets:").append(std::to_string(sdk::player::player_->unsealed_pets.size())).c_str());
 			ImGui::Text(std::string("sealed-pets  :").append(std::to_string(sdk::player::player_->sealed_pets.size())).c_str());
 
