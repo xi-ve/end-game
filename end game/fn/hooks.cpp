@@ -1,12 +1,17 @@
 #include <inc.h>
 //
-static fn::t_packet_outbound fn::o_packet_outbound;
-static fn::t_lua_to_string fn::o_lua_to_string;
-static fn::t_lua_dobuffer fn::o_lua_dobuffer;
-static fn::t_strc_pack fn::o_strc_pack;
-static fn::t_proxy_deadbody fn::o_proxy_deadbody;
-static fn::t_proxy_delete fn::o_proxy_delete;
-static bool fn::executing = false;
+fn::t_packet_outbound fn::o_packet_outbound;
+fn::t_lua_to_string fn::o_lua_to_string;
+fn::t_lua_dobuffer fn::o_lua_dobuffer;
+fn::t_strc_pack fn::o_strc_pack;
+fn::t_proxy_deadbody fn::o_proxy_deadbody;
+fn::t_proxy_delete fn::o_proxy_delete;
+//
+sys::s_cfg_v* fn::ibypass_trial = NULL;
+sys::s_cfg_v* fn::iteleport_gen2 = NULL;
+sys::s_cfg_v* fn::iloot_enable = NULL;
+sys::s_cfg_v* fn::ikey_ctp = NULL;
+bool fn::executing = false;
 //
 bool fn::setup()
 {
@@ -14,8 +19,8 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::packet_outbound, &fn::f_packet_outbound, (void**)&fn::o_packet_outbound)) return false;
 	if (!fn::hook((void*)core::offsets::hk::lua_to_string, &fn::f_lua_to_string, (void**)&fn::o_lua_to_string)) return false;
 	if (!fn::hook((void*)core::offsets::hk::lua_do_buffer, &fn::f_lua_dobuffer, (void**)&fn::o_lua_dobuffer)) return false;
-	if (!fn::hook((void*)0x1407BCF80, &fn::f_proxy_deadbody, (void**)&fn::o_proxy_deadbody)) return false;
-	if (!fn::hook((void*)0x1407A6300, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
+	if (!fn::hook((void*)core::offsets::hk::proxy_deadbody, &fn::f_proxy_deadbody, (void**)&fn::o_proxy_deadbody)) return false;
+	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
 	if (!fn::hook((void*)0x140AE62B0, &fn::f_self_gm, (void**)&asdf)) return false;
 	if (!fn::hook((void*)0x140AE62F0, &fn::f_self_gm, (void**)&asdf)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
@@ -39,8 +44,8 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	ByteBuffer buf; for (auto c = 0; c < size; c++) buf.put(*(uint8_t*)((uint64_t)pack + c));
 	sys::pack_tp->param5 = unk2;
 
-	static auto ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
-	static auto iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
+	if (!ibypass_trial) ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
+	if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
 
 	if (ibypass_trial->iv)				if (b == 5471) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
@@ -72,8 +77,8 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	executing = true;
 	auto v = fn::o_lua_to_string(a1);
 	//
-	static auto iloot_enable = sys::config->gvar("loot", "ienable");
-	static auto ikey_ctp = sys::config->gvar("keybinds", "itp_key");
+	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
+	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
 	else { executing = false; return v; }
@@ -102,23 +107,21 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const char* arg4) 
 {
 	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
-	static auto str6_14785_Update17 = new s_str_container(std::vector<int>{92, 121, 109, 104, 125, 108}); /*Update*/ static auto _Update1487014964_dec = str6_14785_Update17->get(); static auto str5_21568_Frame16 = new s_str_container(std::vector<int>{79, 123, 104, 100, 108}); /*Frame*/ static auto _Frame1487014963_dec = str5_21568_Frame16->get(); static auto str3_14785_Ani14 = new s_str_container(std::vector<int>{72, 103, 96}); /*Ani*/ static auto _Ani1487014961_dec = str3_14785_Ani14->get();
-	static auto str4_7420_Over14 = new s_str_container(std::vector<int>{70, 127, 108, 123}); /*Over*/ static auto _Over75057595_dec = str4_7420_Over14->get(); static auto str7_7472_MouseOn17 = new s_str_container(std::vector<int>{68, 102, 124, 122, 108, 70, 103}); /*MouseOn*/ static auto _MouseOn75577651_dec = str7_7472_MouseOn17->get(); static auto str7_20197_Tooltip18 = new s_str_container(std::vector<int>{93, 102, 102, 101, 125, 96, 121}); /*Tooltip*/ static auto _Tooltip75577651_dec = str7_20197_Tooltip18->get(); static auto str7_7472_ToolTip17 = new s_str_container(std::vector<int>{93, 102, 102, 101, 93, 96, 121}); /*ToolTip*/ static auto _ToolTip75577651_dec = str7_7472_ToolTip17->get(); static auto str3_20197_ANI14 = new s_str_container(std::vector<int>{72, 71, 64}); /*ANI*/ static auto _ANI75577647_dec = str3_20197_ANI14->get(); static auto str3_7472_Ani13 = new s_str_container(std::vector<int>{72, 103, 96}); /*Ani*/ static auto _Ani75577647_dec = str3_7472_Ani13->get(); static auto str6_20197_Update17 = new s_str_container(std::vector<int>{92, 121, 109, 104, 125, 108}); /*Update*/ static auto _Update75577650_dec = str6_20197_Update17->get(); static auto str5_7472_Frame15 = new s_str_container(std::vector<int>{79, 123, 104, 100, 108}); /*Frame*/ static auto _Frame75577649_dec = str5_7472_Frame15->get(); static auto str4_20197_Help15 = new s_str_container(std::vector<int>{65, 108, 101, 121}); /*Help*/ static auto _Help75577648_dec = str4_20197_Help15->get(); static auto str6_7472_Pushed16 = new s_str_container(std::vector<int>{89, 124, 122, 97, 108, 109}); /*Pushed*/ static auto _Pushed75577650_dec = str6_7472_Pushed16->get(); static auto str4_20197_Chat15 = new s_str_container(std::vector<int>{74, 97, 104, 125}); /*Chat*/ static auto _Chat75577648_dec = str4_20197_Chat15->get(); static auto str5_7472_quest15 = new s_str_container(std::vector<int>{120, 124, 108, 122, 125}); /*quest*/ static auto _quest75577649_dec = str5_7472_quest15->get(); static auto str5_20197_Quest16 = new s_str_container(std::vector<int>{88, 124, 108, 122, 125}); /*Quest*/ static auto _Quest75577649_dec = str5_20197_Quest16->get(); static auto str10_7472_MenuRemake21 = new s_str_container(std::vector<int>{68, 108, 103, 124, 91, 108, 100, 104, 98, 108}); /*MenuRemake*/ static auto _MenuRemake75577654_dec = str10_7472_MenuRemake21->get(); static auto str4_20197_Icon15 = new s_str_container(std::vector<int>{64, 106, 102, 103}); /*Icon*/ static auto _Icon75577648_dec = str4_20197_Icon15->get(); static auto str9_7472_QuickSlot19 = new s_str_container(std::vector<int>{88, 124, 96, 106, 98, 90, 101, 102, 125}); /*QuickSlot*/ static auto _QuickSlot75577653_dec = str9_7472_QuickSlot19->get(); static auto str4_20197_Hide15 = new s_str_container(std::vector<int>{65, 96, 109, 108}); /*Hide*/ static auto _Hide75577648_dec = str4_20197_Hide15->get(); static auto str7_7472_collect17 = new s_str_container(std::vector<int>{106, 102, 101, 101, 108, 106, 125}); /*collect*/ static auto _collect75577651_dec = str7_7472_collect17->get();
-	if (strstr(arg2, _Over75057595_dec.c_str())
-		|| strstr(arg2, _MouseOn75577651_dec.c_str())
-		|| strstr(arg2, _Tooltip75577651_dec.c_str()) || strstr(arg2, _ToolTip75577651_dec.c_str())
-		|| strstr(arg2, _ANI75577647_dec.c_str()) || strstr(arg2, _Ani75577647_dec.c_str())
-		|| strstr(arg2, _Update75577650_dec.c_str())
-		|| strstr(arg2, _Frame75577649_dec.c_str())
-		|| strstr(arg2, _Help75577648_dec.c_str())
-		|| strstr(arg2, _Pushed75577650_dec.c_str())
-		|| strstr(arg2, _Chat75577648_dec.c_str())
-		|| strstr(arg2, _quest75577649_dec.c_str()) || strstr(arg2, _Quest75577649_dec.c_str())
-		|| strstr(arg2, _MenuRemake75577654_dec.c_str())
-		|| strstr(arg2, _Icon75577648_dec.c_str())
-		|| strstr(arg2, _QuickSlot75577653_dec.c_str())
-		|| strstr(arg2, _Hide75577648_dec.c_str())
-		|| strstr(arg2, _collect75577651_dec.c_str())
+	if (strstr(arg2, "Over")
+		|| strstr(arg2, "MouseOn")
+		|| strstr(arg2, "Tooltip") || strstr(arg2, "ToolTip")
+		|| strstr(arg2, "ANI") || strstr(arg2, "Ani")
+		|| strstr(arg2, "Update")
+		|| strstr(arg2, "Frame")
+		|| strstr(arg2, "Help")
+		|| strstr(arg2, "Pushed")
+		|| strstr(arg2, "Chat")
+		|| strstr(arg2, "quest") || strstr(arg2, "Quest")
+		|| strstr(arg2, "MenuRemake")
+		|| strstr(arg2, "Icon")
+		|| strstr(arg2, "QuickSlot")
+		|| strstr(arg2, "Hide")
+		|| strstr(arg2, "collect")
 		|| strstr(arg2, "Lua")
 		|| arg2[0] == '\0'
 		|| arg3 > 45) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
@@ -128,12 +131,10 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const cha
 	}
 	return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
 }
-
 bool fn::f_self_gm()
 {
 	return 1;
 }
-
 uint64_t fn::f_strc_pack(uint64_t a)
 {
 	auto r = fn::o_strc_pack(a);
@@ -150,10 +151,8 @@ uint64_t fn::f_strc_pack(uint64_t a)
 uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 {
 	auto r = fn::o_proxy_deadbody(a, b, c);
-	//
-	//sdk::util::log->add(std::string("[f_proxy_deadbody] r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
-	sys::loot->loot_proxys.push_back(r);
-	//
+	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
+	if (iloot_enable->iv) sys::loot->loot_proxys.push_back(r);
 	return r;
 }
 
@@ -169,8 +168,5 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 		}
 	}
 	auto r = fn::o_proxy_delete(a, b);
-	//
-	//sdk::util::log->add(std::string("[f_proxy_delete] a:").append(sdk::util::log->as_hex(a)).append(" b:").append(sdk::util::log->as_hex(b)).append(" r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
-	//
 	return r;
 }

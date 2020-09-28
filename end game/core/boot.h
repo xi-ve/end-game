@@ -18,14 +18,15 @@ static void __stdcall init_thread()
 	sys::pet_boost = new sys::c_pet_boost();
 	sys::roar_bot = new sys::c_roar_bot();
 	sdk::util::file = new sdk::util::c_file();
+	sys::lua_q = new sys::c_lua_q();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
 	//
 	auto hk_status = fn::setup(); if (hk_status == false) { sdk::util::log->add("failed hooking!", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
-	//
+	//	
 	sys::config->read();
-	sys::config->vars();//base
+	sys::config->vars();
 	lib::d3d11->setup();
 	sdk::util::file->update();
 	sys::loot->read_blacklist(); sys::loot->read_whitelist();

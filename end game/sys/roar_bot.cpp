@@ -11,7 +11,7 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 	{
 		auto mobs = [&]() -> bool
 		{
-			static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+			if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 			for (auto a : sdk::player::player_->actors)
 			{
 				if (a.ptr == s) continue;
@@ -36,7 +36,7 @@ bool sys::c_roar_bot::has_lootables(std::vector<sdk::player::s_blank_proxy>& oli
 {
 	static std::vector<sdk::player::s_blank_proxy> list;
 	static ULONGLONG list_clear_time = 0;
-	static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 
 	if (GetTickCount64() > list_clear_time) { list_clear_time = GetTickCount64() + 30000; list.clear(); }
 
@@ -83,6 +83,7 @@ bool sys::c_roar_bot::snear()
 {
 	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
 	auto p = sdk::player::player_->gpos(this->self); auto ldst = 9999.f; sdk::util::c_vector3 lv;
+	this->cur_route.clear();
 	this->repath(0, 0);
 	for (auto a : this->cur_route)
 	{
@@ -318,8 +319,8 @@ void sys::c_roar_bot::work(uint64_t s)
 	this->self = s;
 	if (this->recording_g || this->recording_s) { this->record(); return; }
 	if (!this->dwork) return;
-	static auto ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
-	static auto iloot_tp = sys::config->gvar("roar_bot", "iloot_tp");
+	if (!ibot_timescale) ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
+	if (!iloot_tp) iloot_tp = sys::config->gvar("roar_bot", "iloot_tp");
 	if (!this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	else return;

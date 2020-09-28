@@ -22,6 +22,10 @@ namespace sys
 	class c_roar_bot
 	{
 	private:
+		sys::s_cfg_v* ibot_lootrange = NULL;
+		sys::s_cfg_v* ibot_timescale = NULL;
+		sys::s_cfg_v* iloot_tp = NULL;
+		//
 		ULONGLONG execution;
 		uint64_t self;
 		std::vector<int> allowed_sell_items;

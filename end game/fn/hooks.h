@@ -27,4 +27,9 @@ namespace fn
 	typedef bool(__fastcall* t_proxy_delete)(uint64_t, int);
 	extern t_proxy_delete o_proxy_delete;
 	extern bool f_proxy_delete(uint64_t a, int b);
+	//
+	extern sys::s_cfg_v* ibypass_trial;
+	extern sys::s_cfg_v* iteleport_gen2;
+	extern sys::s_cfg_v* iloot_enable;
+	extern sys::s_cfg_v* ikey_ctp;
 }

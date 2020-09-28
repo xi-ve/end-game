@@ -9,6 +9,7 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <unordered_map>
 #include <d3d11.h>
 #include <mutex>
 #include <d3dx11.h>
@@ -45,6 +46,7 @@
 #include "..\\sys\cfg.h"
 #include "..\\sdk\util\bytebuffer.h"
 #include "..\\fn\hooks.h"
+#include "..\\sys\\lua_q.h"
 #include "..\\lib\imgui\imgui_internal.h"
 #include "..\\sdk\rendering\menu\m_packet.h"
 #include "..\\sdk\rendering\menu\menu.h"

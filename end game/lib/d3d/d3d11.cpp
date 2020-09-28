@@ -3,11 +3,11 @@ typedef HRESULT(__stdcall* D3D11PresentHook) (IDXGISwapChain* pSwapChain, UINT S
 typedef void(__stdcall* D3D11DrawIndexedHook) (ID3D11DeviceContext* pContext, UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation);
 typedef void(__stdcall* D3D11ClearRenderTargetViewHook) (ID3D11DeviceContext* pContext, ID3D11RenderTargetView* pRenderTargetView, const FLOAT ColorRGBA[4]);
 
-static HWND                     g_hWnd = nullptr;
-static ID3D11Device* g_pd3dDevice = nullptr;
-static ID3D11DeviceContext* g_pd3dContext = nullptr;
-static IDXGISwapChain* g_pSwapChain = nullptr;
-static std::once_flag           g_isInitialized;
+HWND					g_hWnd = nullptr;
+ID3D11Device*			g_pd3dDevice = nullptr;
+ID3D11DeviceContext*	g_pd3dContext = nullptr;
+IDXGISwapChain*			g_pSwapChain = nullptr;
+std::once_flag			g_isInitialized;
 
 D3D11PresentHook                phookD3D11Present = nullptr;
 D3D11DrawIndexedHook            phookD3D11DrawIndexed = nullptr;
