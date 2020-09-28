@@ -1,13 +1,12 @@
 #include <inc.h>
 bool sys::c_loot::read_whitelist()
 {
-	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
-	if (!whitelist) sdk::util::log->add("whitelist is null", sdk::util::e_info, true);
-	if (whitelist->rval.size())
+	if (!whitelistv) whitelistv = sys::config->gvar("auto_loot", "string_whitelist_config");
+	if (whitelistv->rval.size())
 	{
 		/*itemid;itemid*/
 		this->whitelist.clear();
-		auto str = whitelist->rval;
+		auto str = whitelistv->rval;
 		while (str.size())
 		{
 			auto cpy = str;
@@ -26,13 +25,12 @@ bool sys::c_loot::read_whitelist()
 }
 bool sys::c_loot::read_blacklist()
 {
-	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
-	if (!blacklist) sdk::util::log->add("blacklist is null", sdk::util::e_info, true);
-	if (blacklist->rval.size())
+	if (!blacklistv) blacklistv = sys::config->gvar("auto_loot", "string_blacklist_config");
+	if (blacklistv->rval.size())
 	{
 		/*itemid;itemid*/
 		this->blacklist.clear();
-		auto str = blacklist->rval;
+		auto str = blacklistv->rval;
 		while (str.size())
 		{
 			auto cpy = str;
@@ -53,30 +51,28 @@ bool sys::c_loot::read_blacklist()
 }
 void sys::c_loot::add_whitelist(int idx)
 {
-	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
+	if (!whitelistv) whitelistv = sys::config->gvar("auto_loot", "string_whitelist_config");
 	for (auto obj : this->whitelist) if (obj == idx) { return; }
-	sdk::util::log->add(std::string("adding:").append(std::to_string(idx)).append(" conf:").append(sdk::util::log->as_hex((uint64_t)whitelist)), sdk::util::e_info, true);
-	whitelist->rval.append(std::string(std::to_string(idx).append(";")));
+	whitelistv->rval.append(std::string(std::to_string(idx).append(";")));
 	this->whitelist.push_back(idx);
 }
 void sys::c_loot::add_blacklist(int idx)
 {
-	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
+	if (!blacklistv) blacklistv = sys::config->gvar("auto_loot", "string_blacklist_config");
 	for (auto obj : this->blacklist) if (obj == idx) { return; }
-	sdk::util::log->add(std::string("adding:").append(std::to_string(idx)).append(" conf:").append(sdk::util::log->as_hex((uint64_t)blacklist)), sdk::util::e_info, true);
-	blacklist->rval.append(std::string(std::to_string(idx).append(";")));
+	blacklistv->rval.append(std::string(std::to_string(idx).append(";")));
 	this->blacklist.push_back(idx);
 }
 void sys::c_loot::reset_whitelist()
 {
-	static auto whitelist = sys::config->gvar("auto_loot", "string_whitelist_config");
-	whitelist->rval.clear();
+	if (!whitelistv) whitelistv = sys::config->gvar("auto_loot", "string_whitelist_config");
+	whitelistv->rval.clear();
 	this->whitelist.clear();
 }
 void sys::c_loot::reset_blacklist()
 {
-	static auto blacklist = sys::config->gvar("auto_loot", "string_blacklist_config");
-	blacklist->rval.clear();
+	if (!blacklistv) blacklistv = sys::config->gvar("auto_loot", "string_blacklist_config");
+	blacklistv->rval.clear();
 	this->blacklist.clear();
 }
 void sys::c_loot::spack(int k)
@@ -91,25 +87,19 @@ uint64_t sys::c_loot::gitem(int s)
 {
 	auto r = uint64_t(0);
 	//
-	typedef uint64_t(__fastcall* a)(int);
-	static a b = (a)core::offsets::fn::loot_get_base;
-	r = b(s);
+	r = this->f_loot_get_base(s);
 	//
 	return r;
 }
 sys::s_looting_item sys::c_loot::gctx(uint64_t p)
 {
-	typedef uint64_t(__fastcall* grarity)(uint64_t);
-	static grarity rarity = (grarity)core::offsets::fn::loot_get_rarity;
-	typedef const CHAR* (__fastcall* gname)(uint64_t);
-	static gname name = (gname)core::offsets::fn::loot_get_name;
 	auto i = *(uint64_t*)(p + 0x98);
 	if (!i) return {};
 	auto id = *(int*)(i + 0x0);
 	auto c = *(int*)(i + 0x8);
 	p += 0x8;
-	auto r = rarity(p);
-	return sys::s_looting_item(c, id, r, name(p));
+	auto r = this->f_loot_get_rarity(p);
+	return sys::s_looting_item(c, id, r, this->f_loot_get_name(p));
 }
 uint64_t sys::c_loot::hnear()
 {
@@ -156,11 +146,11 @@ bool sys::c_loot::pick(s_looting_item ctx)
 	this->proc("auto_loot", "ipick_orange", "1");
 	this->proc("auto_loot", "ipick_yellow", "1");	
 	*/
-	static auto grey = sys::config->gvar("auto_loot", "ipick_grey");
-	static auto green = sys::config->gvar("auto_loot", "ipick_green");
-	static auto blue = sys::config->gvar("auto_loot", "ipick_blue");
-	static auto orange = sys::config->gvar("auto_loot", "ipick_orange");
-	static auto yellow = sys::config->gvar("auto_loot", "ipick_yellow");
+	if (!grey) grey = sys::config->gvar("auto_loot", "ipick_grey");
+	if (!green) green = sys::config->gvar("auto_loot", "ipick_green");
+	if (!blue) blue = sys::config->gvar("auto_loot", "ipick_blue");
+	if (!orange) orange = sys::config->gvar("auto_loot", "ipick_orange");
+	if (!yellow) yellow = sys::config->gvar("auto_loot", "ipick_yellow");
 	for (auto a : this->blacklist) if (a == ctx.id) return false;
 	for (auto a : this->whitelist) if (a == ctx.id) return true;
 	switch (ctx.rarity)
@@ -196,28 +186,21 @@ bool sys::c_loot::pick(s_looting_item ctx)
 void sys::c_loot::work(uint64_t self)
 {
 	this->self = self;
-	static auto last_tick = ULONGLONG(0);
 	if (GetTickCount64() > last_tick) last_tick = GetTickCount64() + 50;
 	else return;
-	static auto ienable = sys::config->gvar("auto_loot", "ienable");
+	if (!ienable) ienable = sys::config->gvar("auto_loot", "ienable");
 	if (!ienable->iv) return;
-	typedef void(__fastcall* cislot)(BYTE, int);
-	static cislot cslot = (cislot)core::offsets::fn::loot_click_slot;
-	typedef int(__fastcall* gicnt)();
-	static gicnt icnt = (gicnt)core::offsets::fn::loot_item_count;
-	typedef bool(__fastcall* inmob)(uint64_t);
-	static inmob imob = (inmob)core::offsets::fn::loot_deadactor;
-	auto n = this->hnear(); if (!n) return; 
+	auto n = this->hnear();						if (!n) return; 
 	this->spack(*(int*)(n + core::offsets::actor::actor_proxy_key));
-	auto i = icnt();		if (!i) return;
-	static auto ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
+	auto i = this->f_loot_get_item_count();		if (!i) return;
+	if (!ienable_filter) ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
 	for (auto b = 0; b < i; b++)
 	{
 		auto o = this->gitem(b);
 		if (!o) continue;
 		auto ctx = this->gctx(o);
 		if (ienable_filter->iv) if (!this->pick(ctx)) continue;
-		cslot(b, ctx.count);
+		this->f_loot_click_slot(b, ctx.count);
 	}
 }
 sys::c_loot* sys::loot;

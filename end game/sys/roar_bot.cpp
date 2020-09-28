@@ -6,7 +6,6 @@ void sys::c_roar_bot::repath(int a, int b)
 bool sys::c_roar_bot::pause(uint64_t s, float p)
 {
 	if (p == 0.1f || p == 1.f) return true;
-	static ULONGLONG pause_ending_tick = 0;
 	if (this->p_mode == 0)
 	{
 		auto mobs = [&]() -> bool
@@ -34,10 +33,7 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 }
 bool sys::c_roar_bot::has_lootables(std::vector<sdk::player::s_blank_proxy>& olist, sdk::util::c_vector3 spp)
 {
-	static std::vector<sdk::player::s_blank_proxy> list;
-	static ULONGLONG list_clear_time = 0;
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-
 	if (GetTickCount64() > list_clear_time) { list_clear_time = GetTickCount64() + 30000; list.clear(); }
 
 	sdk::player::player_->update_actors(this->self);
@@ -58,9 +54,6 @@ bool sys::c_roar_bot::has_lootables(std::vector<sdk::player::s_blank_proxy>& oli
 }
 bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 {
-	static ULONGLONG ltp;
-	static std::vector<sdk::player::s_blank_proxy> llist;
-
 	if (llist.empty())
 	{
 		auto has = this->has_lootables(llist, sdk::player::player_->gpos(this->self));

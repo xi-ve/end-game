@@ -12,6 +12,7 @@ sys::s_cfg_v* fn::iteleport_gen2 = NULL;
 sys::s_cfg_v* fn::iloot_enable = NULL;
 sys::s_cfg_v* fn::ikey_ctp = NULL;
 bool fn::executing = false;
+ULONGLONG fn::execution_time = 0;
 //
 bool fn::setup()
 {
@@ -72,7 +73,6 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 uint64_t __fastcall fn::f_lua_to_string(void* a1)
 {
 	if (!a1) return fn::o_lua_to_string(a1);
-	static auto execution_time = ULONGLONG(0);
 	if (executing) return fn::o_lua_to_string(a1);
 	executing = true;
 	auto v = fn::o_lua_to_string(a1);

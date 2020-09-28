@@ -22,6 +22,9 @@ namespace sys
 	class c_roar_bot
 	{
 	private:
+		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0;
+		std::vector<sdk::player::s_blank_proxy> llist;
+		std::vector<sdk::player::s_blank_proxy> list;
 		sys::s_cfg_v* ibot_lootrange = NULL;
 		sys::s_cfg_v* ibot_timescale = NULL;
 		sys::s_cfg_v* iloot_tp = NULL;

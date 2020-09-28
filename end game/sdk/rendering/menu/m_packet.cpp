@@ -138,10 +138,6 @@ void sdk::menu::c_m_packet::work_ui()
 	{
 		ImGui::Text("send packet by manual input");
 
-		static char packet_body[24000] = "bd 14 00 86 9d 66 3e 00 00 00 00 64 6c 79 bf 02 00 00 00 00 00 00 08 00 c1 51 a4 24 00 00 00 00 00 fc ff ff 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 64 eb f1 45 2e c5 d2 c5 27 38 91 47 00 00 94 6d e4 95 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 45 2e c5 d2 c5 27 38 91 47 64 eb f1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 1b 00 fc ff ff 20 ff ff ff 00 00 ff 9a 84 f6 45 85 05 cf c5 da f9 8f 47 44 00 00 00 00 2e 65 c9 c5 00 00 00 00 00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff c8 10 fa 41 01 00 00 00 80 b1 87 d0 00 00 00 00 60 43 ea 2c 00 00 00 00 90 90 57 20 00 00 00 00 80 47 80 d0 00 00 00 00 00 ea 14 00 00 00 00 00 90 d9 b6 cf 00 00 00 00 b0 ea 14 00 00 00 00 00 66 82 8b 41 01 00 00 00 80 b1 87 d0 00 00 00 00 90 e9 14 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 01 00 00 00 17 d4 9a 42 98 e4 86 c2 79 e1 39 44 00 00 00 00 01 00 00 00 23 bf 86 c2 c0 ea 14 7f 00 00 40 6e 93";
-		static int  packet_opcode = 5309;
-		static int  packet_size = 419;
-
 		ImGui::InputText("packet body  ", packet_body, 24000);
 		ImGui::InputInt("packet opcode", &packet_opcode);
 		ImGui::InputInt("packet size  ", &packet_size);
@@ -153,7 +149,7 @@ void sdk::menu::c_m_packet::work_ui()
 			auto time_min = GetTickCount64() - 60000;
 			auto time_max = GetTickCount64() + 60000;
 
-			static auto offset_time = 0;
+			auto offset_time = 0;
 
 			/*timing scanner*/
 			if (!offset_time)
@@ -179,7 +175,7 @@ void sdk::menu::c_m_packet::work_ui()
 		}
 
 		ImGui::Separator();
-		static int selected_packet = 0;
+		selected_packet = 0;
 		ImGui::Combo("packets captured", &selected_packet, packets);
 
 		auto packet = this->get_packet(packets[selected_packet]);

@@ -32,4 +32,6 @@ namespace fn
 	extern sys::s_cfg_v* iteleport_gen2;
 	extern sys::s_cfg_v* iloot_enable;
 	extern sys::s_cfg_v* ikey_ctp;
+	//
+	extern ULONGLONG execution_time;
 }

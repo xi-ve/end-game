@@ -61,7 +61,7 @@ void __stdcall sys::tp_thread_gen1()
 void sys::c_cursor_tp::work(uint64_t s)
 {
 	if (!_doneTp) return;
-	static auto tpgen2 = sys::config->gvar("packet", "iteleport_gen2");
+	if (!tpgen2) tpgen2 = sys::config->gvar("packet", "iteleport_gen2");
 	if (tpgen2->iv)
 	{
 		sys::pack_tp->teleport_to_cursor(s);

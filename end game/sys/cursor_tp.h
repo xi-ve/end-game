@@ -5,6 +5,8 @@ namespace sys
 	extern void __stdcall tp_thread_gen1();
 	class c_cursor_tp
 	{		
+	private:
+		sys::s_cfg_v* tpgen2 = NULL;
 	public:
 		bool                 _doneTp = 1;
 		bool                 _alt = 0;

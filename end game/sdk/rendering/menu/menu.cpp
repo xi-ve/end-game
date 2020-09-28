@@ -23,8 +23,7 @@ namespace ImGui
 }
 void sdk::menu::c_menu::tab(size_t Index, const char* Text, int height)
 {
-	static const size_t TabWidth = 100;
-	static const size_t TabHeight = height;
+	if (this->TabHeight == 0) this->TabHeight = height;
 
 	ImGui::PushID(Index);
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1);
@@ -79,7 +78,7 @@ void sdk::menu::c_menu::work()
 		{
 		case 0://pack-fn
 		{
-			static auto iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
+			if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
 			ImGui::Checkbox("teleport-gen2", (bool*)&iteleport_gen2->iv);
 			ImGui::Checkbox("teleport-setup", (bool*)&sys::pack_tp->get_packet_again);
 			if (ImGui::Button("teleport-to-marker")) sys::pack_tp->teleport_to_marker();
@@ -87,19 +86,19 @@ void sdk::menu::c_menu::work()
 		}
 		case 1://pack-bypasses
 		{
-			static auto ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
+			if (!ibypass_trial) ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
 			ImGui::Checkbox("trial-escape-bypass", (bool*)&ibypass_trial->iv);
 			break;
 		}
 		case 2://looting
 		{
-			static auto iloot_enable = sys::config->gvar("loot", "ienable");
-			static auto iloot_enable_filter = sys::config->gvar("loot", "ienable_filter");
-			static auto grey = sys::config->gvar("auto_loot", "ipick_grey");
-			static auto green = sys::config->gvar("auto_loot", "ipick_green");
-			static auto blue = sys::config->gvar("auto_loot", "ipick_blue");
-			static auto orange = sys::config->gvar("auto_loot", "ipick_orange");
-			static auto yellow = sys::config->gvar("auto_loot", "ipick_yellow");
+			if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
+			if (!iloot_enable_filter) iloot_enable_filter = sys::config->gvar("loot", "ienable_filter");
+			if (!grey) grey = sys::config->gvar("auto_loot", "ipick_grey");
+			if (!green) green = sys::config->gvar("auto_loot", "ipick_green");
+			if (!blue) blue = sys::config->gvar("auto_loot", "ipick_blue");
+			if (!orange) orange = sys::config->gvar("auto_loot", "ipick_orange");
+			if (!yellow) yellow = sys::config->gvar("auto_loot", "ipick_yellow");
 			ImGui::Checkbox("enable", (bool*)&iloot_enable->iv); ImGui::SameLine();
 			ImGui::Checkbox("use-filter", (bool*)&iloot_enable_filter->iv);
 
@@ -114,8 +113,7 @@ void sdk::menu::c_menu::work()
 				{
 					auto il = sdk::player::player_->ginv();
 					if (il.size() > 2)
-					{
-						static auto selected_whitelist = 0;
+					{						
 						ImGui::Combo2("select-item", &selected_whitelist, il);
 						if (ImGui::Button("add-item-to-whitelist")) sys::loot->add_whitelist(sdk::player::player_->gitm_by_name(il[selected_whitelist])); ImGui::SameLine();
 						if (ImGui::Button("add-item-to-blacklist")) sys::loot->add_blacklist(sdk::player::player_->gitm_by_name(il[selected_whitelist]));
@@ -137,15 +135,14 @@ void sdk::menu::c_menu::work()
 		case 3://menu
 		{
 			if (ImGui::Button("reload config")) sys::config->read();
-			static auto ikey_ctp = sys::config->gvar("keybinds", "itp_key");
+			if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
 			ImGui::Text(std::string("ikey_tp:").append(std::to_string(ikey_ctp->iv)).c_str());
 			break;
 		}
 		case 4://roar-bot
 		{
-			static auto ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
-			static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-			static auto t = 1.1f; static char ct[128] = "path.x"; static auto ps = 0; static auto si = 0; static auto ni = 0;
+			if (!ibot_timescale) ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
+			if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 			if (!sys::roar_bot->dwork) if (ImGui::Button("toggle on")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
 			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); }
 			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
@@ -179,7 +176,6 @@ void sdk::menu::c_menu::work()
 			}
 			if (si == 2 && !sys::roar_bot->last_lua_actions.empty() && sys::roar_bot->recording_s)
 			{
-				static auto is_scr = 0;
 				ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
 				if (ImGui::Button("set-scr")) sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]);
 			}
@@ -188,16 +184,16 @@ void sdk::menu::c_menu::work()
 		}
 		case 5://visuals
 		{
-			static auto iroar_path = sys::config->gvar("visuals", "ienable_roar_path");
-			static auto iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
-			static auto ienable_portal = sys::config->gvar("visuals", "ienable_portal");
-			static auto ienable_debug = sys::config->gvar("visuals", "ienable_debug");
+			if (!iroar_path) iroar_path = sys::config->gvar("visuals", "ienable_roar_path");
+			if (!iroar_pause) iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
+			if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
+			if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
 			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv);
 			break;
 		}
 		case 6://debug
 		{
-			if (ImGui::Button("test-op"))
+			/*if (ImGui::Button("test-op"))
 			{
 				auto ptr = uint64_t(0x143D2F8C0);
 				while (ptr != NULL)
@@ -217,7 +213,7 @@ void sdk::menu::c_menu::work()
 					}
 					sdk::util::log->add(std::string("op:").append(std::to_string(opc)).append(" t:").append(name_t), sdk::util::e_info, true);
 				}
-			}
+			}*/
 			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 			if (!self) 
 			{
@@ -246,7 +242,7 @@ void sdk::menu::c_menu::work()
 				}
 			}
 
-			static auto ient_alt = sys::config->gvar("debug", "ientity_alt");
+			if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
 			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
 			ImGui::SliderInt("filter", &sys::visuals->filter, 1, 100);
 

@@ -22,10 +22,6 @@ void sdk::player::c_player::update_inventory(uint64_t self)
 		else i_cur += 0xc0;
 		i_proc.emplace_back((uint64_t)ib + i_cur, c);
 	}
-	typedef uint64_t(__fastcall* t_get_item_wrapper)(byte, byte);
-	static auto d_get_item_wrapper = (t_get_item_wrapper)core::offsets::fn::inv_get_item;
-	typedef const CHAR* (__fastcall* gname)(uint64_t);
-	static gname name = (gname)core::offsets::fn::loot_get_name;
 	for (auto a : i_proc)
 	{
 		if (!a.p) continue;
@@ -34,9 +30,9 @@ void sdk::player::c_player::update_inventory(uint64_t self)
 		auto i_c = *(int*)(a.p + 0x20);
 		auto i_d = *(uint16_t*)(a.p + 0x30);
 		auto i_dm = *(uint16_t*)(a.p + 0x32);
-		auto i_w = d_get_item_wrapper(0, a.s + 2);
+		auto i_w = this->f_get_item_wrapper(0, a.s + 2);
 		if (!i_w) continue;
-		auto i_n = name(i_w + 0x8);
+		auto i_n = this->f_loot_get_name(i_w + 0x8);
 		i_info.emplace_back(a.p, i_id, i_c, i_d, i_dm, a.s, i_nid, i_n);
 	}
 	i_proc.clear();
@@ -44,7 +40,7 @@ void sdk::player::c_player::update_inventory(uint64_t self)
 }
 void sdk::player::c_player::update_actors(uint64_t self)
 {
-	static auto ient_alt = sys::config->gvar("debug", "ientity_alt");
+	if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
 	auto s = *(uint64_t*)(core::offsets::actor::actor_list_start);
 	auto e = *(uint64_t*)(core::offsets::actor::actor_list_end);
 	if (ient_alt->iv == 1)
@@ -224,8 +220,6 @@ sdk::player::s_trace sdk::player::c_player::trace(sdk::util::c_vector3 f, sdk::u
 {
 	auto r = s_trace();
 	//
-	typedef uint64_t(__fastcall* tc)(__int64 a1, float a2[3], float a3, float a4[3], float a5, float a6[3], float& a7, unsigned int a8);
-	static auto dc = (tc)core::offsets::fn::cast_ray;
 	r.end_distance = 0.f;
 	auto p1n = sdk::util::c_vector3(f.x + 1, f.y + h, f.z + 1);
 	auto p2n = sdk::util::c_vector3();
@@ -244,7 +238,7 @@ sdk::player::s_trace sdk::player::c_player::trace(sdk::util::c_vector3 f, sdk::u
 	auto _D8 = *(uint64_t*)(_18 + 0xD8);
 	if (!_D8) return r;
 	float _a6[3]; float _a7 = 0.f;
-	auto cast = dc(_D8, p1, 15, p2, dst, _a6, _a7, fl);
+	auto cast = this->f_func_trace(_D8, p1, 15, p2, dst, _a6, _a7, fl);
 	if (cast) r.success = 0;
 	else r.success = 1;
 	if (!r.success)

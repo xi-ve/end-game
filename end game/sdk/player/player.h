@@ -93,9 +93,18 @@ namespace sdk
 			float          end_distance;
 			bool		   success = 0;
 		};
+		typedef uint64_t(__fastcall* t_func_trace)(__int64 a1, float a2[3], float a3, float a4[3], float a5, float a6[3], float& a7, unsigned int a8);
+		typedef uint64_t(__fastcall* t_get_item_wrapper)(byte, byte);	
+		typedef const CHAR* (__fastcall* t_loot_get_name)(uint64_t);
+
 		/*player utils*/
 		class c_player
 		{
+		private:
+			t_loot_get_name f_loot_get_name = (t_loot_get_name)core::offsets::fn::loot_get_name;
+			t_get_item_wrapper f_get_item_wrapper = (t_get_item_wrapper)core::offsets::fn::inv_get_item;
+			t_func_trace f_func_trace = (t_func_trace)core::offsets::fn::cast_ray;
+			sys::s_cfg_v* ient_alt = NULL;
 		public:
 			bool thread_working = false;
 			std::deque<s_blank_proxy> actors = std::deque<s_blank_proxy>();

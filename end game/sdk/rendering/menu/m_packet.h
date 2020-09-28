@@ -51,6 +51,10 @@ namespace sdk
 		class c_m_packet
 		{
 		private:
+			char packet_body[24000];
+			int selected_packet = 0;
+			int packet_opcode = 1337;
+			int packet_size = 420;
 			std::vector<s_packet>   packets;		/*hold all packets received by the game with their packet contents*/
 			bool					register_packet(uint64_t ptr, short packet_size);
 		public:

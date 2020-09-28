@@ -15,19 +15,19 @@ std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 f
 }
 void sys::c_visuals::monster_proxy_debug()
 {
-	auto a = sdk::player::player_->corpses;
+	auto a = sys::loot->loot_proxys;
 	if (a.size() <= 1) return;
 	auto sv = sdk::util::c_vector3();
 	if (!sdk::util::math->w2s(sdk::player::player_->gpos(this->self), sv)) return;
 	for (auto b : a)
 	{
-		if (!b.pos.valid() || b.ptr == NULL) continue;
-		if (*(BYTE*)(b.ptr + core::offsets::actor::actor_was_looted)) continue;
+		if (b == NULL) continue;
+		if (*(BYTE*)(b + core::offsets::actor::actor_was_looted)) continue;
+		auto bpos = sdk::player::player_->gpos(b);
 		auto v = sdk::util::c_vector3();
-		if (!sdk::util::math->w2s(b.pos, v)) continue;
+		if (!sdk::util::math->w2s(bpos, v)) continue;
 		sdk::render::render->DrawLine(sv.x, sv.z, v.x, v.z, 0xff00ff0f);
-		sdk::render::render->RenderText(v.x, v.z - 30, 0xff00ff00, (char*)b.name.c_str());
-		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b.ptr).c_str());
+		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b).c_str());
 	}
 }
 void sys::c_visuals::alive_proxy_debug()
@@ -90,8 +90,8 @@ void sys::c_visuals::trace_debug()
 }
 void sys::c_visuals::roar_path()
 {
-	static auto iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
-	static auto ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+	if (!iroar_pause) iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
+	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 	if (!sys::roar_bot->gpsize()) return;
 	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
 	for (auto b : sys::roar_bot->g_p())
@@ -130,9 +130,9 @@ void sys::c_visuals::work()
 	auto can_play = *(BYTE*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) return;
 	this->self = self_actor_proxy;
-	static auto iroar_visual = sys::config->gvar("visuals", "ienable_roar_path");
-	static auto ienable_portal = sys::config->gvar("visuals", "ienable_portal");
-	static auto ienable_debug = sys::config->gvar("visuals", "ienable_debug");
+	if (!iroar_visual) iroar_visual = sys::config->gvar("visuals", "ienable_roar_path");
+	if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
+	if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
 	if (ienable_debug->iv) this->monster_proxy_debug();
 	if (ienable_portal->iv) this->portal();
 	if (iroar_visual->iv) this->roar_path();

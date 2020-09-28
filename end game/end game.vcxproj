@@ -197,6 +197,7 @@
     <ClCompile Include="sdk\rendering\menu\menu.cpp" />
     <ClCompile Include="sdk\rendering\menu\m_packet.cpp" />
     <ClCompile Include="sdk\rendering\render.cpp" />
+    <ClCompile Include="sdk\rendering\shader.cpp" />
     <ClCompile Include="sdk\util\file.cpp" />
     <ClCompile Include="sdk\util\math.cpp" />
     <ClCompile Include="sdk\player\player.cpp" />
