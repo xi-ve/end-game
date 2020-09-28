@@ -89,7 +89,7 @@ bool sys::c_roar_bot::snear()
 	}
 	for (auto a : this->cur_route)
 	{
-		if (!a.pos.cmp(lv)) this->grind.pop_front();
+		if (!a.pos.cmp(lv)) this->cur_route.pop_front();
 		else 
 		{
 			sdk::util::log->add("set start to nearest pos");
