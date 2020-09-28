@@ -164,20 +164,31 @@ void sdk::menu::c_menu::work()
 				ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
 				if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
 			}
-			if (si == 0 && sys::roar_bot->recording_s) { if (ImGui::Button("done-store-path")) si++; }
+			if (si == 0 && sys::roar_bot->recording_s)
+			{
+				sys::roar_bot->store_can_path = true;
+				if (ImGui::Button("done-store-path")) si++;
+			}
 			if (si == 1 && sys::roar_bot->recording_s)
 			{
+				sys::roar_bot->store_can_path = false;
 				auto npcs = sys::roar_bot->gnpcs(); 
-				if (npcs.size()) 
+				if (npcs.size())
 				{
-					ImGui::Combo2("##select-npc", &ni, npcs);
-					if (ImGui::Button("set-npc")) { sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sepoint(); si++; }
+					ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
+					if (ImGui::Button("set-npc")) { sys::roar_bot->glua_actions = true; sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sscr("NONE"); sys::roar_bot->sepoint(); sys::roar_bot->snpc("NONE"); si++; }
 				}
+				else ImGui::TextColored(ImColor(255, 0, 0), "no npc nearby!");
 			}
-			if (si == 2 && !sys::roar_bot->last_lua_actions.empty() && sys::roar_bot->recording_s)
+			if (si == 2 && sys::roar_bot->recording_s)
 			{
-				ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
-				if (ImGui::Button("set-scr")) sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]);
+				sys::roar_bot->glua_actions = true;
+				if (!sys::roar_bot->last_lua_actions.empty())
+				{
+					ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
+					if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
+				}
+				if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 			}
 			
 			break;
@@ -188,7 +199,11 @@ void sdk::menu::c_menu::work()
 			if (!iroar_pause) iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
 			if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
 			if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
-			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv);
+			if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
+			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv); 
+			ImGui::Checkbox("store-path", (bool*)&istore_path->iv);
+			//
+			if (iroar_path->iv && istore_path->iv) { istore_path->iv = 0; iroar_path->iv = 0; }
 			break;
 		}
 		case 6://debug

@@ -126,6 +126,7 @@ void sys::c_roar_bot::spoint()
 	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "NONE" << "}{" << "NONE" << "}" << "\n";
 	f.close();
 	sdk::util::log->add("spoint add", sdk::util::e_info, true);
+	this->store.emplace_back(p, "NONE", "NONE", false);
 }
 void sys::c_roar_bot::sepoint()
 {
@@ -135,6 +136,7 @@ void sys::c_roar_bot::sepoint()
 	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
 	f.close();
 	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
+	this->store.emplace_back(p, this->s_npc, this->s_scr, true);
 	sdk::util::log->add("sepoint add", sdk::util::e_info, true);
 }
 void sys::c_roar_bot::gppoint(float t)
@@ -151,10 +153,13 @@ void sys::c_roar_bot::record()
 {
 	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
 	auto p = sdk::player::player_->gpos(this->self);
+	if (!this->store_can_path && this->recording_s) return;
 	if (!lp.valid())
 	{
 		this->grind.clear(); this->allowed_sell_items.clear(); this->store.clear();
-		lp = p; this->grind.push_back(p);
+		lp = p; 
+		if (this->recording_g) this->grind.push_back(p);
+		if (this->recording_s) this->store.emplace_back(p, "NONE", "NONE", false);
 		return;
 	}
 	auto d = sdk::util::math->gdst_3d(p, lp);
@@ -162,10 +167,12 @@ void sys::c_roar_bot::record()
 	{
 		lp = p;
 		if (this->recording_g) this->gpoint();
+		if (this->recording_s) this->spoint();
 	}
 }
 void sys::c_roar_bot::load()
 {
+	this->reset(); this->grind.clear(); this->store.clear();
 	auto parse_position = [&](std::string l) -> sdk::util::c_vector3
 	{
 		auto line = l;

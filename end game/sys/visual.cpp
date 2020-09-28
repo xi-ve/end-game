@@ -94,8 +94,11 @@ void sys::c_visuals::roar_path()
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 	if (!sys::roar_bot->gpsize()) return;
 	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
+	auto spos = sdk::player::player_->gpos(this->self);
 	for (auto b : sys::roar_bot->g_p())
 	{
+		auto ds = sdk::util::math->gdst_3d(b, spos);
+		if (ds >= 5000) { last.clear(); continue; }
 		sdk::util::c_vector3 l;
 		if (!sdk::util::math->w2s(b, l)) { last.clear(); continue; }
 		if (!last.size()) last.push_back(l);
@@ -105,21 +108,44 @@ void sys::c_visuals::roar_path()
 			if (iroar_pause->iv)
 			{
 				if (b.pause > 0.1f)
-				{
-					auto cir = this->gcircle(b, ibot_lootrange->iv);
-					for (auto h : cir)
+				{					
+					if (ds <= 1200)
 					{
-						if (!sdk::util::math->w2s(h, l)) { last2.clear(); continue; }
-						if (!last2.size()) last2.push_back(l);
-						else
+						auto cir = this->gcircle(b, ibot_lootrange->iv);
+						for (auto h : cir)
 						{
-							sdk::render::render->DrawLine(l.x, l.z, last2.back().x, last2.back().z, 0xff00fff1);
-							last2.clear(); last2.push_back(l);
+							if (!sdk::util::math->w2s(h, l)) { last2.clear(); continue; }
+							if (!last2.size()) last2.push_back(l);
+							else
+							{
+								sdk::render::render->DrawLine(l.x, l.z, last2.back().x, last2.back().z, 0xff00fff1);
+								last2.clear(); last2.push_back(l);
+							}
 						}
 					}
 				}
 			}
 			last.clear(); last.push_back(l); rp = b;
+		}
+	}
+}
+void sys::c_visuals::store_path()
+{
+	if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
+	if (!sys::roar_bot->gssize()) return;
+	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
+	auto spos = sdk::player::player_->gpos(this->self);
+	for (auto b : sys::roar_bot->g_s())
+	{
+		auto ds = sdk::util::math->gdst_3d(b.pos, spos);
+		if (ds >= 5000) { last.clear(); continue; }
+		sdk::util::c_vector3 l;
+		if (!sdk::util::math->w2s(b.pos, l)) { last.clear(); continue; }
+		if (!last.size()) last.push_back(l);
+		else
+		{
+			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);			
+			last.clear(); last.push_back(l); rp = b.pos;
 		}
 	}
 }
@@ -133,9 +159,11 @@ void sys::c_visuals::work()
 	if (!iroar_visual) iroar_visual = sys::config->gvar("visuals", "ienable_roar_path");
 	if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
 	if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
+	if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
 	if (ienable_debug->iv) this->monster_proxy_debug();
 	if (ienable_portal->iv) this->portal();
 	if (iroar_visual->iv) this->roar_path();
+	if (istore_path->iv) this->store_path();
 	this->alive_proxy_debug();
 	//this->trace_debug();
 }

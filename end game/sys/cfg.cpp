@@ -87,6 +87,7 @@ void sys::c_config::vars()
 	this->proc("auto_loot", "ipick_yellow", "1");
 	this->proc("auto_loot", "ienable", "1");
 	this->proc("auto_loot", "ienable_filter", "1");
+	this->proc("visuals", "ienable_store_path", "1");
 	this->proc("visuals", "ienable_roar_path", "1");
 	this->proc("visuals", "ienable_roar_path_pauses", "0");
 	this->proc("visuals", "ienable_portal", "1");

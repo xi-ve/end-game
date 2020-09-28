@@ -6,7 +6,7 @@ namespace sys
 	{
 		s_path_script(sdk::util::c_vector3 p, std::string i, std::string n, bool s = 0)
 		{
-			pos = p;  script = i; n = npc_name; special_event = s; pause = p.pause;
+			pos = p;  script = i; npc_name = n; special_event = s; pause = p.pause;
 		};
 		s_path_script()
 		{
@@ -50,7 +50,7 @@ namespace sys
 		void gpoint();
 		//
 	public:
-		bool dwork, glua_actions; std::vector<std::string> last_lua_actions;
+		bool dwork; bool glua_actions; std::vector<std::string> last_lua_actions;
 		//
 		void gppoint(float t);
 		void spoint();
@@ -58,7 +58,7 @@ namespace sys
 		//
 		sdk::util::c_vector3 lp;
 		std::string pathname;
-		bool recording_g, recording_s;
+		bool recording_g, recording_s, store_can_path;
 		void record();
 		void load();
 		void work(uint64_t s);
@@ -75,6 +75,7 @@ namespace sys
 		std::vector<std::string> gnpcs();
 		//
 		std::deque<sdk::util::c_vector3> g_p() { return this->grind; }
+		std::deque<s_path_script>		 g_s() { return this->store; }
 	};
 	extern c_roar_bot* roar_bot;
 }
