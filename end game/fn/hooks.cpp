@@ -83,7 +83,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) { executing = false; return v; }
-	sys::lua_q->work();
+	sys::lua_q->work(); sys::key_q->work();
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);
 	//sdk::player::player_->update_pets(self_actor_proxy);

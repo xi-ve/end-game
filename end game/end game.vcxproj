@@ -205,6 +205,7 @@
     <ClCompile Include="sdk\util\log.cpp" />
     <ClCompile Include="sys\cfg.cpp" />
     <ClCompile Include="sys\cursor_tp.cpp" />
+    <ClCompile Include="sys\key_q.cpp" />
     <ClCompile Include="sys\loot.cpp" />
     <ClCompile Include="sys\lua_q.cpp" />
     <ClCompile Include="sys\pack_tp.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="sdk\util\log.h" />
     <ClInclude Include="sys\cfg.h" />
     <ClInclude Include="sys\cursor_tp.h" />
+    <ClInclude Include="sys\key_q.h" />
     <ClInclude Include="sys\loot.h" />
     <ClInclude Include="sys\lua_q.h" />
     <ClInclude Include="sys\pack_tp.h" />

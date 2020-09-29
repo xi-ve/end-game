@@ -47,6 +47,7 @@
 #include "..\\sdk\util\bytebuffer.h"
 #include "..\\fn\hooks.h"
 #include "..\\sys\\lua_q.h"
+#include "..\\sys\\key_q.h"
 #include "..\\lib\imgui\imgui_internal.h"
 #include "..\\sdk\rendering\menu\m_packet.h"
 #include "..\\sdk\rendering\menu\menu.h"
