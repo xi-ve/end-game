@@ -156,6 +156,14 @@ void sdk::menu::c_menu::work()
 			}
 			ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
 			ImGui::SliderInt("bot-loot-range", &ibot_lootrange->iv, 300, 800);
+			//
+			if (sdk::player::player_->inventory_items.size())
+			{
+				auto v = sys::roar_bot->gitm();
+				if (v.size()) ImGui::Combo2("##iselect", &this->witem_s, v);
+				if (ImGui::Button("add-to-sell-list")) sys::roar_bot->sitem(sys::roar_bot->gitem_bn(v[this->witem_s]));
+			}
+			//
 			if (ImGui::Button("load path")) sys::roar_bot->load(); ImGui::SameLine(); if (ImGui::Button("reset-full")) sys::roar_bot->reset();
 			if (ImGui::Button("test-SP")) sys::roar_bot->force_store = true;
 			if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
@@ -190,11 +198,7 @@ void sdk::menu::c_menu::work()
 					if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
 				}
 				if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
-			}
-			//
-			ImGui::Separator();
-			ImGui::Text(std::string("force_sp:").append(std::to_string(sys::roar_bot->force_store)).c_str());
-			ImGui::Text(std::string("p_mode  :").append(std::to_string(sys::roar_bot->gmode())).c_str());			
+			}			
 			break;
 		}
 		case 5://visuals
@@ -264,6 +268,7 @@ void sdk::menu::c_menu::work()
 			if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
 			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
 			ImGui::SliderInt("filter", &sys::visuals->filter, 1, 100);
+			ImGui::Checkbox("dobuffer-log", &fn::log_dobuffer);
 
 			auto max_weight = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
 			auto inv_weight = *(int*)(self + core::offsets::actor::actor_inv_raw_weight) / 10000;
@@ -271,6 +276,7 @@ void sdk::menu::c_menu::work()
 			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
 			ImGui::Text(std::string("inv w:").append(std::to_string(inv_weight)).c_str());
 			ImGui::Text(std::string("gear w:").append(std::to_string(inv_gear_weight)).c_str());
+			ImGui::Text(std::string("sp:").append(std::to_string(sdk::player::player_->gsp(self))).c_str());
 			ImGui::Text(std::string("anim:").append(sdk::player::player_->ganim(self)).c_str());
 
 			ImGui::InputText("##luatest", this->dscr, 128);
@@ -286,6 +292,7 @@ void sdk::menu::c_menu::work()
 					l(nnpc.ptr);
 				}
 			}
+			if (ImGui::Button("test-use-0")) sys::lua_q->useitem(0);
 
 			ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
 			for (auto a : n) ImGui::Text(a.c_str());

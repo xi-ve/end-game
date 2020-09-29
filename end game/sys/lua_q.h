@@ -11,6 +11,7 @@ namespace sys
 		void*glp();
 		void sparam(void* a);
 		void add(std::string q);
+		void useitem(int s);
 		void work();
 	};
 	extern c_lua_q* lua_q;

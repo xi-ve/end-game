@@ -278,4 +278,10 @@ std::string sdk::player::c_player::ganim(uint64_t p)
 	//
 	return r;
 }
+int sdk::player::c_player::gsp(uint64_t a)
+{
+	auto _x1d30 = *(uint64_t*)(a + 0x1d30); _x1d30 = *(uint32_t*)(_x1d30);
+	auto _x1d20 = *(uint64_t*)(a + 0x1d20); auto key1 = _x1d20 >> 5;
+	return (key1^_x1d30);
+}
 sdk::player::c_player* sdk::player::player_;

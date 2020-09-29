@@ -6,6 +6,7 @@ fn::t_lua_dobuffer fn::o_lua_dobuffer;
 fn::t_strc_pack fn::o_strc_pack;
 fn::t_proxy_deadbody fn::o_proxy_deadbody;
 fn::t_proxy_delete fn::o_proxy_delete;
+bool fn::log_dobuffer = false;
 //
 sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL;
 sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL;
@@ -122,9 +123,9 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 		|| strstr(arg2, "Hide")
 		|| strstr(arg2, "collect")
 		|| arg2[0] == '\0') return fn::o_lua_dobuffer(arg1, arg2);
+	if (fn::log_dobuffer) sdk::util::log->add(arg2, sdk::util::e_info, true);
 	if (sys::roar_bot->glua_actions)
 	{
-		//sdk::util::log->add(arg2, sdk::util::e_info, true);
 		sys::roar_bot->last_lua_actions.push_back(arg2);
 	}
 	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex((uint64_t)arg1)).append(" arg2:").append(arg2), sdk::util::e_info, true);

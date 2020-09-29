@@ -23,12 +23,11 @@ namespace sys
 	class c_roar_bot
 	{
 	private:
-		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0;
+		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		std::vector<sdk::player::s_blank_proxy> llist;
 		std::vector<sdk::player::s_blank_proxy> list;
-		sys::s_cfg_v* ibot_lootrange = NULL;
-		sys::s_cfg_v* ibot_timescale = NULL;
-		sys::s_cfg_v* iloot_tp = NULL;
+		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
+		int i_sell_state = 0; std::vector<int> items_left_sell;
 		//
 		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
 		//
@@ -42,6 +41,7 @@ namespace sys
 		//
 		int p_mode = 0;//0,grind 1,store
 		int reversed = 0;
+		bool skill_locked = 0;
 		std::deque<s_path_script> cur_route;
 		//
 		bool ssp(s_path_script s);
@@ -50,6 +50,8 @@ namespace sys
 		//
 		bool has_lootables(std::vector<sdk::player::s_blank_proxy>& olist, sdk::util::c_vector3 s);
 		bool loot_near(sdk::util::c_vector3 o);
+
+		void skill();
 		//
 		void gpoint();
 		//
@@ -59,7 +61,10 @@ namespace sys
 		void gppoint(float t);
 		void spoint();
 		void sepoint();
+		void sitem(int i);
 		int  gmode() { return this->p_mode; }
+		std::vector<std::string> gitm();
+		int gitem_bn(std::string s);
 		//
 		sdk::util::c_vector3 lp;
 		std::string pathname;

@@ -95,6 +95,28 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 
 	return false;
 }
+void sys::c_roar_bot::skill()
+{
+	if (this->p_mode == 1) return;
+	if (this->skill_delay > GetTickCount64()) return;
+	auto an = sdk::player::player_->ganim(this->self);
+	if (!an.size()) return;
+	if (strstr(sdk::player::player_->ganim(this->self).c_str(), "BT_skill_AggroShout_Ing_UP") && !this->skill_locked)
+	{
+		this->skill_locked = 1;
+		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+		if (!ctrl) return;
+		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
+		if (!scene) return;
+		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 800000.f;
+	} 
+	else
+	{
+		this->skill_delay = GetTickCount64() + 1000;
+		this->skill_locked = 0;
+		sys::key_q->add(new sys::s_key_input({ 81 }, 200));
+	}
+}
 bool sys::c_roar_bot::snear()
 {
 	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
@@ -161,6 +183,27 @@ void sys::c_roar_bot::sepoint()
 	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
 	this->store.emplace_back(p, this->s_npc, this->s_scr, true);
 	sdk::util::log->add("sepoint add", sdk::util::e_info, true);
+}
+void sys::c_roar_bot::sitem(int i)
+{
+	for (auto a : this->allowed_sell_items) if (a == i) return;
+	std::ofstream f(this->pathname, std::ios::app);
+	if (!f.is_open()) return;
+	f << "[item](" << i << ")\n";
+	this->allowed_sell_items.push_back(i);
+	sdk::util::log->add("sitem add", sdk::util::e_info, true);
+}
+std::vector<std::string> sys::c_roar_bot::gitm()
+{
+	auto r = std::vector<std::string>();
+	//
+	for (auto a : sdk::player::player_->inventory_items) r.push_back(a.name);
+	//
+	return r;
+}
+int sys::c_roar_bot::gitem_bn(std::string s)
+{
+	for (auto a : sdk::player::player_->inventory_items) if (a.name == s) return a.item_index;
 }
 void sys::c_roar_bot::gppoint(float t)
 {
@@ -335,6 +378,7 @@ void sys::c_roar_bot::load()
 		}
 	}
 	v.close();
+	this->items_left_sell = this->allowed_sell_items;
 	sdk::util::log->add(std::string("done load"), sdk::util::e_info, true);
 }
 void sys::c_roar_bot::work(uint64_t s)
@@ -348,6 +392,16 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	else return;
 	//
+	this->skill();
+	//e.g auto scroll combine/event items
+	//
+	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
+	{
+		this->repath(1, 1);
+		this->p_mode = 1;
+		this->force_store = false;
+		sdk::util::log->add("should SP NOW", sdk::util::e_info, true);
+	}
 	if (!this->cur_route.size() && this->p_mode == 0) this->repath(0, 0);
 	if (!this->cur_route.size() && this->p_mode == 1 && this->reversed)
 	{
@@ -362,12 +416,6 @@ void sys::c_roar_bot::work(uint64_t s)
 	}
 	//
 	auto cur_point = this->cur_route.front();
-	if (this->gssize() && this->ssp(cur_point) && this->p_mode == 0)
-	{
-		this->repath(1, 1);
-		this->p_mode = 1;
-		this->force_store = false;
-	}
 	if (this->p_mode == 1)
 	{
 		if (this->sp_delay > GetTickCount64()) return; else sp_delay = 0;
@@ -388,6 +436,71 @@ void sys::c_roar_bot::work(uint64_t s)
 				else if (cur_point.script != "NONE")//scr
 				{
 					sp_delay = GetTickCount64() + 1500;
+					if (cur_point.script == "sell_routine()")
+					{
+						auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+						if (!ctrl) return;
+						auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
+						if (!scene) return;
+						auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
+						if (speed >= 8000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
+
+						if (this->i_sell_state == 3 && this->items_left_sell.size() == 1)//end state
+						{
+							this->items_left_sell = this->allowed_sell_items;
+
+							sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
+							this->cur_route.pop_front();
+							sdk::util::log->add("items sold", sdk::util::e_info, true);
+
+							return;
+						}
+						if (this->i_sell_state == 3 && !this->items_left_sell.empty())
+						{
+							for (auto a : sdk::player::player_->inventory_items)
+							{
+								if (a.item_index == this->items_left_sell.back())
+								{
+									this->i_sell_state = 0; //wasnt sold
+									sdk::util::log->add("failed last sell", sdk::util::e_info, true);
+									return;
+								}
+							}
+							this->items_left_sell.pop_back();
+							this->i_sell_state = 0;
+							sdk::util::log->add("next item", sdk::util::e_info, true);
+						}
+						auto t = this->items_left_sell.back();
+						switch (this->i_sell_state)
+						{
+						case 0:
+						{
+							for (auto a : sdk::player::player_->inventory_items)
+							{
+								if (a.item_index == t)
+								{
+									auto _t = std::string("HandleEventRUp_Inventory_All_SlotRClick(").append(std::to_string(a.item_slot)).append(")");
+									sys::lua_q->add(_t);
+									this->i_sell_state++;
+									return;
+								}
+							}
+							return;
+						}
+						case 1:
+						{
+							sys::lua_q->add("HandleEventLUp_NumberPad_All_AllButton_Click(0)");
+							this->i_sell_state++;
+							return;
+						}
+						case 2:
+						{
+							sys::lua_q->add("HandleEventLUp_NumberPad_All_ConfirmButton_Click()");
+							this->i_sell_state++;
+							return;
+						}
+						}
+					}
 					sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
 					sys::lua_q->add(cur_point.script);
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));

@@ -28,6 +28,7 @@ namespace fn
 	extern t_proxy_delete o_proxy_delete;
 	extern bool f_proxy_delete(uint64_t a, int b);
 	//
+	extern bool log_dobuffer;
 	extern sys::s_cfg_v* ibypass_trial;
 	extern sys::s_cfg_v* iteleport_gen2;
 	extern sys::s_cfg_v* iloot_enable;
