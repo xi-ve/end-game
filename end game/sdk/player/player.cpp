@@ -257,4 +257,25 @@ sdk::player::s_trace sdk::player::c_player::trace(sdk::util::c_vector3 f, sdk::u
 	//
 	return r;
 }
+std::string sdk::player::c_player::ganim(uint64_t p)
+{
+	auto r = std::string("");
+	//
+	auto pc = *(uint64_t*)(p + core::offsets::actor::actor_char_ctrl);
+	if (!pc) return r;
+	auto _x38 = *(uint64_t*)(pc + 0x38);
+	if (!_x38) return r;
+	auto _x20 = *(uint64_t*)(_x38 + 0x20);
+	if (!_x20) return r;
+	auto iv = *(uint32_t*)(_x20);
+	//
+	auto& table = *((uint64_t*)(core::offsets::cl::ascii_table));
+	if (!table) return r;
+	auto& _table = *((uint64_t*)(table));
+	if (!_table) return r;
+	auto entry_base = (_table + (0x10 * iv));
+	r = std::string((char*)(*((uint64_t*)(entry_base))));
+	//
+	return r;
+}
 sdk::player::c_player* sdk::player::player_;

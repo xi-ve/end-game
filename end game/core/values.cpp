@@ -26,6 +26,8 @@ uint64_t core::offsets::patch::window_base = 0x143D16910;
 uint64_t core::offsets::cl::client_base = 0x143CC9B20;
 //0F 29 05 ? ? ? ? 0F 10 4C 24 ? 0F 29 0D ? ? ? ? 0F 10 44 24 ? 0F 29 05 ? ? ? ? 0F 10 4C 24 ? 0F 29 0D ? ? ? ? 0F 28 05 ? ? ? ?
 uint64_t core::offsets::cl::camera_matrice = 0x144B4DA00;
+//48 8B 05 ? ? ? ? 4C 8B 00 48 8B 48 08 49 2B C8 48 C1 F9 04 48 3B CA 76 40 
+uint64_t core::offsets::cl::ascii_table = 0x143CC9BE0;
 
 
 //48 8B C4 56 57 41 56 48 81 EC ? ? ? ? 48 C7 80 ? ? ? ? ? ? ? ? 48 89 58 10 48 89 68 18 0F 29 70 D8 

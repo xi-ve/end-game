@@ -130,6 +130,7 @@ namespace sdk
 			float						grot(uint64_t s);
 			util::c_vector3				ray_cast_rvec(util::c_vector3 pos1, util::c_vector3 pos2);
 			s_trace						trace(sdk::util::c_vector3 f, sdk::util::c_vector3 t, uint64_t s, float h, int fl = 34, bool a = true);
+			std::string					ganim(uint64_t p);
 		};
 		extern c_player* player_;
 	}

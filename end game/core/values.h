@@ -23,6 +23,7 @@ namespace core
 		{
 			extern uint64_t client_base;
 			extern uint64_t camera_matrice;
+			extern uint64_t ascii_table;
 		}
 		namespace fn
 		{

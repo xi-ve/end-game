@@ -271,10 +271,10 @@ void sdk::menu::c_menu::work()
 			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
 			ImGui::Text(std::string("inv w:").append(std::to_string(inv_weight)).c_str());
 			ImGui::Text(std::string("gear w:").append(std::to_string(inv_gear_weight)).c_str());
+			ImGui::Text(std::string("anim:").append(sdk::player::player_->ganim(self)).c_str());
 
 			ImGui::InputText("##luatest", this->dscr, 128);
 			if (ImGui::Button("test-lua")) sys::lua_q->add(this->dscr); ImGui::SameLine();
-
 			if (ImGui::Button("test-interact"))
 			{
 				auto nnpc = sdk::player::player_->npcs.front();
