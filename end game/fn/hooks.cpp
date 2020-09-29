@@ -22,8 +22,6 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::lua_do_buffer, &fn::f_lua_dobuffer, (void**)&fn::o_lua_dobuffer)) return false;
 	if (!fn::hook((void*)core::offsets::hk::proxy_deadbody, &fn::f_proxy_deadbody, (void**)&fn::o_proxy_deadbody)) return false;
 	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
-	if (!fn::hook((void*)0x140AE62B0, &fn::f_self_gm, (void**)&asdf)) return false;
-	if (!fn::hook((void*)0x140AE62F0, &fn::f_self_gm, (void**)&asdf)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
 }
@@ -152,6 +150,7 @@ uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 {
 	auto r = fn::o_proxy_deadbody(a, b, c);
 	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
+	//sdk::util::log->add(std::string("[deadbody] key:").append(sdk::util::log->as_hex(*(int*)(r + core::offsets::actor::actor_proxy_key))), sdk::util::e_info, true);
 	if (iloot_enable->iv) sys::loot->loot_proxys.push_back(r);
 	return r;
 }
@@ -167,6 +166,7 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 			if (k == b) sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f);
 		}
 	}
+	//sdk::util::log->add(std::string("[delete] key:").append(sdk::util::log->as_hex(b)), sdk::util::e_info, true);
 	auto r = fn::o_proxy_delete(a, b);
 	return r;
 }

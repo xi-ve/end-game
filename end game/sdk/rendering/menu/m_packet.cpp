@@ -175,7 +175,6 @@ void sdk::menu::c_m_packet::work_ui()
 		}
 
 		ImGui::Separator();
-		selected_packet = 0;
 		ImGui::Combo("packets captured", &selected_packet, packets);
 
 		auto packet = this->get_packet(packets[selected_packet]);
