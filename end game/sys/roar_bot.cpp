@@ -1,7 +1,30 @@
 #include <inc.h>
+bool sys::c_roar_bot::ssp(s_path_script s)
+{
+	if (this->force_store) return true;
+	auto in_m = *(int*)(this->self + core::offsets::actor::actor_inv_max_weight) / 10000;
+	auto in_w = (*(int*)(this->self + core::offsets::actor::actor_inv_raw_weight) + *(int*)(this->self + core::offsets::actor::actor_inv_gear_weight)) / 10000;
+	if (in_w >= in_m) return true;
+	//
+	auto in_l = *(int*)(this->self + core::offsets::actor::actor_inv_left);
+	if (in_l <= 2) return true;
+	//
+	return false;
+}
 void sys::c_roar_bot::repath(int a, int b)
 {
-	if (a == 0) for (auto a : this->grind) this->cur_route.emplace_back(a, "NONE", "NONE", a.pause);
+	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "NONE", "NONE", c.pause); }
+	if (a == 1)
+	{
+		this->cur_route.clear();
+		if (b) this->cur_route = this->store;
+		else
+		{
+			this->cur_route = this->store;
+			std::reverse(this->cur_route.begin(), this->cur_route.end());
+		}	
+		this->reversed = b;
+	}
 }
 bool sys::c_roar_bot::pause(uint64_t s, float p)
 {
@@ -324,10 +347,76 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (!this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	else return;
-	//sp etc.
-	if (!this->cur_route.size()) this->repath(0, 0);
+	//
+	if (!this->cur_route.size() && this->p_mode == 0) this->repath(0, 0);
+	if (!this->cur_route.size() && this->p_mode == 1 && this->reversed)
+	{
+		//remove events
+		this->repath(1, 0);
+		for (auto a = 0; a < this->cur_route.size(); a++)
+		{
+			auto obj = this->cur_route[a];
+			if (obj.special_event) this->cur_route.erase(this->cur_route.begin() + a);
+		}		
+		sdk::util::log->add("repathed SP conform", sdk::util::e_info, true);
+	}
 	//
 	auto cur_point = this->cur_route.front();
+	if (this->gssize() && this->ssp(cur_point) && this->p_mode == 0)
+	{
+		this->repath(1, 1);
+		this->p_mode = 1;
+		this->force_store = false;
+	}
+	if (this->p_mode == 1)
+	{
+		if (this->sp_delay > GetTickCount64()) return; else sp_delay = 0;
+		if (this->reversed)//path to
+		{
+			if (cur_point.special_event)
+			{
+				if (cur_point.npc_name != "NONE")//npc
+				{
+					sp_delay = GetTickCount64() + 8400;
+					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
+					this->f_npc_interaction(sdk::player::player_->npcs.front().ptr);
+					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+					this->cur_route.pop_front();
+					return;
+					//interact->clear event->continue
+				}
+				else if (cur_point.script != "NONE")//scr
+				{
+					sp_delay = GetTickCount64() + 1500;
+					sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
+					sys::lua_q->add(cur_point.script);
+					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+					this->cur_route.pop_front();
+					return;
+					//run script->check if next has script->remove if not->reverse path->prep for path back
+				}
+			}
+			else
+			{
+				sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+				this->cur_route.pop_front();
+				return;
+			}
+		}
+		else//path back
+		{
+			sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+			this->cur_route.pop_front();
+			if (this->cur_route.empty())
+			{
+				this->p_mode = 0;
+				this->repath(0, 0);
+				sdk::util::log->add("completed SP", sdk::util::e_info, true);
+			}
+		}
+		return;
+	}
+	//
 	auto x = this->pause(this->self, cur_point.pos.pause);
 	if (!x) return;
 	else this->cur_route.front().pause = 0.1f;

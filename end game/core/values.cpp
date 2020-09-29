@@ -4,8 +4,8 @@
 uint64_t core::offsets::hk::packet_outbound = 0x140D99080;
 //tostring
 uint64_t core::offsets::hk::lua_to_string = 0x141DB2CF0;
-//48 83 EC 38 48 89 54 24 ? 48 8D 15 ? ? ? ? 
-uint64_t core::offsets::hk::lua_do_buffer = 0x141DB4C50;
+//48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B 39 48 8B F2 
+uint64_t core::offsets::hk::lua_do_buffer = 0x1415672D0;
 //48 8B C4 56 57 41 56 48 83 EC 70 48 C7 40 ? ? ? ? ? 48 89 58 08 48 89 68 18 45 8B F0 48 8B FA 48 8B E9 8B 52 38 E8 ? ? ? ? 8B 57 38 48 8B CD E8 ? ? ? ? 48 85 C0 0F 85 ? ? ? ? 
 uint64_t core::offsets::hk::proxy_deadbody = 0x1407BCFC0;//ref v7 = sub_xxxx(0x488...
 //89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 C7 44 24 ? ? ? ? ? 

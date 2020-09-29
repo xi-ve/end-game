@@ -156,7 +156,8 @@ void sdk::menu::c_menu::work()
 			}
 			ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
 			ImGui::SliderInt("bot-loot-range", &ibot_lootrange->iv, 300, 800);
-			if (ImGui::Button("load path")) sys::roar_bot->load();
+			if (ImGui::Button("load path")) sys::roar_bot->load(); ImGui::SameLine(); if (ImGui::Button("reset-full")) sys::roar_bot->reset();
+			if (ImGui::Button("test-SP")) sys::roar_bot->force_store = true;
 			if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
 			if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
 			if (sys::roar_bot->recording_g)
@@ -190,7 +191,10 @@ void sdk::menu::c_menu::work()
 				}
 				if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 			}
-			
+			//
+			ImGui::Separator();
+			ImGui::Text(std::string("force_sp:").append(std::to_string(sys::roar_bot->force_store)).c_str());
+			ImGui::Text(std::string("p_mode  :").append(std::to_string(sys::roar_bot->gmode())).c_str());			
 			break;
 		}
 		case 5://visuals
@@ -267,6 +271,21 @@ void sdk::menu::c_menu::work()
 			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
 			ImGui::Text(std::string("inv w:").append(std::to_string(inv_weight)).c_str());
 			ImGui::Text(std::string("gear w:").append(std::to_string(inv_gear_weight)).c_str());
+
+			ImGui::InputText("##luatest", this->dscr, 128);
+			if (ImGui::Button("test-lua")) sys::lua_q->add(this->dscr); ImGui::SameLine();
+
+			if (ImGui::Button("test-interact"))
+			{
+				auto nnpc = sdk::player::player_->npcs.front();
+				if (nnpc.ptr != 0)
+				{
+					sdk::util::log->add(nnpc.name, sdk::util::e_info, true);
+					typedef uint64_t(__stdcall* k)(uint64_t);
+					k l = (k)(core::offsets::fn::start_npc_interaction);
+					l(nnpc.ptr);
+				}
+			}
 
 			ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
 			for (auto a : n) ImGui::Text(a.c_str());

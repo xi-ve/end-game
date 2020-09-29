@@ -6,9 +6,10 @@ namespace sys
 	{
 	private:
 		std::vector<std::string> lua_queue;
-		void* lua_state; const char* lua_base;
+		void* lua_state;
 	public:
-		void sparam(void* a, const char* b);
+		void*glp();
+		void sparam(void* a);
 		void add(std::string q);
 		void work();
 	};

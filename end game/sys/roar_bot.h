@@ -19,15 +19,18 @@ namespace sys
 		std::string    script   = "NONE";
 		std::string	   npc_name = "NONE";
 	};
+	typedef uint64_t(__stdcall* t_npc_interaction)(uint64_t);
 	class c_roar_bot
 	{
 	private:
-		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0;
+		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0;
 		std::vector<sdk::player::s_blank_proxy> llist;
 		std::vector<sdk::player::s_blank_proxy> list;
 		sys::s_cfg_v* ibot_lootrange = NULL;
 		sys::s_cfg_v* ibot_timescale = NULL;
 		sys::s_cfg_v* iloot_tp = NULL;
+		//
+		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
 		//
 		ULONGLONG execution;
 		uint64_t self;
@@ -41,6 +44,7 @@ namespace sys
 		int reversed = 0;
 		std::deque<s_path_script> cur_route;
 		//
+		bool ssp(s_path_script s);
 		void repath(int a, int b);
 		bool pause(uint64_t s, float p);
 		//
@@ -50,11 +54,12 @@ namespace sys
 		void gpoint();
 		//
 	public:
-		bool dwork; bool glua_actions; std::vector<std::string> last_lua_actions;
+		bool dwork; bool glua_actions; bool force_store; std::vector<std::string> last_lua_actions;
 		//
 		void gppoint(float t);
 		void spoint();
 		void sepoint();
+		int  gmode() { return this->p_mode; }
 		//
 		sdk::util::c_vector3 lp;
 		std::string pathname;

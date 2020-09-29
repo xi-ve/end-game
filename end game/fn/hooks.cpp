@@ -7,10 +7,8 @@ fn::t_strc_pack fn::o_strc_pack;
 fn::t_proxy_deadbody fn::o_proxy_deadbody;
 fn::t_proxy_delete fn::o_proxy_delete;
 //
-sys::s_cfg_v* fn::ibypass_trial = NULL;
-sys::s_cfg_v* fn::iteleport_gen2 = NULL;
-sys::s_cfg_v* fn::iloot_enable = NULL;
-sys::s_cfg_v* fn::ikey_ctp = NULL;
+sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL;
+sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL;
 bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
 //
@@ -77,6 +75,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//
 	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
 	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
+	if (!ilock_key) ilock_key = sys::config->gvar("keybinds", "ilock_key");
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
 	else { executing = false; return v; }
@@ -84,13 +83,14 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play) { executing = false; return v; }
+	sys::lua_q->work();
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);
 	//sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);
 	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
-	if (GetAsyncKeyState(VK_F5) & 1)
+	if (GetAsyncKeyState(ilock_key->iv) & 1)
 	{
 		auto c = *(uint64_t*)(self_actor_proxy + core::offsets::actor::actor_char_ctrl);
 		auto s = *(uint64_t*)(c + core::offsets::actor::actor_char_scene);
@@ -102,9 +102,10 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//
 	return v;
 }
-uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const char* arg4) 
+uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2) 
 {
-	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
+	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2);
+	sys::lua_q->sparam(arg1);
 	if (strstr(arg2, "Over")
 		|| strstr(arg2, "MouseOn")
 		|| strstr(arg2, "Tooltip") || strstr(arg2, "ToolTip")
@@ -120,14 +121,14 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2, size_t arg3, const cha
 		|| strstr(arg2, "QuickSlot")
 		|| strstr(arg2, "Hide")
 		|| strstr(arg2, "collect")
-		|| arg2[0] == '\0'
-		|| arg3 > 45) return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
+		|| arg2[0] == '\0') return fn::o_lua_dobuffer(arg1, arg2);
 	if (sys::roar_bot->glua_actions)
 	{
-		sdk::util::log->add(arg2, sdk::util::e_info, true);
+		//sdk::util::log->add(arg2, sdk::util::e_info, true);
 		sys::roar_bot->last_lua_actions.push_back(arg2);
 	}
-	return fn::o_lua_dobuffer(arg1, arg2, arg3, arg4);
+	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex((uint64_t)arg1)).append(" arg2:").append(arg2), sdk::util::e_info, true);
+	return fn::o_lua_dobuffer(arg1, arg2);
 }
 bool fn::f_self_gm()
 {

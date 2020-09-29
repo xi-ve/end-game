@@ -92,7 +92,7 @@ void sys::c_visuals::roar_path()
 {
 	if (!iroar_pause) iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-	if (!sys::roar_bot->gpsize()) return;
+	if (!sys::roar_bot->g_p().size()) return;
 	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
 	auto spos = sdk::player::player_->gpos(this->self);
 	for (auto b : sys::roar_bot->g_p())

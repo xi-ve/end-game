@@ -13,8 +13,8 @@ namespace fn
 	typedef uint64_t(__fastcall* t_lua_to_string)(void*);
 	extern t_lua_to_string o_lua_to_string;
 	extern uint64_t __fastcall f_lua_to_string(void* a1);
-	extern uint64_t f_lua_dobuffer(void*, const char*, size_t, const char*);
-	typedef uint64_t(__stdcall* t_lua_dobuffer)(void* arg1, const char* arg2, size_t arg3, const char* arg4);
+	extern uint64_t f_lua_dobuffer(void*, const char*);
+	typedef uint64_t(__stdcall* t_lua_dobuffer)(void* arg1, const char* arg2);
 	extern t_lua_dobuffer o_lua_dobuffer;
 	extern bool f_self_gm();
 	typedef uint64_t(__fastcall* t_strc_pack)(uint64_t);
@@ -32,6 +32,7 @@ namespace fn
 	extern sys::s_cfg_v* iteleport_gen2;
 	extern sys::s_cfg_v* iloot_enable;
 	extern sys::s_cfg_v* ikey_ctp;
+	extern sys::s_cfg_v* ilock_key;
 	//
 	extern ULONGLONG execution_time;
 }
