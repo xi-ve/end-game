@@ -10,7 +10,7 @@ std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 f
 		auto z = from.z + (dst * std::sin(c / (180 / M_PI)));
 		r.emplace_back(x, y, z);
 	}
-	//r.push_back(r.front());//completes circle
+	r.push_back(r.front());//completes circle
 	return r;
 }
 void sys::c_visuals::monster_proxy_debug()
@@ -104,7 +104,7 @@ void sys::c_visuals::roar_path()
 		if (!last.size()) last.push_back(l);
 		else
 		{
-			if (b.pause == 0.1f) sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
+			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
 			if (iroar_pause->iv)
 			{
 				if (b.pause > 0.1f)
