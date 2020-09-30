@@ -19,6 +19,7 @@
 #include <D3Dcompiler.h>
 #include <D3D11Shader.h>
 #include "..\\sdk\rendering\fx\d3dx11effect.h"
+#include <ThemidaSDK.h>
 //
 #pragma warning ( disable: 4102 )
 #pragma warning ( disable: 4311 )
@@ -34,6 +35,7 @@
 #pragma comment (lib, "D3DX11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 #pragma comment (lib, "Effects11.lib")
+#pragma comment (lib, "SecureEngineSDK64.lib")
 //SDK
 #include <values.h>
 #include "..\\sdk\rendering\font_wrapper\FW1FontWrapper.h"

@@ -356,9 +356,36 @@
     <ClInclude Include="sys\key_q.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lib\themida\ThemidaSDK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_BorlandC_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_GNU_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_ICL_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_LCC_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_VC_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\mh\mh_lib.lib" />
     <Library Include="sdk\rendering\fx\Effects11.lib" />
+    <Library Include="lib\themida\SecureEngineSDK32.lib" />
+    <Library Include="lib\themida\SecureEngineSDK64.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\themida\SecureEngineSDK32.dll" />
+    <None Include="lib\themida\SecureEngineSDK64.dll" />
   </ItemGroup>
 </Project>

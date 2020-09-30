@@ -83,8 +83,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)lib\imgui;$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
-    <LibraryPath>$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
+    <IncludePath>$(ProjectDir)lib\themida;$(ProjectDir)lib\imgui;$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
+    <LibraryPath>$(ProjectDir)lib\themida;$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -233,6 +233,13 @@
     <ClInclude Include="lib\imgui\stb_textedit.h" />
     <ClInclude Include="lib\imgui\stb_truetype.h" />
     <ClInclude Include="lib\mh\mh.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_BorlandC_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_GNU_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_ICL_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_LCC_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_VC_inline.h" />
+    <ClInclude Include="lib\themida\ThemidaSDK.h" />
     <ClInclude Include="lib\win\dirent.h" />
     <ClInclude Include="sdk\engine\funcs.h" />
     <ClInclude Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.h" />
@@ -274,7 +281,13 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\mh\mh_lib.lib" />
+    <Library Include="lib\themida\SecureEngineSDK32.lib" />
+    <Library Include="lib\themida\SecureEngineSDK64.lib" />
     <Library Include="sdk\rendering\fx\Effects11.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\themida\SecureEngineSDK32.dll" />
+    <None Include="lib\themida\SecureEngineSDK64.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
