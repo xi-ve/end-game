@@ -1,6 +1,6 @@
 <?php
-$user = "root";
-$pass = '';
-$dbh = new PDO('mysql:host=localhost;dbname=bdo', $user, $pass);
+$user = "cheat";
+$pass = 'fGBWG9gnSGjpg8KZ';
+$dbh = new PDO('mysql:host=localhost;dbname=cheat', $user, $pass);
 
 ?>
