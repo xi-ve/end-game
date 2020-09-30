@@ -37,6 +37,7 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 			for (auto a : sdk::player::player_->actors)
 			{
 				if (a.ptr == s) continue;
+				if (a.type == 0) continue;	
 				if (a.hp <= 0) continue;
 				if (a.state == 1) continue;
 				if (a.rlt_dst >= ibot_lootrange->iv) continue;
@@ -111,7 +112,27 @@ void sys::c_roar_bot::skill()
 		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 800000.f;
 	} 
 	else
-	{
+	{		
+		if (sdk::player::player_->gsp(this->self) < 65)
+		{
+			auto used = 0;
+			for (auto a : sdk::player::player_->inventory_items)
+			{
+				if (std::find(this->wp_items.begin(), this->wp_items.end(), a.item_index) != this->wp_items.end())
+				{
+					sys::lua_q->useitem(a.item_slot);
+					used = true;
+					break;
+				}
+			}
+			if (!used) { this->skill_delay = GetTickCount64() + 1000; this->skill_locked = 0; return; }
+		}
+		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+		if (!ctrl) return;
+		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
+		if (!scene) return;
+		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
+
 		this->skill_delay = GetTickCount64() + 1000;
 		this->skill_locked = 0;
 		sys::key_q->add(new sys::s_key_input({ 81 }, 200));
@@ -200,6 +221,10 @@ std::vector<std::string> sys::c_roar_bot::gitm()
 	for (auto a : sdk::player::player_->inventory_items) r.push_back(a.name);
 	//
 	return r;
+}
+std::vector<int> sys::c_roar_bot::gitm_left()
+{
+	return this->items_left_sell;
 }
 int sys::c_roar_bot::gitem_bn(std::string s)
 {
@@ -395,6 +420,14 @@ void sys::c_roar_bot::work(uint64_t s)
 	this->skill();
 	//e.g auto scroll combine/event items
 	//
+	if (this->force_store && (this->cur_route.empty() || this->cur_route.front().pos.cmp(this->grind.front())))
+	{
+		this->cur_route.clear();
+		this->repath(1, 1);
+		this->p_mode = 1;
+		this->force_store = false;
+		sdk::util::log->add("should SP NOW", sdk::util::e_info, true);
+	}
 	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
 	{
 		this->repath(1, 1);
@@ -435,7 +468,7 @@ void sys::c_roar_bot::work(uint64_t s)
 				}
 				else if (cur_point.script != "NONE")//scr
 				{
-					sp_delay = GetTickCount64() + 1500;
+					sp_delay = GetTickCount64() + 2500;
 					if (cur_point.script == "sell_routine()")
 					{
 						auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);

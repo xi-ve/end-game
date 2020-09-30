@@ -28,6 +28,7 @@ namespace sys
 		std::vector<sdk::player::s_blank_proxy> list;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell;
+		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
 		//
 		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
 		//
@@ -64,6 +65,7 @@ namespace sys
 		void sitem(int i);
 		int  gmode() { return this->p_mode; }
 		std::vector<std::string> gitm();
+		std::vector<int> gitm_left();
 		int gitem_bn(std::string s);
 		//
 		sdk::util::c_vector3 lp;

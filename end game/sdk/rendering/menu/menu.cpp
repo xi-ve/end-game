@@ -293,6 +293,10 @@ void sdk::menu::c_menu::work()
 				}
 			}
 			if (ImGui::Button("test-use-0")) sys::lua_q->useitem(0);
+			if (ImGui::Button("test-ghp_")) sdk::player::player_->ghp(self);
+
+			ImGui::Text("items left to sell");
+			for (auto sad : sys::roar_bot->gitm_left()) ImGui::Text(std::to_string(sad).c_str());
 
 			ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
 			for (auto a : n) ImGui::Text(a.c_str());

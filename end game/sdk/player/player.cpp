@@ -67,7 +67,7 @@ void sdk::player::c_player::update_actors(uint64_t self)
 			auto n = *(sdk::player::c_proxy_name*)(p);
 			if (!n.name_ptr) continue;
 			auto pos = this->gpos(p);
-			auto hp = sdk::engine::d_actor_get_hp(p);
+			auto hp = this->ghp(p);
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
 			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
@@ -89,7 +89,7 @@ void sdk::player::c_player::update_actors(uint64_t self)
 			auto n = *(sdk::player::c_proxy_name*)(p);
 			if (!n.name_ptr) continue;
 			auto pos = this->gpos(p);
-			auto hp = sdk::engine::d_actor_get_hp(p);
+			auto hp = this->ghp(p);
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
 			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
@@ -173,10 +173,6 @@ sdk::util::c_vector3 sdk::player::c_player::gpos(uint64_t a, bool raw)
 		if (!raw) b.x *= 100.f; b.y *= 100.f; b.z *= 100.f;
 	}
 	return b;
-}
-float sdk::player::c_player::ghp(uint64_t a)
-{
-	return sdk::engine::d_actor_get_hp(a);
 }
 std::vector<std::string> sdk::player::c_player::ginv()
 {
@@ -280,8 +276,15 @@ std::string sdk::player::c_player::ganim(uint64_t p)
 }
 int sdk::player::c_player::gsp(uint64_t a)
 {
-	auto _x1d30 = *(uint64_t*)(a + 0x1d30); _x1d30 = *(uint32_t*)(_x1d30);
-	auto _x1d20 = *(uint64_t*)(a + 0x1d20); auto key1 = _x1d20 >> 5;
+	auto _x1d30 = *(uint64_t*)(a + 0x1d30); if (!_x1d30) return 0; _x1d30 = *(uint32_t*)(_x1d30);
+	auto _x1d20 = *(uint64_t*)(a + 0x1d20); if (!_x1d20) return 0; auto key1 = _x1d20 >> 5;
 	return (key1^_x1d30);
+}
+float sdk::player::c_player::ghp(uint64_t a)
+{	
+	auto _xa0 = *(uint32_t*)(a + 0xa0); if (!_xa0) return 0; auto key2 = _xa0 >> 5;
+	auto _xb0 = *(uint64_t*)(a + 0xb0); if (!_xb0) return 0; auto key1 = *(uint32_t*)(_xb0); if (!key1) return 0;
+	auto tv = (key1 ^ key2); auto ret = *((float*)&tv);
+	return ret;
 }
 sdk::player::c_player* sdk::player::player_;

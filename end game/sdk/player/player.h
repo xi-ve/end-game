@@ -124,7 +124,6 @@ namespace sdk
 			util::c_vector3				gpos(uint64_t a, bool raw = false);
 			BYTE						gtype(uint64_t a) { return this->get<BYTE>(a, core::offsets::actor::actor_proxy_type); }
 			int							gkey(uint64_t a)  { return this->get<int>(a, core::offsets::actor::actor_proxy_key);   }
-			float						ghp(uint64_t a);
 			std::vector<std::string>	ginv();
 			int							gitm_by_name(std::string n);
 			float						grot(uint64_t s);
@@ -132,6 +131,7 @@ namespace sdk
 			s_trace						trace(sdk::util::c_vector3 f, sdk::util::c_vector3 t, uint64_t s, float h, int fl = 34, bool a = true);
 			std::string					ganim(uint64_t p);
 			int							gsp(uint64_t a);
+			float						ghp(uint64_t a);
 		};
 		extern c_player* player_;
 	}
