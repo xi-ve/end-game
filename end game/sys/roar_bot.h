@@ -25,8 +25,7 @@ namespace sys
 	private:
 		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0;
-		std::vector<sdk::player::s_blank_proxy> llist;
-		std::vector<sdk::player::s_blank_proxy> list;
+		std::vector<uint64_t> llist; std::vector<uint64_t> list;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell;
 		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
@@ -50,7 +49,7 @@ namespace sys
 		void repath(int a, int b);
 		bool pause(uint64_t s, float p);
 		//
-		bool has_lootables(std::vector<sdk::player::s_blank_proxy>& olist, sdk::util::c_vector3 s);
+		bool has_lootables(std::vector<uint64_t>& olist, sdk::util::c_vector3 s);
 		bool loot_near(sdk::util::c_vector3 o);
 
 		void skill();

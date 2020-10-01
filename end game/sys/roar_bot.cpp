@@ -60,21 +60,24 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 
 	return false;
 }
-bool sys::c_roar_bot::has_lootables(std::vector<sdk::player::s_blank_proxy>& olist, sdk::util::c_vector3 spp)
+bool sys::c_roar_bot::has_lootables(std::vector<uint64_t>& olist, sdk::util::c_vector3 spp)
 {
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 	if (GetTickCount64() > list_clear_time) { list_clear_time = GetTickCount64() + 30000; list.clear(); }
 
 	sdk::player::player_->update_actors(this->self);
 	olist.clear();
-	for (auto a : sdk::player::player_->corpses)
+	for (auto a : sys::loot->loot_proxys)
 	{
-		auto hloot = *(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted);
-		if (hloot || a.rlt_dst > ibot_lootrange->iv) continue;
+		auto hloot = *(BYTE*)(a + core::offsets::actor::actor_was_looted);
+		if (hloot) continue;
+		auto apos = sdk::player::player_->gpos(a);
+		auto rltdst = sdk::util::math->gdst_3d(apos, spp);
+		if (rltdst > ibot_lootrange->iv) continue;
 		auto s = false;
-		for (auto b : list) { if (a.ptr == b.ptr) { s = 1; break; } }
+		for (auto b : list) { if (a == b) { s = 1; break; } }
 		if (s) continue;
-		auto tr = sdk::player::player_->trace(spp, a.pos, this->self, 400, 34, false);
+		auto tr = sdk::player::player_->trace(spp, apos, this->self, 400, 34, false);
 		if (!tr.success) continue;
 		olist.push_back(a); list.push_back(a);
 	}
@@ -93,8 +96,9 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 	{
 		ltp = GetTickCount64() + 350;
 		auto c = llist.back();
-		if (!c.pos.valid()) { llist.pop_back(); ltp = 0; return false; }
-		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(c.pos.x / 100, c.pos.y / 100, c.pos.z / 100));
+		auto ps = sdk::player::player_->gpos(c);
+		if (!ps.valid()) { llist.pop_back(); ltp = 0; return false; }
+		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(ps.x / 100, ps.y / 100, ps.z / 100));
 		llist.pop_back();
 		return false;
 	}
