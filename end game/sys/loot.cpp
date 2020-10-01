@@ -139,13 +139,6 @@ uint64_t sys::c_loot::hnear()
 }
 bool sys::c_loot::pick(s_looting_item ctx)
 {
-	/*	
-	this->proc("auto_loot", "ipick_grey", "1");
-	this->proc("auto_loot", "ipick_green", "1");
-	this->proc("auto_loot", "ipick_blue", "1");
-	this->proc("auto_loot", "ipick_orange", "1");
-	this->proc("auto_loot", "ipick_yellow", "1");	
-	*/
 	if (!grey) grey = sys::config->gvar("auto_loot", "ipick_grey");
 	if (!green) green = sys::config->gvar("auto_loot", "ipick_green");
 	if (!blue) blue = sys::config->gvar("auto_loot", "ipick_blue");
@@ -183,24 +176,69 @@ bool sys::c_loot::pick(s_looting_item ctx)
 	}
 	return false;
 }
+bool sys::c_loot::lhas(int s)
+{
+	if (s <= 0) return false;
+	auto m = sdk::player::player_->gpos(this->self);
+	for (auto a : this->loot_proxys)
+	{
+		auto k = *(int*)(a + core::offsets::actor::actor_proxy_key);
+		if (k == s)
+		{
+			auto p = sdk::player::player_->gpos(a);
+			auto d = sdk::util::math->gdst_3d(m, p);
+			if (d <= 300) return true;
+			else return false;
+		}
+	}
+	return false;
+}
 void sys::c_loot::work(uint64_t self)
 {
 	this->self = self;
-	if (GetTickCount64() > last_tick) last_tick = GetTickCount64() + 50;
+	if (GetTickCount64() > last_tick) last_tick = GetTickCount64() + 25;
 	else return;
 	if (!ienable) ienable = sys::config->gvar("auto_loot", "ienable");
 	if (!ienable->iv) return;
-	auto n = this->hnear();						if (!n) return; 
-	this->spack(*(int*)(n + core::offsets::actor::actor_proxy_key));
-	auto i = this->f_loot_get_item_count();		if (!i) return;
+	auto n = this->hnear();						   if (!n) {return; }
+	auto actid = *(int*)(n + core::offsets::actor::actor_proxy_key);
+	if (this->act_id_cur == 0)
+	{
+		this->spack(actid);
+		this->act_id_cur = actid;
+		return;
+	}
+	if (!this->lhas(this->act_id_cur))
+	{
+		this->act_id_cur = 0;
+		return;
+	}
+	auto cur_loot_window_k = *(int*)(0x143D1F2E0); if (cur_loot_window_k != this->act_id_cur) { return; }
+	auto i = this->f_loot_get_item_count();		   if (!i) { this->act_id_cur = 0; return; }
 	if (!ienable_filter) ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
+	auto did_loot_good_item = false;
 	for (auto b = 0; b < i; b++)
 	{
 		auto o = this->gitem(b);
 		if (!o) continue;
 		auto ctx = this->gctx(o);
-		if (ienable_filter->iv) if (!this->pick(ctx)) continue;
+		if (ienable_filter->iv) if (!this->pick(ctx)) continue; 					
 		this->f_loot_click_slot(b, ctx.count);
+		did_loot_good_item = true;
 	}
+	*(int*)(0x143D1F2E0) = 0;
+	if (!did_loot_good_item && this->f_loot_get_item_count())
+	{
+		if (sys::loot->loot_proxys.size())
+		{
+			for (auto f = 0; f < sys::loot->loot_proxys.size(); f++)
+			{
+				auto c = sys::loot->loot_proxys[f]; if (!c) continue;
+				auto k = *(int*)(c + core::offsets::actor::actor_proxy_key);
+				if (k == this->act_id_cur) { sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f); break; }
+			}
+		}
+	}
+	this->act_id_cur = 0;
 }
 sys::c_loot* sys::loot;

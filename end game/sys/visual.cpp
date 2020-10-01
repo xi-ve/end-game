@@ -39,12 +39,13 @@ void sys::c_visuals::alive_proxy_debug()
 	for (auto b : a)
 	{
 		if (!b.pos.valid() || b.ptr == NULL || b.type != 1) continue;
-		if (!strstr(b.name.c_str(), "Raccoon")) continue;
+		if (!strstr(b.name.c_str(), sdk::menu::menu->mob_target)) continue;
 		auto v = sdk::util::c_vector3();
 		if (!sdk::util::math->w2s(b.pos, v)) continue;
 		sdk::render::render->DrawLine(sv.x, sv.z, v.x, v.z, 0xff00ff0f);
 		sdk::render::render->RenderText(v.x, v.z - 30, 0xff00ff00, (char*)b.name.c_str());
 		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b.ptr).c_str());
+		sdk::render::render->RenderText(v.x, v.z - 70, 0xff00ff00, (char*)sdk::util::log->as_hex(b.key).c_str());
 	}
 }
 void sys::c_visuals::portal()

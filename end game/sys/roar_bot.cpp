@@ -107,8 +107,18 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 }
 void sys::c_roar_bot::skill()
 {
-	if (this->p_mode == 1) return;
-	if (this->skill_delay > GetTickCount64()) return;
+	if ((this->npc_interacted && this->p_mode == 1)
+	|| (!this->ibot_storage_roar->iv && this->p_mode == 1))
+	{
+		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+		if (!ctrl) return;
+		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
+		if (!scene) return;
+		auto cv = *(float*)(scene + core::offsets::actor::actor_animation_speed);
+		if (cv >= 800000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
+		return;
+	}
+ 	if (this->skill_delay > GetTickCount64()) return;
 	auto an = sdk::player::player_->ganim(this->self);
 	if (!an.size()) return;
 	if ((strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP") && !this->skill_locked))
@@ -424,6 +434,7 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (this->recording_g || this->recording_s) { this->record(); return; }
 	if (!this->dwork) return;
 	if (!ibot_timescale) ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
+	if (!ibot_storage_roar) ibot_storage_roar = sys::config->gvar("roar_bot", "ibot_storage_roar");
 	if (!iloot_tp) iloot_tp = sys::config->gvar("roar_bot", "iloot_tp");
 	if (!this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
@@ -466,13 +477,14 @@ void sys::c_roar_bot::work(uint64_t s)
 					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 					this->f_npc_interaction(sdk::player::player_->npcs.front().ptr);
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
-					this->cur_route.pop_front();
+					this->cur_route.pop_front();					
 					return;
 					//interact->clear event->continue
 				}
 				else if (cur_point.script != "NONE")//scr
 				{
-					sp_delay = GetTickCount64() + 2500;
+					this->npc_interacted = true;
+					sp_delay = GetTickCount64() + 2000;
 					if (cur_point.script == "sell_routine()")
 					{
 						auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
@@ -522,6 +534,7 @@ void sys::c_roar_bot::work(uint64_t s)
 									return;
 								}
 							}
+							this->i_sell_state = 3;
 							return;
 						}
 						case 1:
@@ -562,6 +575,7 @@ void sys::c_roar_bot::work(uint64_t s)
 				this->p_mode = 0;
 				this->repath(0, 0);
 				sdk::util::log->add("completed SP", sdk::util::e_info, true);
+				this->npc_interacted = false;
 			}
 		}
 		return;

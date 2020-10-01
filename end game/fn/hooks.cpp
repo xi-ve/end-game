@@ -170,7 +170,7 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 			if (k == b) sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f);
 		}
 	}
-	//sdk::util::log->add(std::string("[delete] key:").append(sdk::util::log->as_hex(b)), sdk::util::e_info, true);
+	//sdk::util::log->add(std::string("[delete] a:").append(sdk::util::log->as_hex(a)), sdk::util::e_info, true);
 	auto r = fn::o_proxy_delete(a, b);
 	return r;
 }

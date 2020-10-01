@@ -27,6 +27,7 @@ namespace sys
 		ULONGLONG max_cooltime = 0;
 		std::vector<uint64_t> llist; std::vector<uint64_t> list;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
+		sys::s_cfg_v* ibot_storage_roar = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell;
 		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
 		//
@@ -42,7 +43,7 @@ namespace sys
 		//
 		int p_mode = 0;//0,grind 1,store
 		int reversed = 0;
-		bool skill_locked = 0;
+		bool skill_locked = 0; bool npc_interacted = false;
 		std::deque<s_path_script> cur_route;
 		//
 		bool ssp(s_path_script s);

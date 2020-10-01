@@ -143,6 +143,7 @@ void sdk::menu::c_menu::work()
 		{
 			if (!ibot_timescale) ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
 			if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+			if (!ibot_storage_roar) ibot_storage_roar = sys::config->gvar("roar_bot", "ibot_storage_roar");
 			if (!sys::roar_bot->dwork) if (ImGui::Button("toggle on")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
 			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); }
 			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
@@ -154,6 +155,10 @@ void sdk::menu::c_menu::work()
 				ImGui::Combo2("##path-select", &ps, sdk::util::file->roar_paths); ImGui::SameLine();
 				if (ImGui::Button("set-path##cs")) sys::roar_bot->pathname = sdk::util::file->roar_paths[ps];
 			}
+			if (ImGui::Button("load path")) sys::roar_bot->load(); ImGui::SameLine(); 
+			if (ImGui::Button("reset-full")) sys::roar_bot->reset(); ImGui::SameLine();
+			if (ImGui::Button("test-SP")) sys::roar_bot->force_store = true;
+
 			ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
 			ImGui::SliderInt("bot-loot-range", &ibot_lootrange->iv, 300, 800);
 			//
@@ -164,8 +169,7 @@ void sdk::menu::c_menu::work()
 				if (ImGui::Button("add-to-sell-list")) sys::roar_bot->sitem(sys::roar_bot->gitem_bn(v[this->witem_s]));
 			}
 			//
-			if (ImGui::Button("load path")) sys::roar_bot->load(); ImGui::SameLine(); if (ImGui::Button("reset-full")) sys::roar_bot->reset();
-			if (ImGui::Button("test-SP")) sys::roar_bot->force_store = true;
+			ImGui::Checkbox("storage-use-roar", (bool*)&ibot_storage_roar->iv);
 			if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
 			if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
 			if (sys::roar_bot->recording_g)
@@ -210,6 +214,7 @@ void sdk::menu::c_menu::work()
 			if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
 			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv); 
 			ImGui::Checkbox("store-path", (bool*)&istore_path->iv);
+			ImGui::InputText("mob-name-esp", mob_target, 128);
 			//
 			if (iroar_path->iv && istore_path->iv) { istore_path->iv = 0; iroar_path->iv = 0; }
 			break;

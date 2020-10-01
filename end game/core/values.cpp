@@ -58,8 +58,9 @@ uint64_t core::offsets::fn::inv_get_item = 0x140A555E0;
 
 //FromClient_SelfPlayerExpChanged
 uint64_t core::offsets::actor::actor_self = 0x143D1E4F0;
-//48 8D 15 ? ? ? ? 48 8D 4D EF E8 ? ? ? ? 90 4C 8B 75 F7 
-uint64_t core::offsets::actor::actor_list_start = 0x143D1E080;
+//48 8D 15 ? ? ? ? 48 8D 4D EF E8 ? ? ? ? 90 4C 8B 75 F7  
+uint64_t core::offsets::actor::actor_list_base = 0x143D1E040;
+uint64_t core::offsets::actor::actor_list_start = 0x143D1E080;//470 delta to local
 uint64_t core::offsets::actor::actor_list_end = core::offsets::actor::actor_list_start + 0x8;
 uint64_t core::offsets::actor::unsealed_pet_start = 0x143D7CBA0 + 0x18;
 uint64_t core::offsets::actor::unsealed_pet_end = core::offsets::actor::unsealed_pet_start + 0x8;

@@ -95,6 +95,7 @@ void sys::c_config::vars()
 	this->proc("roar_bot", "ibot_timescale", "350");
 	this->proc("roar_bot", "ibot_lootrange", "400");
 	this->proc("roar_bot", "iloot_tp", "1");
+	this->proc("roar_bot", "ibot_storage_roar", "1");
 	this->proc("keybinds", "itp_key", "96");
 	this->proc("keybinds", "ilock_key", "116"); 
 }
