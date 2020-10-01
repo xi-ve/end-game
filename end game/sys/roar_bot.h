@@ -24,6 +24,7 @@ namespace sys
 	{
 	private:
 		ULONGLONG list_clear_time = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
+		ULONGLONG max_cooltime = 0;
 		std::vector<sdk::player::s_blank_proxy> llist;
 		std::vector<sdk::player::s_blank_proxy> list;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
@@ -32,8 +33,8 @@ namespace sys
 		//
 		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
 		//
-		ULONGLONG execution;
-		uint64_t self;
+		ULONGLONG execution = 0;
+		uint64_t self = 0;
 		std::vector<int> allowed_sell_items;
 		std::deque<sdk::util::c_vector3> grind;
 		std::deque<s_path_script>		 store;
@@ -70,7 +71,7 @@ namespace sys
 		//
 		sdk::util::c_vector3 lp;
 		std::string pathname;
-		bool recording_g, recording_s, store_can_path;
+		bool recording_g = 0, recording_s = 0, store_can_path = 0;
 		void record();
 		void load();
 		void work(uint64_t s);

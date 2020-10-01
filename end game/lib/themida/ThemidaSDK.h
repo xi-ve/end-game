@@ -66,7 +66,7 @@
 // Include files
 // ***********************************************
 
-#include <SecureEngineCustomVMs.h>
+#include "SecureEngineCustomVMs.h"
 
 
 // ***********************************************

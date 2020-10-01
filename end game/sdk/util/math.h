@@ -76,8 +76,8 @@ namespace sdk
 				if (x == 0 || y == 0 || z == 0) return true;
 				return false;
 			}
-			float x, y, z;
-			float pause;
+			float x = 0, y = 0, z = 0;
+			float pause = 0;
 		};
 		class c_math
 		{

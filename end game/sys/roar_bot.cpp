@@ -40,13 +40,18 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 				if (a.type == 0) continue;	
 				if (a.hp <= 0) continue;
 				if (a.state == 1) continue;
-				if (a.rlt_dst >= ibot_lootrange->iv) continue;
+				if (a.rlt_dst >= ibot_lootrange->iv) continue;				
 				return false;
 			}
 			return true;
 		};
 		if (mobs()) return true;
-		else return false;
+		else 
+		{
+			if (!this->max_cooltime) this->max_cooltime = GetTickCount64() + 30000;
+			else if (GetTickCount64() > this->max_cooltime) { this->max_cooltime = 0; return true; }
+			return false; 
+		}
 	}
 
 	auto tick = GetTickCount64();
@@ -102,7 +107,7 @@ void sys::c_roar_bot::skill()
 	if (this->skill_delay > GetTickCount64()) return;
 	auto an = sdk::player::player_->ganim(this->self);
 	if (!an.size()) return;
-	if (strstr(sdk::player::player_->ganim(this->self).c_str(), "BT_skill_AggroShout_Ing_UP") && !this->skill_locked)
+	if ((strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP") && !this->skill_locked))
 	{
 		this->skill_locked = 1;
 		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
@@ -110,9 +115,10 @@ void sys::c_roar_bot::skill()
 		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
 		if (!scene) return;
 		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 800000.f;
+		return;
 	} 
-	else
-	{		
+	else if (!strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP"))
+	{			
 		if (sdk::player::player_->gsp(this->self) < 65)
 		{
 			auto used = 0;
@@ -127,6 +133,7 @@ void sys::c_roar_bot::skill()
 			}
 			if (!used) { this->skill_delay = GetTickCount64() + 1000; this->skill_locked = 0; return; }
 		}
+
 		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
 		if (!ctrl) return;
 		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
@@ -229,10 +236,11 @@ std::vector<int> sys::c_roar_bot::gitm_left()
 int sys::c_roar_bot::gitem_bn(std::string s)
 {
 	for (auto a : sdk::player::player_->inventory_items) if (a.name == s) return a.item_index;
+	return {};
 }
 void sys::c_roar_bot::gppoint(float t)
 {
-	auto p = sdk::player::player_->gpos(this->self);
+	auto p = sdk::player::player_->gpos(this->self); p.pause = t;
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
 	f << "[gp](" << p.x << ")(" << p.y << ")(" << p.z << ")(" << t << ")\n";
@@ -420,14 +428,6 @@ void sys::c_roar_bot::work(uint64_t s)
 	this->skill();
 	//e.g auto scroll combine/event items
 	//
-	if (this->force_store && (this->cur_route.empty() || this->cur_route.front().pos.cmp(this->grind.front())))
-	{
-		this->cur_route.clear();
-		this->repath(1, 1);
-		this->p_mode = 1;
-		this->force_store = false;
-		sdk::util::log->add("should SP NOW", sdk::util::e_info, true);
-	}
 	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
 	{
 		this->repath(1, 1);

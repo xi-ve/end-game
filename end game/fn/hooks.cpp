@@ -15,6 +15,7 @@ ULONGLONG fn::execution_time = 0;
 //
 bool fn::setup()
 {
+	CodeReplaceStart();
 	void* asdf;
 	if (!fn::hook((void*)core::offsets::hk::packet_outbound, &fn::f_packet_outbound, (void**)&fn::o_packet_outbound)) return false;
 	if (!fn::hook((void*)core::offsets::hk::lua_to_string, &fn::f_lua_to_string, (void**)&fn::o_lua_to_string)) return false;
@@ -23,6 +24,7 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
+	CodeReplaceEnd();
 }
 bool fn::hook(LPVOID offset, LPVOID exchangee, LPVOID* backup)
 {

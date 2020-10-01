@@ -1,9 +1,9 @@
 #include <inc.h>
-std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 from, float dst)
+std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 from, float dst, int deg)
 {
 	auto r = std::vector<sdk::util::c_vector3>();
 #define M_PI		3.14159265358979323846
-	for (auto c = 0; c < 360; c += 2)
+	for (auto c = 0; c < 360; c += deg)
 	{
 		auto x = from.x + (dst * std::cos(c / (180 / M_PI)));
 		auto y = from.y;
@@ -92,7 +92,6 @@ void sys::c_visuals::roar_path()
 {
 	if (!iroar_pause) iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-	if (!sys::roar_bot->g_p().size()) return;
 	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
 	auto spos = sdk::player::player_->gpos(this->self);
 	for (auto b : sys::roar_bot->g_p())
@@ -101,17 +100,23 @@ void sys::c_visuals::roar_path()
 		if (ds >= 5000) { last.clear(); continue; }
 		sdk::util::c_vector3 l;
 		if (!sdk::util::math->w2s(b, l)) { last.clear(); continue; }
-		if (!last.size()) last.push_back(l);
+		if (!last.size())
+		{ 
+			last.push_back(l); 
+			rp = b; 
+		}
 		else
 		{
 			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
 			if (iroar_pause->iv)
 			{
-				if (b.pause > 0.1f)
+				if (b.pause > 0.1f || rp.pause > 0.1f)
 				{					
 					if (ds <= 1200)
 					{
-						auto cir = this->gcircle(b, ibot_lootrange->iv);
+						auto ta = b;
+						if (b.pause <= 0.1f && rp.pause > 0.1f) ta = rp;
+						auto cir = this->gcircle(ta, ibot_lootrange->iv, 6);
 						for (auto h : cir)
 						{
 							if (!sdk::util::math->w2s(h, l)) { last2.clear(); continue; }

@@ -2,6 +2,7 @@
 #include <inc.h>
 static void __stdcall init_thread()
 {
+	ClearStart();
 	sdk::player::player_ = new ::sdk::player::c_player();
 	sdk::util::log = new sdk::util::c_log();
 	sdk::util::math = new sdk::util::c_math();
@@ -33,4 +34,5 @@ static void __stdcall init_thread()
 	sys::loot->read_blacklist(); sys::loot->read_whitelist();
 	fn::patcher->create_patches();
 	sdk::util::log->add("done init_thread", sdk::util::e_info, true);
+	ClearEnd();
 }
