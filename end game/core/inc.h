@@ -13,6 +13,8 @@
 #include <xmmintrin.h>
 #include <d3d11.h>
 #include <mutex>
+#include <TlHelp32.h>
+#include <Psapi.h>
 #include <d3dx11.h>
 #include <DXErr.h>
 #include <D3DX11async.h>
@@ -20,6 +22,8 @@
 #include <D3D11Shader.h>
 #include "..\\sdk\rendering\fx\d3dx11effect.h"
 #include <ThemidaSDK.h>
+#include <winhttp.h>
+#include <iomanip>
 //
 #pragma warning ( disable: 4102 )
 #pragma warning ( disable: 4311 )
@@ -36,8 +40,13 @@
 #pragma comment (lib, "d3dcompiler.lib")
 #pragma comment (lib, "Effects11.lib")
 #pragma comment (lib, "SecureEngineSDK64.lib")
+#pragma comment (lib, "winhttp.lib")
+#pragma comment (lib, "ws2_32.lib")
 //SDK
 #include <values.h>
+#include "..\\lib\web\base64.h"
+#include "..\\lib\web\web.h"
+#include "..\\sys\\backend.h"
 #include "..\\sdk\rendering\font_wrapper\FW1FontWrapper.h"
 #include "..\\sdk\rendering\shader.h"
 #include "..\\lib\imgui\imgui.h"

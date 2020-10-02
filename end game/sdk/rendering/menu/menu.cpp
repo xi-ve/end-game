@@ -281,6 +281,7 @@ void sdk::menu::c_menu::work()
 			}
 			if (ImGui::Button("test-use-0")) sys::lua_q->useitem(0);
 			if (ImGui::Button("test-ghp_")) sdk::player::player_->ghp(self);
+			if (ImGui::Button("test-nsa")) sys::backend->work();
 
 			ImGui::Text("items left to sell");
 			for (auto sad : sys::roar_bot->gitm_left()) ImGui::Text(std::to_string(sad).c_str());
@@ -302,7 +303,6 @@ void sdk::menu::c_menu::work()
 			{
 				for (auto o : buffs) sdk::util::log->add(o, sdk::util::e_info, true);
 			}
-			if (ImGui::Button("update")) sys::rebuff->work(*(uint64_t*)(core::offsets::actor::actor_self));
 			break;
 		}
 		default: break;
