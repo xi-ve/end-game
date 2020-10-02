@@ -41,6 +41,7 @@ namespace core
 			extern uint64_t loot_item_count;
 			extern uint64_t loot_deadactor;
 			extern uint64_t inv_get_item;
+			extern uint64_t buff_get_name;
 		}
 		namespace actor
 		{

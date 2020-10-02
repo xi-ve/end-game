@@ -183,6 +183,9 @@
     <ClCompile Include="sys\key_q.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sys\rebuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -375,6 +378,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\themida\SecureEngineCustomVMs_VC_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\rebuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

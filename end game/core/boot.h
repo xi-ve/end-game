@@ -21,6 +21,7 @@ static void __stdcall init_thread()
 	sdk::util::file = new sdk::util::c_file();
 	sys::lua_q = new sys::c_lua_q();
 	sys::key_q = new sys::c_key_q();
+	sys::rebuff = new sys::c_rebuff();
 	sdk::util::log->add("starting init", sdk::util::e_info, true);
 	//
 	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }

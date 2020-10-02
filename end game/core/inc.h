@@ -58,6 +58,7 @@
 #include "..\\sdk\\util\math.h"
 #include "..\\sdk\\engine\funcs.h"
 #include "..\\sdk\player\player.h"
+#include "..\\sys\rebuff.h"
 #include "..\\sys\pack_tp.h"
 #include "..\\sys\\cursor_tp.h"
 #include "..\\sys\\pet_boost.h"

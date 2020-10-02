@@ -56,6 +56,8 @@ uint64_t core::offsets::fn::loot_click_slot = 0x140A58A20;
 uint64_t core::offsets::fn::loot_item_count = 0x140A586A0;
 //40 53 48 83 EC 30 48 C7 44 24 ? ? ? ? ? 0F B6 DA 0F B6 D1 
 uint64_t core::offsets::fn::inv_get_item = 0x140A555E0;
+//40 53 48 83 EC 50 48 C7 44 24 ? ? ? ? ? 48 8B D9 48 8D 51 20 33 C0 66 3B 02 73 0C 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 90 ? ? ? ? 
+uint64_t core::offsets::fn::buff_get_name = 0x1402E1510;
 
 
 //FromClient_SelfPlayerExpChanged

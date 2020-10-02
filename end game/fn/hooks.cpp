@@ -94,6 +94,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	sys::lua_q->work(); sys::key_q->work();
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);
+	sys::rebuff->work(self_actor_proxy);
 	//sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);

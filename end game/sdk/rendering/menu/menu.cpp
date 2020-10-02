@@ -74,6 +74,7 @@ void sdk::menu::c_menu::work()
 		this->tab(4, "roar-bot", 18);
 		this->tab(5, "visuals", 18);
 		this->tab(6, "debug-info", 18);
+		this->tab(7, "rebuffer", 18);
 		switch (this->ctab)
 		{
 		case 0://pack-fn
@@ -223,27 +224,6 @@ void sdk::menu::c_menu::work()
 		}
 		case 6://debug
 		{
-			/*if (ImGui::Button("test-op"))
-			{
-				auto ptr = uint64_t(0x143D2F8C0);
-				while (ptr != NULL)
-				{
-					if (ptr == NULL) break;
-					auto xx = *(uint64_t*)ptr;
-					if (xx == NULL) break;
-					auto name_t = core::get_vtable_name(xx);
-					auto opc = *(int*)(ptr + 0x8);
-					ptr += 0x110;
-
-					if (*(uint64_t*)(ptr) >= 0x14fffffff || *(uint64_t*)(ptr) == NULL)
-					{
-						ptr += 0x10;
-						auto t = core::get_vtable_name(xx);
-						if (t == "") break;
-					}
-					sdk::util::log->add(std::string("op:").append(std::to_string(opc)).append(" t:").append(name_t), sdk::util::e_info, true);
-				}
-			}*/
 			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 			if (!self) 
 			{
@@ -308,6 +288,21 @@ void sdk::menu::c_menu::work()
 			ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
 			for (auto a : n) ImGui::Text(a.c_str());
 
+			break;
+		}
+		case 7:
+		{
+			auto buffs = sys::rebuff->gbuffs();
+			if (buffs.size())
+			{
+				for (auto o : buffs) ImGui::Text(o.c_str());
+			}
+			else ImGui::Text("no buffs kekw");
+			if (ImGui::Button("log"))
+			{
+				for (auto o : buffs) sdk::util::log->add(o, sdk::util::e_info, true);
+			}
+			if (ImGui::Button("update")) sys::rebuff->work(*(uint64_t*)(core::offsets::actor::actor_self));
 			break;
 		}
 		default: break;
