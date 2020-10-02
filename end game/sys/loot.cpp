@@ -200,7 +200,7 @@ void sys::c_loot::work(uint64_t self)
 	else return;
 	if (!ienable) ienable = sys::config->gvar("auto_loot", "ienable");
 	if (!ienable->iv) return;
-	auto n = this->hnear();						   if (!n) {return; }
+	auto n = this->hnear();						   if (!n) return;
 	auto actid = *(int*)(n + core::offsets::actor::actor_proxy_key);
 	if (this->act_id_cur == 0)
 	{
@@ -213,7 +213,7 @@ void sys::c_loot::work(uint64_t self)
 		this->act_id_cur = 0;
 		return;
 	}
-	auto cur_loot_window_k = *(int*)(0x143D1F2E0); if (cur_loot_window_k != this->act_id_cur) { return; }
+	auto cur_loot_window_k = *(int*)(core::offsets::cl::loot_base); if (cur_loot_window_k != this->act_id_cur) return;
 	auto i = this->f_loot_get_item_count();		   if (!i) { this->act_id_cur = 0; return; }
 	if (!ienable_filter) ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
 	auto did_loot_good_item = false;
@@ -226,7 +226,6 @@ void sys::c_loot::work(uint64_t self)
 		this->f_loot_click_slot(b, ctx.count);
 		did_loot_good_item = true;
 	}
-	*(int*)(0x143D1F2E0) = 0;
 	if (!did_loot_good_item && this->f_loot_get_item_count())
 	{
 		if (sys::loot->loot_proxys.size())

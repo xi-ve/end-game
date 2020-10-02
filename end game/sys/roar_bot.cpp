@@ -34,13 +34,16 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 		auto mobs = [&]() -> bool
 		{
 			if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+			auto sk = *(int*)(s + core::offsets::actor::actor_proxy_key);
 			for (auto a : sdk::player::player_->actors)
 			{
 				if (a.ptr == s) continue;
 				if (a.type == 0) continue;	
 				if (a.hp <= 0) continue;
 				if (a.state == 1) continue;
-				if (a.rlt_dst >= ibot_lootrange->iv) continue;				
+				if (a.rlt_dst >= ibot_lootrange->iv) continue;		
+				auto ak = *(int*)(a.ptr + core::offsets::actor::actor_attack_target);
+				if (ak != sk) return true;
 				return false;
 			}
 			return true;
@@ -103,6 +106,17 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 		return false;
 	}
 
+	return false;
+}
+bool sys::c_roar_bot::has_aggro()
+{
+	auto sk = *(int*)(this->self + core::offsets::actor::actor_proxy_key);
+	for (auto a : sdk::player::player_->actors)
+	{
+		if (a.type != 1 || a.hp <= 0 || a.state == 1) continue;
+		auto ag = *(int*)(a.ptr + core::offsets::actor::actor_attack_target);
+		if (sk == ag) return true;
+	}
 	return false;
 }
 void sys::c_roar_bot::skill()
@@ -473,6 +487,7 @@ void sys::c_roar_bot::work(uint64_t s)
 			{
 				if (cur_point.npc_name != "NONE")//npc
 				{
+					if (this->has_aggro()) return;
 					sp_delay = GetTickCount64() + 8400;
 					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 					this->f_npc_interaction(sdk::player::player_->npcs.front().ptr);

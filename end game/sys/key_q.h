@@ -16,12 +16,15 @@ namespace sys
 	class c_key_q
 	{
 	private:
+		HWND lh = 0;
 		std::deque<s_key_input*> key_queue;
+		void bypass();
 	public:
 		bool thread_working = false;
 		void add(s_key_input* k);
 		void rm();
 		void work();
+		std::deque<s_key_input*> gq() { return key_queue; };
 	};
 	extern c_key_q* key_q;
 }

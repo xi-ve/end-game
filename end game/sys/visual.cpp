@@ -155,6 +155,27 @@ void sys::c_visuals::store_path()
 		}
 	}
 }
+void sys::c_visuals::lineto_roar()
+{
+	if (sys::roar_bot->g_p().empty()) return;
+	auto fp = sys::roar_bot->g_p().front();
+	auto sv = sdk::util::c_vector3(); auto sp = sdk::util::c_vector3();
+	if (!sdk::util::math->w2s(sdk::player::player_->gpos(this->self), sv)) return;
+	if (!sdk::util::math->w2s(fp, sp)) return;
+	sdk::render::render->DrawLine(sv.x, sv.z, sp.x, sp.z, 0xff00ddff);
+}
+void sys::c_visuals::debug_mobs()
+{
+	auto sk = *(int*)(this->self + core::offsets::actor::actor_proxy_key); auto sv = sdk::util::c_vector3();
+	for (auto a : sdk::player::player_->actors)
+	{
+		if (a.type != 1 || a.rlt_dst >= 2000) continue;
+		auto et = *(int*)(a.ptr + core::offsets::actor::actor_attack_target);
+		if (et != sk) continue;
+		if (!sdk::util::math->w2s(a.pos, sv)) continue;
+		sdk::render::render->RenderText(sv.x, sv.z, 0xff00ff00, (char*)std::string("aggro:").append(sdk::util::log->as_hex(a.ptr)).c_str());
+	}
+}
 void sys::c_visuals::work()
 {
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
@@ -166,11 +187,15 @@ void sys::c_visuals::work()
 	if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
 	if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
 	if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
+	if (!ivis_linestart) ivis_linestart = sys::config->gvar("roar_bot", "ivis_linestart");
+	if (!ialive_byname) ialive_byname = sys::config->gvar("visuals", "ialive_byname");
 	if (ienable_debug->iv) this->monster_proxy_debug();
 	if (ienable_portal->iv) this->portal();
 	if (iroar_visual->iv) this->roar_path();
 	if (istore_path->iv) this->store_path();
-	this->alive_proxy_debug();
+	if (ivis_linestart->iv) this->lineto_roar();
+	if (ialive_byname->iv) this->alive_proxy_debug();
+	//this->debug_mobs();
 	//this->trace_debug();
 }
 sys::c_visuals* sys::visuals;

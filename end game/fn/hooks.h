@@ -23,10 +23,16 @@ namespace fn
 	typedef uint64_t(__fastcall* t_proxy_deadbody)(uint64_t, uint64_t, int);
 	extern t_proxy_deadbody o_proxy_deadbody;
 	extern uint64_t f_proxy_deadbody(uint64_t a, uint64_t b, int c);
-	//char __fastcall sub_1407A6300(__int64 a1, int a2)
 	typedef bool(__fastcall* t_proxy_delete)(uint64_t, int);
 	extern t_proxy_delete o_proxy_delete;
 	extern bool f_proxy_delete(uint64_t a, int b);
+	typedef int(__fastcall* t_reset_input_class)(uint64_t);
+	extern t_reset_input_class o_reset_input_class;
+	extern int __fastcall f_reset_input_class(uint64_t a);
+	typedef bool(__fastcall* t_is_key_pressed)(uint64_t, int, BYTE);
+	extern t_is_key_pressed o_is_key_ressed;
+	extern bool __fastcall f_is_key_pressed(uint64_t a, int b, BYTE c);
+	extern HWND __fastcall f_get_focus();
 	//
 	extern bool log_dobuffer;
 	extern sys::s_cfg_v* ibypass_trial;

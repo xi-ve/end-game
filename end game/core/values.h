@@ -11,6 +11,8 @@ namespace core
 			extern uint64_t lua_do_buffer;
 			extern uint64_t proxy_deadbody;
 			extern uint64_t proxy_delete;
+			extern uint64_t is_key_pressed;
+			extern uint64_t reset_input_class;
 		}
 		namespace patch
 		{
@@ -24,6 +26,7 @@ namespace core
 			extern uint64_t client_base;
 			extern uint64_t camera_matrice;
 			extern uint64_t ascii_table;
+			extern uint64_t loot_base;
 		}
 		namespace fn
 		{
@@ -31,8 +34,6 @@ namespace core
 			extern uint64_t actor_get_hp;
 			extern uint64_t start_npc_dialog;
 			extern uint64_t start_npc_interaction;
-			extern uint64_t is_key_pressed;
-			extern uint64_t reset_input_class;
 			extern uint64_t loot_get_rarity;
 			extern uint64_t loot_get_name;
 			extern uint64_t loot_get_base;
@@ -77,6 +78,7 @@ namespace core
 			extern uint64_t actor_inv_max_weight;
 			extern uint64_t actor_guild_name;
 			extern uint64_t actor_inv_gear_weight;
+			extern uint64_t actor_attack_target;
 		}
 	}
 }

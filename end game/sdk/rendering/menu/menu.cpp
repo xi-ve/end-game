@@ -212,8 +212,10 @@ void sdk::menu::c_menu::work()
 			if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
 			if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
 			if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
+			if (!ivis_linestart) ivis_linestart = sys::config->gvar("roar_bot", "ivis_linestart");
+			if (!ialive_byname) ialive_byname = sys::config->gvar("visuals", "ialive_byname");
 			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv); 
-			ImGui::Checkbox("store-path", (bool*)&istore_path->iv);
+			ImGui::Checkbox("store-path", (bool*)&istore_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-start-line", (bool*)&ivis_linestart->iv); ImGui::SameLine(); ImGui::Checkbox("alive-by-name", (bool*)&ialive_byname->iv);
 			ImGui::InputText("mob-name-esp", mob_target, 128);
 			//
 			if (iroar_path->iv && istore_path->iv) { istore_path->iv = 0; iroar_path->iv = 0; }

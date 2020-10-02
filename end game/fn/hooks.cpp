@@ -6,6 +6,8 @@ fn::t_lua_dobuffer fn::o_lua_dobuffer;
 fn::t_strc_pack fn::o_strc_pack;
 fn::t_proxy_deadbody fn::o_proxy_deadbody;
 fn::t_proxy_delete fn::o_proxy_delete;
+fn::t_reset_input_class fn::o_reset_input_class;
+fn::t_is_key_pressed fn::o_is_key_ressed;
 bool fn::log_dobuffer = false;
 //
 sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL;
@@ -22,6 +24,9 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::lua_do_buffer, &fn::f_lua_dobuffer, (void**)&fn::o_lua_dobuffer)) return false;
 	if (!fn::hook((void*)core::offsets::hk::proxy_deadbody, &fn::f_proxy_deadbody, (void**)&fn::o_proxy_deadbody)) return false;
 	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
+	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
+	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
+	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
 	CodeReplaceEnd();
@@ -173,4 +178,25 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 	//sdk::util::log->add(std::string("[delete] a:").append(sdk::util::log->as_hex(a)), sdk::util::e_info, true);
 	auto r = fn::o_proxy_delete(a, b);
 	return r;
+}
+int __fastcall fn::f_reset_input_class(uint64_t a)
+{
+	if (sys::key_q->thread_working) return 1;
+	else return fn::o_reset_input_class(a);
+}
+bool __fastcall fn::f_is_key_pressed(uint64_t a, int b, BYTE c)
+{
+	for (auto t : sys::key_q->gq())
+	{
+		for (auto g : t->k)
+		{
+			if (g == b) return 1;
+		}
+	}
+	return fn::o_is_key_ressed(a,b,c);
+}
+HWND __fastcall fn::f_get_focus()
+{
+	if (!lib::d3d11->h) return GetForegroundWindow();
+	return lib::d3d11->h;
 }

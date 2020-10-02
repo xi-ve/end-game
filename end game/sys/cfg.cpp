@@ -92,10 +92,12 @@ void sys::c_config::vars()
 	this->proc("visuals", "ienable_roar_path_pauses", "0");
 	this->proc("visuals", "ienable_portal", "1");
 	this->proc("visuals", "ienable_debug", "0");
+	this->proc("visuals", "ialive_byname", "0");
 	this->proc("roar_bot", "ibot_timescale", "350");
 	this->proc("roar_bot", "ibot_lootrange", "400");
 	this->proc("roar_bot", "iloot_tp", "1");
 	this->proc("roar_bot", "ibot_storage_roar", "1");
+	this->proc("roar_bot", "ivis_linestart", "1");
 	this->proc("keybinds", "itp_key", "96");
 	this->proc("keybinds", "ilock_key", "116"); 
 }

@@ -52,7 +52,8 @@ namespace sys
 		//
 		bool has_lootables(std::vector<uint64_t>& olist, sdk::util::c_vector3 s);
 		bool loot_near(sdk::util::c_vector3 o);
-
+		bool has_aggro();
+		//
 		void skill();
 		//
 		void gpoint();

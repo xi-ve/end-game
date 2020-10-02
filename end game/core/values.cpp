@@ -10,12 +10,16 @@ uint64_t core::offsets::hk::lua_do_buffer = 0x1415672D0;
 uint64_t core::offsets::hk::proxy_deadbody = 0x1407BCFC0;//ref v7 = sub_xxxx(0x488...
 //89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 C7 44 24 ? ? ? ? ? 
 uint64_t core::offsets::hk::proxy_delete = 0x1407A6340;
+//48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 8B F2 41 0F B6 F8 
+uint64_t core::offsets::hk::is_key_pressed = 0x1418E60E0;
+//40 53 48 83 EC 20 48 8B D9 33 D2 48 83 C1 40 
+uint64_t core::offsets::hk::reset_input_class = 0x1418E6170;
 
 
 //C6 83 ? ? ? ? ? 48 85 FF 
 uint64_t core::offsets::patch::walk_to_pos = 0x1406E5A10;
 //48 8B CB 40 84 F6 0F 84 ? ? ? ? 48 8D 54 24 ? 
-uint64_t core::offsets::patch::walk_mouse = 0x1406E5B01;
+uint64_t core::offsets::patch::walk_mouse = 0x1406E5B19;
 //48 8B C4 48 89 48 08 55 48 8D 68 A1 48 81 EC ? ? ? ? 48 C7 45 ? ? ? ? ? 48 89 58 10 48 89 70 18 48 89 78 20 0F 29 70 E8 
 uint64_t core::offsets::patch::window_focus_validity = 0x1402C5650;
 //48 8D 0D ? ? ? ? E8 ? ? ? ? 84 C0 75 13 45 33 C0 48 8B CF 41 8D 50 28 
@@ -28,6 +32,8 @@ uint64_t core::offsets::cl::client_base = 0x143CC9B20;
 uint64_t core::offsets::cl::camera_matrice = 0x144B4DA00;
 //48 8B 05 ? ? ? ? 4C 8B 00 48 8B 48 08 49 2B C8 48 C1 F9 04 48 3B CA 76 40 
 uint64_t core::offsets::cl::ascii_table = 0x143CC9BE0;
+//81 0D ? ? ? ? ? ? ? ? 48 8B 05 ? ? ? ? C6 05 ? ? ? ? ? 
+uint64_t core::offsets::cl::loot_base = 0x143D1F2E0;
 
 
 //48 8B C4 56 57 41 56 48 81 EC ? ? ? ? 48 C7 80 ? ? ? ? ? ? ? ? 48 89 58 10 48 89 68 18 0F 29 70 D8 
@@ -38,10 +44,6 @@ uint64_t core::offsets::fn::actor_get_hp = 0x14079D8B0;
 uint64_t core::offsets::fn::start_npc_dialog = 0x140336240;
 //48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 30 48 8B F9 FF 15 ? ? ? ? 
 uint64_t core::offsets::fn::start_npc_interaction = 0x140803BC0;
-//48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 8B F2 41 0F B6 F8 
-uint64_t core::offsets::fn::is_key_pressed = 0x1418E60E0;
-//40 53 48 83 EC 20 48 8B D9 33 D2 48 83 C1 40 
-uint64_t core::offsets::fn::reset_input_class = 0x1418E6170;
 //getGradeType
 uint64_t core::offsets::fn::loot_get_rarity = 0x140BA88D0;
 //40 53 48 83 EC 50 48 C7 44 24 ? ? ? ? ? 48 8D 91 ? ? ? ? 83 3A 00 75 0D 48 8D 05 ? ? ? ? 48 83 C4 50 5B C3 48 8D 59 68 48 C7 43 ? ? ? ? ? 
@@ -93,3 +95,4 @@ uint64_t core::offsets::actor::actor_inv_raw_weight = core::offsets::actor::acto
 uint64_t core::offsets::actor::actor_inv_max_weight = 0x1098;
 uint64_t core::offsets::actor::actor_guild_name = 0x1102;
 uint64_t core::offsets::actor::actor_inv_gear_weight = 0x2130;
+uint64_t core::offsets::actor::actor_attack_target = 0xB40;

@@ -7,6 +7,7 @@ namespace sys
 	private:
 		sys::s_cfg_v* iroar_pause = NULL; sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* iroar_visual = NULL;
 		sys::s_cfg_v* ienable_portal = NULL; sys::s_cfg_v* ienable_debug = NULL; sys::s_cfg_v* istore_path = NULL;
+		sys::s_cfg_v* ivis_linestart = NULL; sys::s_cfg_v* ialive_byname = NULL;
 		uint64_t self = NULL;
 		std::string esp_mob_t = "Raccoon";
 		std::vector<sdk::util::c_vector3> gcircle(sdk::util::c_vector3 from, float dst, int deg);
@@ -16,6 +17,8 @@ namespace sys
 		void trace_debug();
 		void roar_path();
 		void store_path();
+		void lineto_roar();
+		void debug_mobs();
 	public:
 		int filter = 34;
 		void work();
