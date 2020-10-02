@@ -22,19 +22,19 @@ namespace sys
 		unsigned long process_id;
 		HWND window_handle;
 	};
+	extern void __stdcall backend_worker();
 	class c_backend
 	{
 	private:
-		std::string usr, pass, hwid;
 		std::string get_val(std::string name);
-		ULONGLONG last_run = 0;
 		PROCESS_INFORMATION open_pid(const int pid);
 		HWND find_main_window(unsigned long process_id);
-		std::vector<s_process_info> gather();
-		std::string xor_fn(std::string i, std::string k);
-		std::string ghwid();
-		void setup();
 	public:
+		std::string xor_fn(std::string i, std::string k);
+		std::vector<s_process_info> gather();
+		std::string ghwid(); void setup();
+		ULONGLONG last_run = 0;	std::string usr, pass, hwid;
+		bool thread_working = false;
 		BOOL is_main_window(const HWND handle);
 		void work();
 	};

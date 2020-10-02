@@ -80,6 +80,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (executing) return fn::o_lua_to_string(a1);
 	executing = true;
 	auto v = fn::o_lua_to_string(a1);
+	sys::backend->work();
 	//
 	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
 	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
