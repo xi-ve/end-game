@@ -20,6 +20,9 @@ namespace web
 		std::vector<byte> response;
 		std::string url_encode(const std::string& value);
 	public:
+		std::string encryptDecrypt(std::string buffer, std::string key);
+		std::string rstr(int size);
+		std::string prepare(std::string data);
 		bool               connect(std::wstring page);
 		bool               request(std::wstring file, web::requestmode mode, std::unordered_map<std::string, std::string> vars);
 		std::vector<byte>  get();

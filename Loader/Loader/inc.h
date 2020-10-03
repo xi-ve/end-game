@@ -30,4 +30,8 @@
 #pragma comment(lib, "ntdll.lib")
 #pragma comment(lib, "Winhttp.lib")
 
+#include "VMProtectSDK.h"
 #include "web.h"
+#include "game.h"
+#include "base64.h"
+#include "userdata.h"
