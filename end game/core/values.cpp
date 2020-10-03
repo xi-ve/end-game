@@ -77,6 +77,7 @@ uint64_t core::offsets::actor::actor_proxy_type = 0x5C;
 uint64_t core::offsets::actor::actor_char_ctrl = 0x410;
 uint64_t core::offsets::actor::actor_mov_base = 0x8;
 uint64_t core::offsets::actor::actor_char_scene = 0x10;
+uint64_t core::offsets::actor::actor_loot_owner = 0x448;
 uint64_t core::offsets::actor::actor_networked_move = 0x198;
 uint64_t core::offsets::actor::actor_animation_speed = 0x4C0;
 uint64_t core::offsets::actor::actor_is_dead = 0x1F0;

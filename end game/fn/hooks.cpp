@@ -162,7 +162,13 @@ uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 	auto r = fn::o_proxy_deadbody(a, b, c);
 	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
 	//sdk::util::log->add(std::string("[deadbody] key:").append(sdk::util::log->as_hex(*(int*)(r + core::offsets::actor::actor_proxy_key))), sdk::util::e_info, true);
-	if (iloot_enable->iv) sys::loot->loot_proxys.push_back(r);
+	if (iloot_enable->iv)
+	{
+		auto self_key = *(int*)(*(uint64_t*)(core::offsets::actor::actor_self) + core::offsets::actor::actor_proxy_key);
+		auto owner = *(int*)(r + core::offsets::actor::actor_loot_owner);
+		if (self_key != owner) return r;
+		sys::loot->loot_proxys.push_back(r);
+	}
 	return r;
 }
 

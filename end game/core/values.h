@@ -59,6 +59,7 @@ namespace core
 			extern uint64_t actor_char_ctrl;
 			extern uint64_t actor_mov_base;
 			extern uint64_t actor_char_scene;
+			extern uint64_t actor_loot_owner;
 			extern uint64_t actor_networked_move;
 			extern uint64_t actor_animation_speed;
 			extern uint64_t actor_is_dead;

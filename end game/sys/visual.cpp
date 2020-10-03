@@ -197,7 +197,7 @@ void sys::c_visuals::work()
 	if (ialive_byname->iv) this->alive_proxy_debug();
 	//
 	sdk::render::render->RenderText(150, 150, 0xff00ffdd, (char*)std::string("target loot:").append(sdk::util::log->as_hex(sys::loot->act_id_cur)).c_str());
-	sdk::render::render->RenderText(100, 170, 0xff00ffdd, (char*)std::string("target time:").append(sdk::util::log->as_hex(sys::loot->pack_time)).c_str());
+	sdk::render::render->RenderText(150, 170, 0xff00ffdd, (char*)std::string("target time:").append(sdk::util::log->as_hex(sys::loot->pack_time)).c_str());
 	//this->debug_mobs();
 	//this->trace_debug();
 }

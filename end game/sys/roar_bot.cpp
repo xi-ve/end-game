@@ -216,7 +216,7 @@ bool sys::c_roar_bot::snear()
 }
 void sys::c_roar_bot::reset()
 {
-	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear();
+	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear(); this->items_left_sell.clear();
 	this->p_mode = 0;
 	this->reversed = 0;
 	this->s_npc = "NONE";
@@ -313,7 +313,7 @@ void sys::c_roar_bot::record()
 }
 void sys::c_roar_bot::load()
 {
-	this->reset(); this->grind.clear(); this->store.clear();
+	this->reset(); this->grind.clear(); this->store.clear(); 
 	auto parse_position = [&](std::string l) -> sdk::util::c_vector3
 	{
 		auto line = l;
@@ -522,16 +522,6 @@ void sys::c_roar_bot::work(uint64_t s)
 						auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
 						if (speed >= 8000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
 
-						if (this->i_sell_state == 3 && this->items_left_sell.size() == 1)//end state
-						{
-							this->items_left_sell = this->allowed_sell_items;
-
-							sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
-							this->cur_route.pop_front();
-							sdk::util::log->add("items sold", sdk::util::e_info, true);
-
-							return;
-						}
 						if (this->i_sell_state == 3 && !this->items_left_sell.empty())
 						{
 							for (auto a : sdk::player::player_->inventory_items)
@@ -547,6 +537,16 @@ void sys::c_roar_bot::work(uint64_t s)
 							this->i_sell_state = 0;
 							sdk::util::log->add("next item", sdk::util::e_info, true);
 						}
+						if (this->i_sell_state == 3 && this->items_left_sell.empty())//end state
+						{
+							this->items_left_sell = this->allowed_sell_items;
+
+							sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
+							this->cur_route.pop_front();
+							sdk::util::log->add("items sold", sdk::util::e_info, true);
+
+							return;
+						}						
 						auto t = this->items_left_sell.back();
 						switch (this->i_sell_state)
 						{
