@@ -5,7 +5,7 @@ import asyncio
 import mysql.connector
 bot = commands.Bot(command_prefix='$')
 
-dbh = mysql.connector.connect(host='localhost',database='cheat',user='root',password='')
+dbh = mysql.connector.connect(host='localhost',database='cheat',user='cheat',password='fGBWG9gnSGjpg8KZ')
 cursor = dbh.cursor(prepared=True)
 dbh.autocommit = True
 
@@ -40,6 +40,8 @@ async def sub(ctx):
 
 @bot.command()
 async def ban(ctx,user: discord.Member,reason):
+    if ctx.channel != 755780806475120661:
+        return 
     query = "UPDATE `login` SET l_banned = %s WHERE l_discord = %s;"
     cursor.execute(query, [reason,user.id, ])
     await ctx.send("done....")
@@ -55,6 +57,8 @@ async def get_soft(ctx):
         await ctx.send(s[0])
 @bot.command()
 async def add(ctx,user: discord.Member,software,time,time_type):
+    if ctx.channel != 755780806475120661:
+        return 
     if time_type != "days" and time_type != "hours":
         await ctx.send("$add <@user> <soft> <time> <days|hours>")
         return

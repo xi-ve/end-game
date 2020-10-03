@@ -1,4 +1,34 @@
 #include "inc.h"
+#include "str_vodoo.h"
+
+std::string web::client::encryptDecrypt(std::string buffer, std::string key)
+{
+	for (auto c = 0; c < buffer.size(); c++) buffer[c] ^= key[c % key.length()];
+	return buffer;
+}
+std::string web::client::rstr(int size)
+{
+
+	static auto str52_21695_abcdefghijklmnopqrstuvw35 = new s_str_container(std::vector<int>{104, 107, 106, 109, 108, 111, 110, 97, 96, 99, 98, 101, 100, 103, 102, 121, 120, 123, 122, 125, 124, 127, 126, 113, 112, 115, 72, 75, 74, 77, 76, 79, 78, 65, 64, 67, 66, 69, 68, 71, 70, 89, 88, 91, 90, 93, 92, 95, 94, 81, 80, 83}); /*abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ*/ static auto _abcdefghijklmnopqrstuvw2177921890_dec = str52_21695_abcdefghijklmnopqrstuvw35->get();
+
+	static auto range = std::string(_abcdefghijklmnopqrstuvw2177921890_dec);
+	auto out = std::stringstream();
+	for (auto c = 0; c < size; c++)
+	{
+		auto slc = range[rand() % 52];
+		out << slc;
+	}
+	return out.str();
+}
+
+
+std::string web::client::prepare(std::string data) {
+//	VMProtectBegin("prepare");
+	std::string key_data = rstr(10);
+	key_data.append(encryptDecrypt(data, key_data));
+	return key_data;
+//	VMProtectEnd();
+}
 bool web::client::connect(std::wstring page)
 {
 	//cleanup
@@ -16,6 +46,7 @@ bool web::client::connect(std::wstring page)
 
 
 std::string web::client::url_encode(const std::string& value) {
+//	VMProtectBegin("encode");
 	std::ostringstream escaped;
 	escaped.fill('0');
 	escaped << std::hex;
@@ -34,8 +65,8 @@ std::string web::client::url_encode(const std::string& value) {
 		escaped << '%' << std::setw(2) << int((unsigned char)c);
 		escaped << std::nouppercase;
 	}
-
 	return escaped.str();
+	//VMProtectEnd();
 }
 
 bool web::client::request(std::wstring file, web::requestmode mode, std::unordered_map<std::string, std::string> vars)
@@ -57,7 +88,7 @@ bool web::client::request(std::wstring file, web::requestmode mode, std::unorder
 			if (i) data.append("&");
 			data.append(elm.first);
 			data.append("=");
-			data.append(url_encode(elm.second));
+			data.append(url_encode(base64_encode(prepare(elm.second))));
 			i++;
 		}
 	}
