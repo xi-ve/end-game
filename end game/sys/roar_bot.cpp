@@ -562,6 +562,7 @@ void sys::c_roar_bot::work(uint64_t s)
 									return;
 								}
 							}
+							sdk::util::log->add(std::string("item not found: ").append(std::to_string(t)), sdk::util::e_info, true);
 							this->i_sell_state = 3;
 							return;
 						}

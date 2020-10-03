@@ -35,6 +35,7 @@ static void __stdcall init_thread()
 	sdk::util::file->update();
 	sys::loot->read_blacklist(); sys::loot->read_whitelist();
 	fn::patcher->create_patches();
+	sys::rebuff->load();
 	sdk::util::log->add("done init_thread", sdk::util::e_info, true);
 	ClearEnd();
 }

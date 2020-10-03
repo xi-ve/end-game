@@ -294,15 +294,23 @@ void sdk::menu::c_menu::work()
 		case 7:
 		{
 			auto buffs = sys::rebuff->gbuffs();
-			if (buffs.size())
+			auto il = sdk::player::player_->ginv();
+			if (buffs.size() && il.size())
 			{
-				for (auto o : buffs) ImGui::Text(o.c_str());
+				if (!irebuffer_enable) irebuffer_enable = sys::config->gvar("rebuffer", "ienable");
+				ImGui::Combo2("##buffselect", &this->selected_buff, buffs);
+				ImGui::Combo2("##select-item", &selected_buff_item, il);
+				ImGui::Checkbox("toggle", (bool*)&irebuffer_enable->iv);//im vegan
+				if (ImGui::Button("add")) sys::rebuff->add(buffs[this->selected_buff], sys::rebuff->gibyname(il[selected_buff_item]));
+				if (ImGui::Button("reset")) sys::rebuff->reset();
+
+				ImGui::Text("registered buffs");
+				for (auto t : sys::rebuff->gabuffs())
+				{
+					ImGui::Text(std::string(t.n).append(":").append(std::to_string(t.i)).c_str());
+				}
 			}
-			else ImGui::Text("no buffs kekw");
-			if (ImGui::Button("log"))
-			{
-				for (auto o : buffs) sdk::util::log->add(o, sdk::util::e_info, true);
-			}
+			else ImGui::Text("no buffs active");
 			break;
 		}
 		default: break;
