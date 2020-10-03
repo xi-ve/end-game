@@ -1,5 +1,5 @@
 #include <inc.h>
-bool sys::c_config::proc(std::string a, std::string b, std::string c)
+bool sys::c_config::proc(std::string a, std::string b, std::string c, bool local)
 {
 	if (a.empty() || b.empty()) return false;
 	if (this->gvar(a, b)) return false;
@@ -49,6 +49,7 @@ void sys::c_config::save()
 	if (!t.is_open()) return;
 	for (auto&& a : this->cfg_list)
 	{
+		if (a->local) continue;
 		switch (a->t)
 		{
 		case 0:
@@ -102,5 +103,7 @@ void sys::c_config::vars()
 	this->proc("rebuffer", "string_buffs", "");
 	this->proc("keybinds", "itp_key", "96");
 	this->proc("keybinds", "ilock_key", "116"); 
+	//locals
+
 }
 sys::c_config* sys::config;

@@ -4,6 +4,89 @@ namespace sdk
 {
 	namespace menu
 	{
+		typedef void(__fastcall* t_func)();
+		extern void roar_menu();
+		extern void visuals_menu();
+		struct s_imgui_intslider
+		{
+			s_imgui_intslider() {};
+			s_imgui_intslider(int l, int h)
+			{
+				min = l; max = h;
+			};
+			int min = 0, max = 0;
+		};
+		struct s_imgui_floatslider
+		{
+			s_imgui_floatslider() {};
+			s_imgui_floatslider(float l, float h)
+			{
+				min = l; max = h;
+			};
+			float min = 0.f, max = 0.f;
+		};
+		struct s_imgui_node
+		{
+			s_imgui_node(std::string n, int t, std::string ct, std::string vn, bool sl)
+			{
+				if (ct.size() && vn.size()) cfg = sys::config->gvar(ct, vn);
+				name = n;
+				type = t;
+				use_sameline = sl;
+			};
+			s_imgui_node(std::string n, int t, std::string ct, std::string vn, bool sl, void* strc)
+			{
+				if (ct.size() && vn.size()) cfg = sys::config->gvar(ct, vn);
+				name = n;
+				type = t;
+				strct = strc;
+				f_func = (t_func)strc;
+				use_sameline = sl;
+			};
+			s_imgui_node(std::string n, int t, std::string ct, std::string vn, bool sl, s_imgui_floatslider* strc)
+			{
+				if (ct.size() && vn.size()) cfg = sys::config->gvar(ct, vn);
+				name = n;
+				type = t;
+				strct = (void*)strc;
+				use_sameline = sl;
+			};
+			s_imgui_node(std::string n, int t, std::string ct, std::string vn, bool sl, s_imgui_intslider* strc)
+			{
+				if (ct.size() && vn.size()) cfg = sys::config->gvar(ct, vn);
+				name = n;
+				type = t;
+				strct = (void*)strc;
+				use_sameline = sl;
+			};
+			t_func			f_func;
+			void*			strct = NULL;
+			std::string		name = "";
+			int				type = 0;
+			sys::s_cfg_v* cfg = NULL;
+			bool			use_sameline = false;
+		};
+		struct s_imgui_treenode
+		{
+			s_imgui_treenode() {};
+			s_imgui_treenode(std::string n, std::vector<s_imgui_node> ns)
+			{
+				main_name = n; nodes = ns;
+			};
+			std::string main_name = "";
+			std::vector<s_imgui_node> nodes = {};
+		};
+		struct s_imgui_tab
+		{
+			s_imgui_tab(std::string n, std::vector<s_imgui_treenode> t)
+			{
+				name = n; tree = t;
+			};
+			std::string name = "";
+			bool toggle = false;
+			std::vector<s_imgui_treenode> tree = {};
+		};
+		extern void test_func();
 		class c_menu
 		{
 		private:
@@ -19,13 +102,25 @@ namespace sdk
 			int selected_whitelist = 0; float t = 1.1f; char ct[128]; int ps = 0; int si = 0; int ni = 0; int is_scr = 0; int witem_s = 0;
 			int selected_buff = 0; int selected_buff_item = 0;
 
+			bool test_roar_state = false;
+
 			char dscr[128];
 			void tab(size_t Index, const char* Text, int height);
 			bool was_setup = false;
 			bool menu_active = false;
+
+			std::vector<s_imgui_tab> tabs;
+			bool setup_tabs = false; bool has_tab_open = false;
+			bool setup();
+			bool add_tab(std::string n, std::vector<s_imgui_treenode> node);
+			//
+			void work_tabs();
 		public:
-			char mob_target[128] = "Raccoon";
+			char mob_target[128] = "Raccoon"; bool using_test_menu = false;
 			void work();
+			//
+			void work2();
+			//
 			void sactive();
 			bool gactive() { return this->menu_active; };
 		};

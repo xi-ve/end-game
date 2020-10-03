@@ -51,8 +51,154 @@ void sdk::menu::c_menu::tab(size_t Index, const char* Text, int height)
 	ImGui::PopStyleColor(3);
 	ImGui::PopID();
 }
+void sdk::menu::roar_menu()
+{
+	ImGui::Begin("##roar-menu", 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
+	{
+		ImGui::TextColored(ImColor(0, 255, 0), "test-roar-menu");
+		ImGui::End();
+	}
+}
+void sdk::menu::visuals_menu()
+{
+	ImGui::Begin("##visuals-menu", 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
+	{
+		
+		ImGui::End();
+	}
+}
+void sdk::menu::test_func()
+{
+	sdk::util::log->add("test func called!", sdk::util::e_info, true);
+}
+bool sdk::menu::c_menu::setup()
+{
+	//s_imgui_node(std::string n, int t, std::string ct, std::string vn)
+	//if (!this->add_tab("roar-bot", (void*)roar_menu,
+	//	{ {	{"roar-bot"},
+	//		{
+	//			{"test", 0, "", ""}
+	//		}
+	//	} })) return false;
+	if (!this->add_tab("visuals",
+		{ 
+		{	{"monster-actor"},
+			{
+				{"dead-info  "	, 0, "visuals", "ienable_debug", false},
+				{"esp-by-name"	, 0, "visuals", "ialive_byname", false}
+			}			
+		},
+		{
+			{"environment"},
+			{
+				{"roar-grind-path"	, 0, "visuals", "ienable_roar_path", true},
+				{"roar-store-path"	, 0, "visuals", "ienable_store_path", false},
+				{"roar-start     "  , 0, "roar_bot", "ivis_linestart", true},
+				{"roar-pauses    "  , 0, "visuals", "ienable_roar_path_pauses", false},
+				{"show-portals   "  , 0, "visuals", "ienable_portal", false}
+			}
+		},
+		{
+			{"menu-tests"},
+			{
+				{"test-button", 4 , "", "", false, (void*)test_func}
+			}
+		}
+		}
+	)) return false;
+	
+	return true;
+}
+bool sdk::menu::c_menu::add_tab(std::string n, std::vector<s_imgui_treenode> node)
+{
+	this->tabs.emplace_back(n, node);
+	return true;
+}
+void sdk::menu::c_menu::work_tabs()
+{
+	ImGui::Begin("##core-tab", 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar);
+	{
+		auto main_window_pos = ImGui::GetWindowPos();
+		auto width = ImGui::GetWindowWidth();
+
+		for (auto &&a : this->tabs)
+		{
+			ImGui::SetNextWindowPos(ImVec2(main_window_pos.x + width + 5, main_window_pos.y), ImGuiCond_::ImGuiCond_Appearing);
+			if (a.toggle)
+			{
+				if (ImGui::ArrowButton(a.name.c_str(), ImGuiDir_::ImGuiDir_Left)) a.toggle = !a.toggle; 
+				ImGui::SameLine(); ImGui::BulletText(a.name.c_str());
+				//a.func();
+
+				ImGui::Begin(a.name.c_str(), 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
+				{
+					ImGui::TextColored(ImColor(0, 255, 0), a.name.c_str());
+					for (auto&& b : a.tree)
+					{
+						if (ImGui::TreeNode(b.main_name.c_str()))
+						{
+							for (auto&& c : b.nodes)
+							{
+								switch (c.type)
+								{
+								case 0://checkbox
+								{
+									ImGui::Checkbox(c.name.c_str(), (bool*)&c.cfg->iv);											
+									break;
+								}
+								case 1://float slider
+								{
+									auto s = (sdk::menu::s_imgui_floatslider*)(c.strct);
+									ImGui::SliderFloat(c.name.c_str(), &c.cfg->fv, s->min, s->max);
+									break;
+								}
+								case 2://int slider
+								{
+									auto s = (sdk::menu::s_imgui_intslider*)(c.strct);
+									ImGui::SliderInt(c.name.c_str(), &c.cfg->iv, s->min, s->max);
+									break;
+								}
+								case 3://text input
+								{
+									ImGui::InputText(c.name.c_str(), c.cfg->cin, 2048);
+									break;
+								}
+								case 4://button
+								{
+									if (ImGui::Button(c.name.c_str())) c.f_func();
+									break;
+								}
+								case 5://func to run
+								{
+									c.f_func();
+									break;
+								}
+								default: break;
+								}
+								if (c.use_sameline) ImGui::SameLine();
+							}
+							ImGui::TreePop();
+						}
+					}
+					ImGui::End();
+				}
+			}
+			else 
+			{
+				if (ImGui::ArrowButton(a.name.c_str(), ImGuiDir_::ImGuiDir_Right))
+				{
+					for (auto&& b : this->tabs) b.toggle = false;
+					a.toggle = !a.toggle;
+				}
+				ImGui::SameLine(); ImGui::BulletText(a.name.c_str());
+			}
+		}
+	}
+	//ImGui::SetNextWindowPos(ImVec2(main_window_pos.x + width + 5, main_window_pos.y), ImGuiCond_::ImGuiCond_Appearing);
+}
 void sdk::menu::c_menu::work()
 {
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -63,6 +209,7 @@ void sdk::menu::c_menu::work()
 		this->was_setup = true;
 	}
 	if (!this->menu_active) return;
+	if (this->using_test_menu) { this->work2(); return; }
 
 	ImGui::Begin("  28802  ", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
 	{
@@ -281,7 +428,64 @@ void sdk::menu::c_menu::work()
 			}
 			if (ImGui::Button("test-use-0")) sys::lua_q->useitem(0);
 			if (ImGui::Button("test-ghp_")) sdk::player::player_->ghp(self);
-			if (ImGui::Button("test-nsa")) sys::backend->work();
+			if (ImGui::Button("use-test-menu"))
+			{
+				ImGuiStyle* style = &ImGui::GetStyle();
+
+				style->WindowPadding = ImVec2(15, 15);
+				style->WindowRounding = 5.0f;
+				style->FramePadding = ImVec2(5, 5);
+				style->FrameRounding = 4.0f;
+				style->ItemSpacing = ImVec2(12, 8);
+				style->ItemInnerSpacing = ImVec2(8, 6);
+				style->IndentSpacing = 25.0f;
+				style->ScrollbarSize = 15.0f;
+				style->ScrollbarRounding = 9.0f;
+				style->GrabMinSize = 5.0f;
+				style->GrabRounding = 3.0f;
+
+				style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
+				style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+				style->Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+				style->Colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+				style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+				style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
+				style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+				style->Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+				style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+				style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+				style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+				style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+				style->Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+				style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+				style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+				style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+				style->Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+				style->Colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+				style->Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+				style->Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+				style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+				style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+				style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+				style->Colors[ImGuiCol_Separator] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+				style->Colors[ImGuiCol_SeparatorActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+				style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+				style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+				style->Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+				style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+				style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+				style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+				style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+				style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+
+				this->using_test_menu = true;
+			}
 
 			ImGui::Text("items left to sell");
 			for (auto sad : sys::roar_bot->gitm_left()) ImGui::Text(std::to_string(sad).c_str());
@@ -323,9 +527,20 @@ void sdk::menu::c_menu::work()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
+void sdk::menu::c_menu::work2()
+{
+	//
+	if (this->tabs.empty()) this->setup();
+	ImGui::ShowDemoWindow();
+	this->work_tabs();
+	//
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
 void sdk::menu::c_menu::sactive()
 {
 	this->menu_active = !this->menu_active;
 	if (!this->menu_active) sys::config->save();
 }
 sdk::menu::c_menu* sdk::menu::menu;
+

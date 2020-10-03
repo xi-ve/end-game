@@ -29,13 +29,14 @@ namespace sys
 		std::string table;
 		std::string val;
 		std::string rval;
-		int iv = 0; float fv = 0; int t = 0;
+		char*		cin;
+		int iv = 0; float fv = 0; int t = 0; bool local = false;
 	};
 	class c_config
 	{
 	private:
 		std::vector<s_cfg_v*> cfg_list;
-		bool proc(std::string a, std::string b, std::string c);
+		bool proc(std::string a, std::string b, std::string c, bool local = false);
 	public:
 		s_cfg_v* gvar(std::string t, std::string v);
 		void read();

@@ -15,6 +15,7 @@
 #include <mutex>
 #include <TlHelp32.h>
 #include <Psapi.h>
+#include <functional>
 #include <d3dx11.h>
 #include <DXErr.h>
 #include <D3DX11async.h>
