@@ -32,7 +32,6 @@ namespace sys
 		sys::s_cfg_v* green = NULL; sys::s_cfg_v* blue = NULL;
 		sys::s_cfg_v* orange = NULL; sys::s_cfg_v* yellow = NULL; sys::s_cfg_v* ienable = NULL;
 		sys::s_cfg_v* ienable_filter = NULL;
-		int act_id_cur = 0;
 		std::vector<int>			blacklist;
 		std::vector<int>			whitelist;
 		uint64_t					self = NULL, last_ent = NULL;
@@ -43,13 +42,16 @@ namespace sys
 		bool						pick(s_looting_item ctx);
 		bool						lhas(int s);
 	public:
+		int act_id_cur = 0; ULONGLONG pack_time = 0;
 		std::vector<uint64_t>       loot_proxys;
+		void	 mloot();
 		bool	 read_whitelist();
 		bool	 read_blacklist();
 		void     add_whitelist(int idx);
 		void     add_blacklist(int idx);
 		void     reset_whitelist();
 		void     reset_blacklist();
+		void starget(int k);
 		void work(uint64_t self);
 	};
 	extern c_loot* loot;

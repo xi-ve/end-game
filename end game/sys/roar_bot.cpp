@@ -22,7 +22,7 @@ void sys::c_roar_bot::repath(int a, int b)
 		{
 			this->cur_route = this->store;
 			std::reverse(this->cur_route.begin(), this->cur_route.end());
-		}	
+		}
 		this->reversed = b;
 	}
 }
@@ -38,10 +38,10 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 			for (auto a : sdk::player::player_->actors)
 			{
 				if (a.ptr == s) continue;
-				if (a.type == 0) continue;	
+				if (a.type == 0) continue;
 				if (a.hp <= 0) continue;
 				if (a.state == 1) continue;
-				if (a.rlt_dst >= ibot_lootrange->iv) continue;		
+				if (a.rlt_dst >= ibot_lootrange->iv) continue;
 				auto ak = *(int*)(a.ptr + core::offsets::actor::actor_attack_target);
 				if (ak != sk) return true;
 				return false;
@@ -49,11 +49,11 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 			return true;
 		};
 		if (mobs()) return true;
-		else 
+		else
 		{
 			if (!this->max_cooltime) this->max_cooltime = GetTickCount64() + 30000;
 			else if (GetTickCount64() > this->max_cooltime) { this->max_cooltime = 0; return true; }
-			return false; 
+			return false;
 		}
 	}
 
@@ -63,47 +63,61 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 
 	return false;
 }
-bool sys::c_roar_bot::has_lootables(std::vector<uint64_t>& olist, sdk::util::c_vector3 spp)
+bool sys::c_roar_bot::has_lootables(sdk::util::c_vector3 spp)
 {
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-	if (GetTickCount64() > list_clear_time) { list_clear_time = GetTickCount64() + 30000; list.clear(); }
-
-	sdk::player::player_->update_actors(this->self);
-	olist.clear();
-	for (auto a : sys::loot->loot_proxys)
+	if (sys::loot->loot_proxys.empty()) return 0;
+	auto l = 9999.f; auto rr = uint64_t(0);
+	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
-		auto hloot = *(BYTE*)(a + core::offsets::actor::actor_was_looted);
-		if (hloot) continue;
-		auto apos = sdk::player::player_->gpos(a);
-		auto rltdst = sdk::util::math->gdst_3d(apos, spp);
-		if (rltdst > ibot_lootrange->iv) continue;
-		auto s = false;
-		for (auto b : list) { if (a == b) { s = 1; break; } }
-		if (s) continue;
-		auto tr = sdk::player::player_->trace(spp, apos, this->self, 400, 34, false);
-		if (!tr.success) continue;
-		olist.push_back(a); list.push_back(a);
+		auto a = sys::loot->loot_proxys[b];
+		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		{
+			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
+			continue;
+		}
+		auto ap = sdk::player::player_->gpos(a);
+		auto rd = sdk::util::math->gdst_3d(ap, spp);
+		if (rd <= l && rd <= ibot_lootrange->iv)
+		{
+			l = rd;
+			rr = a;
+			continue;
+		}
 	}
-	if (olist.size()) return true;
-	return false;
+	return rr;
 }
 bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 {
-	if (llist.empty())
+	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
+
+	auto has = this->has_lootables(o);
+	if (!has) { sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(o.x / 100, o.y / 100, o.z / 100)); return true; }
+
+	auto l = 9999.f; auto rr = uint64_t(0);
+	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
-		auto has = this->has_lootables(llist, sdk::player::player_->gpos(this->self));
-		if (!has) { llist.clear(); sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(o.x / 100, o.y / 100, o.z / 100)); return true; }
-		return false;
+		auto a = sys::loot->loot_proxys[b];
+		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		{
+			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
+			continue;
+		}
+		auto ap = sdk::player::player_->gpos(a);
+		auto rd = sdk::util::math->gdst_3d(ap, o);
+		if (rd <= l && rd <= ibot_lootrange->iv)
+		{
+			l = rd;
+			rr = a;
+			continue;
+		}
 	}
-	if (GetTickCount64() > ltp)
+	if (rr)
 	{
-		ltp = GetTickCount64() + 350;
-		auto c = llist.back();
-		auto ps = sdk::player::player_->gpos(c);
-		if (!ps.valid()) { llist.pop_back(); ltp = 0; return false; }
-		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(ps.x / 100, ps.y / 100, ps.z / 100));
-		llist.pop_back();
-		return false;
+		auto lpos = sdk::player::player_->gpos(rr);
+		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, lpos.y / 100, (int)lpos.z / 100));
+		this->loot_act_k = *(int*)(rr+core::offsets::actor::actor_proxy_key);
+		sys::loot->act_id_cur = 0;
 	}
 
 	return false;
@@ -122,7 +136,7 @@ bool sys::c_roar_bot::has_aggro()
 void sys::c_roar_bot::skill()
 {
 	if ((this->npc_interacted && this->p_mode == 1)
-	|| (!this->ibot_storage_roar->iv && this->p_mode == 1))
+		|| (!this->ibot_storage_roar->iv && this->p_mode == 1))
 	{
 		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
 		if (!ctrl) return;
@@ -132,7 +146,7 @@ void sys::c_roar_bot::skill()
 		if (cv >= 800000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
 		return;
 	}
- 	if (this->skill_delay > GetTickCount64()) return;
+	if (this->skill_delay > GetTickCount64()) return;
 	auto an = sdk::player::player_->ganim(this->self);
 	if (!an.size()) return;
 	if ((strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP") && !this->skill_locked))
@@ -144,9 +158,9 @@ void sys::c_roar_bot::skill()
 		if (!scene) return;
 		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 800000.f;
 		return;
-	} 
+	}
 	else if (!strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP"))
-	{			
+	{
 		if (sdk::player::player_->gsp(this->self) < 65)
 		{
 			auto used = 0;
@@ -175,13 +189,14 @@ void sys::c_roar_bot::skill()
 }
 bool sys::c_roar_bot::snear()
 {
+	if (this->p_mode == 1) return false;
 	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
 	auto p = sdk::player::player_->gpos(this->self); auto ldst = 9999.f; sdk::util::c_vector3 lv;
 	this->cur_route.clear();
 	this->repath(0, 0);
 	for (auto a : this->cur_route)
 	{
-		auto d = sdk::util::math->gdst_3d(p,a.pos);
+		auto d = sdk::util::math->gdst_3d(p, a.pos);
 		if (d < ldst)
 		{
 			ldst = d;
@@ -191,7 +206,7 @@ bool sys::c_roar_bot::snear()
 	for (auto a : this->cur_route)
 	{
 		if (!a.pos.cmp(lv)) this->cur_route.pop_front();
-		else 
+		else
 		{
 			sdk::util::log->add("set start to nearest pos");
 			break;
@@ -201,13 +216,12 @@ bool sys::c_roar_bot::snear()
 }
 void sys::c_roar_bot::reset()
 {
-	this->cur_route.clear();
+	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear();
 	this->p_mode = 0;
 	this->reversed = 0;
 	this->s_npc = "NONE";
 	this->s_scr = "NONE";
 	this->lp.clear();
-	this->repath(0, 0);
 }
 void sys::c_roar_bot::gpoint()
 {
@@ -284,7 +298,7 @@ void sys::c_roar_bot::record()
 	if (!lp.valid())
 	{
 		this->grind.clear(); this->allowed_sell_items.clear(); this->store.clear();
-		lp = p; 
+		lp = p;
 		if (this->recording_g) this->grind.push_back(p);
 		if (this->recording_s) this->store.emplace_back(p, "NONE", "NONE", false);
 		return;
@@ -473,7 +487,7 @@ void sys::c_roar_bot::work(uint64_t s)
 		{
 			auto obj = this->cur_route[a];
 			if (obj.special_event) this->cur_route.erase(this->cur_route.begin() + a);
-		}		
+		}
 		sdk::util::log->add("repathed SP conform", sdk::util::e_info, true);
 	}
 	//
@@ -492,7 +506,7 @@ void sys::c_roar_bot::work(uint64_t s)
 					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 					this->f_npc_interaction(sdk::player::player_->npcs.front().ptr);
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
-					this->cur_route.pop_front();					
+					this->cur_route.pop_front();
 					return;
 				}
 				else if (cur_point.script != "NONE")//scr

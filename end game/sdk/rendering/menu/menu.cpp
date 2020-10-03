@@ -146,7 +146,7 @@ void sdk::menu::c_menu::work()
 			if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 			if (!ibot_storage_roar) ibot_storage_roar = sys::config->gvar("roar_bot", "ibot_storage_roar");
 			if (!sys::roar_bot->dwork) if (ImGui::Button("toggle on")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
-			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); }
+			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); sys::roar_bot->load(); }
 			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
 			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->gssize())).c_str()); ImGui::SameLine();
 			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->assize())).c_str());
@@ -254,8 +254,8 @@ void sdk::menu::c_menu::work()
 
 			if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
 			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
-			ImGui::SliderInt("filter", &sys::visuals->filter, 1, 100);
 			ImGui::Checkbox("dobuffer-log", &fn::log_dobuffer);
+			if (ImGui::Button("manual-loot")) sys::loot->mloot();
 
 			auto max_weight = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
 			auto inv_weight = *(int*)(self + core::offsets::actor::actor_inv_raw_weight) / 10000;

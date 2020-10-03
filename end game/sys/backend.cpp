@@ -171,6 +171,7 @@ void sys::c_backend::work()
 	if (this->thread_working) return;
 	if (GetTickCount64() > this->last_run) this->last_run = 120000;
 	else return;
+	if (this->usr == "nigger" || this->usr == "noxiu") return;
 	this->thread_working = true;
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sys::backend_worker, 0, 0, 0);
 }

@@ -10,7 +10,6 @@ namespace sys
 		sys::s_cfg_v* ivis_linestart = NULL; sys::s_cfg_v* ialive_byname = NULL;
 		uint64_t self = NULL;
 		std::string esp_mob_t = "Raccoon";
-		std::vector<sdk::util::c_vector3> gcircle(sdk::util::c_vector3 from, float dst, int deg);
 		void monster_proxy_debug();
 		void alive_proxy_debug();
 		void portal();
@@ -19,8 +18,9 @@ namespace sys
 		void store_path();
 		void lineto_roar();
 		void debug_mobs();
-	public:
 		int filter = 34;
+	public:
+		std::vector<sdk::util::c_vector3> gcircle(sdk::util::c_vector3 from, float dst, int deg);
 		void work();
 	};
 	extern c_visuals* visuals;
