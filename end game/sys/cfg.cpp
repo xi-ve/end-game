@@ -105,6 +105,7 @@ void sys::c_config::vars()
 	this->proc("rebuffer", "string_buffs", "");
 	this->proc("keybinds", "itp_key", "96");
 	this->proc("keybinds", "ilock_key", "116"); 
+	this->proc("overlay", "ioverlay_toggled", "1");
 	//locals
 
 }

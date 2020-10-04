@@ -115,7 +115,9 @@ namespace sdk
 			int selected_whitelist = 0; float t = 1.1f; char ct[128] = "def.28"; int ps = 0; int si = 0; int ni = 0; int is_scr = 0; int witem_s = 0;
 			int selected_buff = 0; int selected_buff_item = 0; int selected_packet = 0;
 
-			bool test_roar_state = false;
+			bool overlay_moveable = false; int overlay_selected_id = 0; bool overlay_active = true;
+			sys::s_cfg_v* ioverlay_toggled = NULL;
+			void overlay(bool* acti);
 
 			char dscr[128];
 			void tab(size_t Index, const char* Text, int height);

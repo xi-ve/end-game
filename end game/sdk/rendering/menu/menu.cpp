@@ -21,6 +21,31 @@ namespace ImGui
 			static_cast<void*>(&values), values.size());
 	}
 }
+void sdk::menu::c_menu::overlay(bool* acti)
+{
+	const float DISTANCE = 10.0f;
+	static bool corner = 0;
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	if (corner != 1)
+	{
+		window_flags |= ImGuiWindowFlags_NoMove;
+	}
+	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+	if (ImGui::Begin("info-overlay", acti, window_flags))
+	{
+		char buf[128];
+		sprintf(buf, "info-panel %c", "|/-\\"[(int)(ImGui::GetTime() / 0.25f) & 3]);
+		ImGui::Text(buf);
+		if (ImGui::BeginPopupContextWindow())
+		{
+			if (ImGui::MenuItem("move-overlay", NULL, corner == 1)) corner = !corner;			
+			if (acti && ImGui::MenuItem("disable-overlay")) this->ioverlay_toggled->iv = 0;
+			ImGui::EndPopup();
+		}
+	}
+	ImGui::End();
+}
 void sdk::menu::c_menu::tab(size_t Index, const char* Text, int height)
 {
 	if (this->TabHeight == 0) this->TabHeight = height;
@@ -205,6 +230,12 @@ bool sdk::menu::c_menu::setup()
 				{"roar-start     "  , 0, "roar_bot", "ivis_linestart", true},
 				{"roar-pauses    "  , 0, "visuals", "ienable_roar_path_pauses", false},
 				{"show-portals   "  , 0, "visuals", "ienable_portal", false}
+			}
+		},
+		{
+			{"menu-related"},
+			{
+				{"info-overlay", 0, "overlay", "ioverlay_toggled", false}
 			}
 		}
 		}
@@ -542,7 +573,7 @@ void sdk::menu::c_menu::work_tabs()
 }
 void sdk::menu::c_menu::work()
 {
-
+	if (!this->ioverlay_toggled) this->ioverlay_toggled = sys::config->gvar("overlay", "ioverlay_toggled");
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -603,6 +634,15 @@ void sdk::menu::c_menu::work()
 		style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
 		style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 		this->was_setup = true;
+	}
+	if (ioverlay_toggled->iv)
+	{
+		this->overlay((bool*)this->ioverlay_toggled->iv);
+		if (!this->menu_active)
+		{
+			ImGui::Render();
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		}
 	}
 	if (!this->menu_active) return;
 	this->work2(); 
