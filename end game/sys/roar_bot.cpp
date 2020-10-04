@@ -191,6 +191,7 @@ bool sys::c_roar_bot::snear()
 {
 	if (this->p_mode == 1) return false;
 	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
+	if (!this->self) return false;
 	auto p = sdk::player::player_->gpos(this->self); auto ldst = 9999.f; sdk::util::c_vector3 lv;
 	this->cur_route.clear();
 	this->repath(0, 0);

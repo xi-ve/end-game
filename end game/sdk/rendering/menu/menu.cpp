@@ -73,7 +73,7 @@ bool sdk::menu::c_menu::setup()
 		{
 		{	{"roar-bot"},
 			{
-				{"toggel_switch", 5, "", "", false, [&]() 
+				{"toggel_switch", 5, "", "", true, [&]() 
 					{ 
 						if (!sys::roar_bot->dwork)
 						{
@@ -85,12 +85,77 @@ bool sdk::menu::c_menu::setup()
 						}
 					}
 				},
-				{"roar_set_button_manual", 5, "", "", true, [this]()
+				{"roar_set_button_manual", 5, "", "", false, [this]()
 					{
+						if (ImGui::Button("re-list")) sdk::util::file->update();
+						ImGui::SameLine();
 						if (ImGui::Button("load")) { sys::roar_bot->pathname = string_last_path->cin; string_last_path->rval = string_last_path->cin; strcpy(string_last_path->cin, string_last_path->cin); sys::roar_bot->load(); }
 					}
 				},
-				{"##rbpath_by_name", 3, "roar_bot", "string_last_path", false}
+				{"##rbpath_by_name", 3, "roar_bot", "string_last_path", false},
+				{"combo_path_list", 5, "","",false, [this]() 
+					{
+						if (sdk::util::file->roar_paths.size())
+						{
+							ImGui::PushItemWidth(125); ImGui::SameLine();
+							ImGui::Combo2("##rb-paths-combo", &this->ps, sdk::util::file->roar_paths);
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no paths found");
+					}
+				},
+				{"recording_stuff", 5, "", "", false, [this]()
+					{
+						if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
+						if (!sys::roar_bot->recording_s && !sys::roar_bot->recording_g) ImGui::SameLine();
+						if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
+						if (sys::roar_bot->recording_g)
+						{
+							ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
+							if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
+						}
+						if (si == 0 && sys::roar_bot->recording_s)
+						{
+							sys::roar_bot->store_can_path = true;
+							if (ImGui::Button("done-store-path")) si++;
+						}
+						if (si == 1 && sys::roar_bot->recording_s)
+						{
+							sys::roar_bot->store_can_path = false;
+							auto npcs = sys::roar_bot->gnpcs();
+							if (npcs.size())
+							{
+								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
+								if (ImGui::Button("set-npc")) { sys::roar_bot->glua_actions = true; sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sscr("NONE"); sys::roar_bot->sepoint(); sys::roar_bot->snpc("NONE"); si++; }
+							}
+							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
+						}
+						if (si == 2 && sys::roar_bot->recording_s)
+						{
+							sys::roar_bot->glua_actions = true;
+							if (!sys::roar_bot->last_lua_actions.empty())
+							{
+								ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
+								if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
+							}
+							if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+						}
+					}
+				},
+				{"timescale", 2, "roar_bot", "ibot_timescale", true, new sdk::menu::s_imgui_intslider(400, 1000)}, 
+				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
+				{"sell_combo_options", 5, "", "", false, [this]() 
+					{
+						auto v = sys::roar_bot->gitm();
+						if (v.size())
+						{
+							ImGui::Combo2("##sell_combo_slct", &this->witem_s, v);
+							ImGui::SameLine();
+							if (ImGui::Button("add")) sys::roar_bot->sitem(sys::roar_bot->gitem_bn(v[this->witem_s]));
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no items found");
+					}
+				},
+				{"store-roar", 0, "roar_bot", "ibot_storage_roar", false}
 			}
 		}
 		})) return false;

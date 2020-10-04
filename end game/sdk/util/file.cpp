@@ -2,6 +2,7 @@
 #include "..\\..\\lib\win\dirent.h"
 void sdk::util::c_file::update()
 {
+	this->roar_paths.clear();
 	char r[MAX_PATH];
 	auto p = std::string(r, GetModuleFileNameA(NULL, r, MAX_PATH));
 	for (auto a = 0; a < 17; a++) p.pop_back();
