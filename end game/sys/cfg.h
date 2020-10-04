@@ -24,20 +24,21 @@ namespace sys
 			}
 			default: break;
 			}
+			if (t == 0) strcpy(cin, rval.c_str());
 			sdk::util::log->add(std::string(a).append(":").append(b).append(":").append(c).append(":").append(std::to_string(t)), sdk::util::e_info, true);
 		}
 		std::string table;
 		std::string val;
 		std::string rval;
-		char*		cin;
-		int iv = 0; float fv = 0; int t = 0; bool local = false;
+		char		cin[2048] = "none";
+		int iv = 0; float fv = 0.f; int t = 0; bool local = false;
 	};
 	class c_config
 	{
 	private:
 		std::vector<s_cfg_v*> cfg_list;
-		bool proc(std::string a, std::string b, std::string c, bool local = false);
 	public:
+		bool proc(std::string a, std::string b, std::string c, bool local = false);
 		s_cfg_v* gvar(std::string t, std::string v);
 		void read();
 		void save();

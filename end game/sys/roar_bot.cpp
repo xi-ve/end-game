@@ -468,6 +468,8 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	else return;
 	//
+	if (sdk::player::player_->ghp(this->self) <= 0) return;
+	//
 	this->skill();
 	//e.g auto scroll combine/event items
 	//

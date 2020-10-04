@@ -4,12 +4,13 @@ bool sys::c_config::proc(std::string a, std::string b, std::string c, bool local
 	if (a.empty() || b.empty()) return false;
 	if (this->gvar(a, b)) return false;
 	auto t = new sys::s_cfg_v(a, b, c);
+	t->local = local;
 	this->cfg_list.push_back(t);
 	return true;
 }
 sys::s_cfg_v* sys::c_config::gvar(std::string t, std::string v)
 {
-	for (auto a : this->cfg_list) if (strstr(a->table.c_str(), t.c_str()) && strstr(a->val.c_str(), v.c_str())) return a;	
+	for (auto a : this->cfg_list) if (strstr(a->table.c_str(), t.c_str()) && strstr(a->val.c_str(), v.c_str())) return a;
 	return nullptr;
 }
 void sys::c_config::read()
@@ -99,6 +100,7 @@ void sys::c_config::vars()
 	this->proc("roar_bot", "iloot_tp", "1");
 	this->proc("roar_bot", "ibot_storage_roar", "1");
 	this->proc("roar_bot", "ivis_linestart", "1");
+	this->proc("roar_bot", "string_last_path", "def.28");
 	this->proc("rebuffer", "ienable", "0");
 	this->proc("rebuffer", "string_buffs", "");
 	this->proc("keybinds", "itp_key", "96");
