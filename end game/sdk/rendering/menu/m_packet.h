@@ -50,14 +50,32 @@ namespace sdk
 		};
 		class c_m_packet
 		{
-		private:
-			char packet_body[24000];
+		public:
+			char packet_body[2048];
 			int selected_packet = 0;
 			int packet_opcode = 1337;
 			int packet_size = 420;
+			std::vector<std::string> split(const std::string& str, int splitLength)
+			{
+				int NumSubstrings = str.length() / splitLength;
+				std::vector<std::string> ret;
+
+				for (auto i = 0; i < NumSubstrings; i++)
+				{
+					ret.push_back(str.substr(i * splitLength, splitLength));
+				}
+
+				// If there are leftover characters, create a shorter item at the end.
+				if (str.length() % splitLength != 0)
+				{
+					ret.push_back(str.substr(splitLength * NumSubstrings));
+				}
+
+
+				return ret;
+			}
 			std::vector<s_packet>   packets;		/*hold all packets received by the game with their packet contents*/
 			bool					register_packet(uint64_t ptr, short packet_size);
-		public:
 			void					reset_packets();/*this will reset the packet buffer*/
 			std::vector<s_packet>   get_all_packets();
 			/*returns the vector containing all registered packets*/

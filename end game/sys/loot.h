@@ -51,6 +51,8 @@ namespace sys
 		void     add_blacklist(int idx);
 		void     reset_whitelist();
 		void     reset_blacklist();
+		std::vector<std::string> gwl();
+		std::vector<std::string> gbl();
 		void starget(int k);
 		void work(uint64_t self);
 	};

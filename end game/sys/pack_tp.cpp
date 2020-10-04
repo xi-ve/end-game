@@ -132,6 +132,7 @@ void sys::c_pack_tp::capture_packet(ByteBuffer buf, uint64_t pack, int size, int
 				break;
 			}
 		}
+		if (!sys::pack_tp->time_signature) return;
 		for (auto c = 0; c < size; c++)
 		{
 			auto as_flt = *(float*)((uint64_t)pack + c);
@@ -142,6 +143,7 @@ void sys::c_pack_tp::capture_packet(ByteBuffer buf, uint64_t pack, int size, int
 		}
 		if (sys::pack_tp->x_pos.size() < 9) 
 		{
+			sys::pack_tp->packet_id = 0;
 			sys::pack_tp->x_pos.clear(); 
 			return;
 		}

@@ -68,6 +68,7 @@ bool sys::c_roar_bot::has_lootables(sdk::util::c_vector3 spp)
 	if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
 	if (sys::loot->loot_proxys.empty()) return 0;
 	auto l = 9999.f; auto rr = uint64_t(0);
+	auto selfpos = sdk::player::player_->gpos(this->self);
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
 		auto a = sys::loot->loot_proxys[b];
@@ -80,6 +81,7 @@ bool sys::c_roar_bot::has_lootables(sdk::util::c_vector3 spp)
 		auto rd = sdk::util::math->gdst_3d(ap, spp);
 		if (rd <= l && rd <= ibot_lootrange->iv)
 		{
+			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
 			l = rd;
 			rr = a;
 			continue;
@@ -93,6 +95,8 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 
 	auto has = this->has_lootables(o);
 	if (!has) { sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(o.x / 100, o.y / 100, o.z / 100)); return true; }
+	
+	auto selfpos = sdk::player::player_->gpos(this->self);
 
 	auto l = 9999.f; auto rr = uint64_t(0);
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
@@ -107,6 +111,7 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 		auto rd = sdk::util::math->gdst_3d(ap, o);
 		if (rd <= l && rd <= ibot_lootrange->iv)
 		{
+			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
 			l = rd;
 			rr = a;
 			continue;
@@ -592,6 +597,7 @@ void sys::c_roar_bot::work(uint64_t s)
 			}
 			else
 			{
+				if (this->npc_interacted) this->npc_interacted = false;
 				sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 				this->cur_route.pop_front();
 				return;

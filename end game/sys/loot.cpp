@@ -79,6 +79,18 @@ void sys::c_loot::reset_blacklist()
 	blacklistv->rval.clear();
 	this->blacklist.clear();
 }
+std::vector<std::string> sys::c_loot::gwl()
+{
+	auto r = std::vector<std::string>();
+	for (auto a : this->whitelist) r.push_back(std::to_string(a));
+	return r;
+}
+std::vector<std::string> sys::c_loot::gbl()
+{
+	auto r = std::vector<std::string>();
+	for (auto a : this->blacklist) r.push_back(std::to_string(a));
+	return r;
+}
 void sys::c_loot::starget(int k)
 {
 	this->act_id_cur = k;

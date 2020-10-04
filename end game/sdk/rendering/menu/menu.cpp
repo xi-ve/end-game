@@ -71,7 +71,7 @@ bool sdk::menu::c_menu::setup()
 	if (!string_last_path) string_last_path = sys::config->gvar("roar_bot", "string_last_path");
 	if (!this->add_tab("roar-bot",
 		{
-		{	{"roar-bot"},
+		{	{"core-options"},
 			{
 				{"toggel_switch", 5, "", "", true, [&]() 
 					{ 
@@ -84,16 +84,41 @@ bool sdk::menu::c_menu::setup()
 							if (ImGui::Button("disable-bot-rb")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); sys::roar_bot->load(); }
 						}
 					}
-				},
+				},								
+				{"timescale", 2, "roar_bot", "ibot_timescale", true, new sdk::menu::s_imgui_intslider(400, 1000)}, 
+				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
+				{"store-roar", 0, "roar_bot", "ibot_storage_roar", true},				
+				{"store-test", 5, "", "", false, [this]() 
+					{
+						ImGui::Checkbox("store-test", &sys::roar_bot->force_store);
+					}}
+			}			
+		},
+		{
+			{"path-utils"},
+			{
 				{"roar_set_button_manual", 5, "", "", false, [this]()
 					{
 						if (ImGui::Button("re-list")) sdk::util::file->update();
 						ImGui::SameLine();
-						if (ImGui::Button("load")) { sys::roar_bot->pathname = string_last_path->cin; string_last_path->rval = string_last_path->cin; strcpy(string_last_path->cin, string_last_path->cin); sys::roar_bot->load(); }
+						if (ImGui::Button("load"))
+						{
+							if (sys::roar_bot->pathname != string_last_path->cin)
+							{
+								sys::roar_bot->pathname = string_last_path->cin;
+								string_last_path->rval = string_last_path->cin;
+							}
+							else
+							{
+								sys::roar_bot->pathname = sdk::util::file->roar_paths[this->ps];
+								string_last_path->rval = sdk::util::file->roar_paths[this->ps];
+							}
+							sys::roar_bot->load();
+						}
 					}
 				},
 				{"##rbpath_by_name", 3, "roar_bot", "string_last_path", false},
-				{"combo_path_list", 5, "","",false, [this]() 
+				{"combo_path_list", 5, "","",false, [this]()
 					{
 						if (sdk::util::file->roar_paths.size())
 						{
@@ -103,6 +128,19 @@ bool sdk::menu::c_menu::setup()
 						else ImGui::TextColored(ImColor(255,0,0), "no paths found");
 					}
 				},
+				{"sell_combo_options", 5, "", "", false, [this]()
+					{
+						auto v = sys::roar_bot->gitm();
+						if (v.size())
+						{
+							ImGui::PushItemWidth(125);
+							ImGui::Combo2("##sell_combo_slct", &this->witem_s, v);
+							ImGui::SameLine();
+							if (ImGui::Button("add")) sys::roar_bot->sitem(sys::roar_bot->gitem_bn(v[this->witem_s]));
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no items found");
+					}
+				},
 				{"recording_stuff", 5, "", "", false, [this]()
 					{
 						if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
@@ -110,6 +148,7 @@ bool sdk::menu::c_menu::setup()
 						if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
 						if (sys::roar_bot->recording_g)
 						{
+							ImGui::PushItemWidth(125);
 							ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
 							if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
 						}
@@ -124,6 +163,7 @@ bool sdk::menu::c_menu::setup()
 							auto npcs = sys::roar_bot->gnpcs();
 							if (npcs.size())
 							{
+								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
 								if (ImGui::Button("set-npc")) { sys::roar_bot->glua_actions = true; sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sscr("NONE"); sys::roar_bot->sepoint(); sys::roar_bot->snpc("NONE"); si++; }
 							}
@@ -134,31 +174,18 @@ bool sdk::menu::c_menu::setup()
 							sys::roar_bot->glua_actions = true;
 							if (!sys::roar_bot->last_lua_actions.empty())
 							{
+								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
 								if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
 							}
 							if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 						}
 					}
-				},
-				{"timescale", 2, "roar_bot", "ibot_timescale", true, new sdk::menu::s_imgui_intslider(400, 1000)}, 
-				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
-				{"sell_combo_options", 5, "", "", false, [this]() 
-					{
-						auto v = sys::roar_bot->gitm();
-						if (v.size())
-						{
-							ImGui::Combo2("##sell_combo_slct", &this->witem_s, v);
-							ImGui::SameLine();
-							if (ImGui::Button("add")) sys::roar_bot->sitem(sys::roar_bot->gitem_bn(v[this->witem_s]));
-						}
-						else ImGui::TextColored(ImColor(255, 0, 0), "no items found");
-					}
-				},
-				{"store-roar", 0, "roar_bot", "ibot_storage_roar", false}
+				}
 			}
 		}
-		})) return false;
+		}))
+		return false;
 	if (!this->add_tab("visuals",
 		{ 
 		{	{"monster-actor"},
@@ -177,21 +204,206 @@ bool sdk::menu::c_menu::setup()
 				{"roar-pauses    "  , 0, "visuals", "ienable_roar_path_pauses", false},
 				{"show-portals   "  , 0, "visuals", "ienable_portal", false}
 			}
+		}
+		}
+	)) return false;
+	if (!this->add_tab("packets",
+		{
+		{
+			{"teleporter"},
+			{
+				{"tele-options", 5, "", "", false, [this]() 
+					{
+						ImGui::Checkbox("setup-packet", (bool*)&sys::pack_tp->get_packet_again);
+						if (sys::pack_tp->x_pos.size())
+						{
+							ImGui::TextColored(ImColor(0, 255, 0), std::string("timestamp:").append(std::to_string(sys::pack_tp->time_signature)).c_str());
+							ImGui::TextColored(ImColor(0, 255, 0), std::string("opcode   :").append(std::to_string(sys::pack_tp->packet_id)).c_str());
+							ImGui::TextColored(ImColor(0, 255, 0), std::string("packet is captured!").c_str());
+							if (ImGui::Button("tp-to-marker")) sys::pack_tp->teleport_to_marker();
+						}
+					}
+				}
+			}
 		},
 		{
-			{"menu-tests"},
+			{"functions"},
 			{
-				{"test-button"	 , 4 , "", "", false, (void*)test_func},
-				{"test-input"	 , 3 , "locals", "string_test_input", false},
-				{"test-input-vt" , 3 , "", "", false, (void*)sdk::menu::menu->test_input_ptr},
-				{"test-slider-int", 2 , "roar_bot", "ibot_timescale", false, new s_imgui_intslider(250, 1000)},
-				{"test-slider-fl", 1 , "roar_bot", "ibot_timescale", false,	 new s_imgui_floatslider(0.1f, 10.f)},
-				{"function-call", 5, "","", false, (void*)sdk::menu::visuals_menu}
+				{"allow-trial-chars", 0, "packet", "ibypass_trial", true},
+				{"cursor-tp-packet ", 0, "packet", "iteleport_gen2", false}
+			}
+		},
+		{
+			{"packet-sniffer"},
+			{
+				{"editor_part", 5 , "", "", false, [this]()
+					{
+						auto v = sdk::menu::m_packet->get_all_packets_names();
+						if (v.size())
+						{
+							ImGui::PushItemWidth(125);
+							ImGui::Combo2("##packets_captured", &this->selected_packet, v);
+							auto p = v[this->selected_packet];
+							if (p.size())
+							{
+								auto pack = sdk::menu::m_packet->get_packet(p);
+								auto pack_i = sdk::menu::m_packet->get_packet_info(pack);
+								if (ImGui::Button("copy-body"))
+								{
+									OpenClipboard(lib::d3d11->h); EmptyClipboard();
+									auto hg = GlobalAlloc(GMEM_MOVEABLE, pack_i.size() + 1);
+									if (!hg) { CloseClipboard(); return; }
+									memcpy(GlobalLock(hg), pack_i.c_str(), pack_i.size() + 1);
+									GlobalUnlock(hg); SetClipboardData(CF_TEXT, hg); CloseClipboard(); GlobalFree(hg);
+								}
+								ImGui::SameLine();
+								if (ImGui::Button("re-send")) if (pack.timestamp_pos) pack.data.putLong(GetTickCount64(), pack.timestamp_pos);
+								ImGui::TextColored(ImColor(0, 255, 0), std::string("size     :").append(std::to_string(pack.size)).c_str());
+								ImGui::TextColored(ImColor(0, 255, 0), std::string("opcode   :").append(std::to_string(pack.opcode)).c_str());
+								if (pack.timestamp_pos) ImGui::TextColored(ImColor(0, 255, 0), std::string("timestamp:").append(std::to_string(pack.timestamp_pos)).c_str());
+								if (pack.data.buf.size() < 27) ImGui::Text(std::string("body     :").append(pack_i).c_str());
+								else
+								{									
+									ImGui::Text("body     :"); std::string buf;
+									auto parts = sdk::menu::m_packet->split(pack_i, 27);
+									for (auto a : parts) ImGui::Text(a.c_str());
+								}
+							}
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no packets registered");
+					}				
+				}
+			}
+		},
+		{
+			{"packet-creator"},
+			{
+				{"body   ", 3, "", "", false, (void*)sdk::menu::m_packet->packet_body},
+				{"packet-creation", 5, "", "", false, [this]() 
+					{
+						ImGui::PushItemWidth(125); ImGui::InputInt("opcode", &sdk::menu::m_packet->packet_opcode);
+						ImGui::PushItemWidth(125); ImGui::InputInt("size  ", &sdk::menu::m_packet->packet_size);
+						if (ImGui::Button("send"))
+						{
+							auto buf = sdk::menu::m_packet->convert_char_to_buff(sdk::menu::m_packet->packet_body);
+							auto tm = GetTickCount64() - 180000;
+							auto tx = GetTickCount64() + 180000;
+							auto time = 0;
+							for (auto a = 0; a < buf.buf.size(); a++)
+							{
+								auto ul = *(uint64_t*)(&buf.buf + a);
+								if (ul >= tm && ul <= tx) { time = a; break; }
+							}
+							if (time) buf.putLong(GetTickCount64(), time);
+							fn::send_packet(buf, sdk::menu::m_packet->packet_opcode, sdk::menu::m_packet->packet_size);
+						}
+					}
+				}
+			}
+		}
+		}
+		)) return false;
+	if (!this->add_tab("looting",
+		{
+		{
+			{"core-options"},
+			{
+				{"enable      ", 0, "loot", "ienable", true},
+				{"filtering", 0, "loot", "ienable_filter", false},
+				{"allow-grey  ", 0, "auto_loot", "ipick_grey", true},
+				{"allow-green", 0, "auto_loot", "ipick_green", false},
+				{"allow-blue  ", 0, "auto_loot", "ipick_blue", true},
+				{"allow-orange", 0, "auto_loot", "ipick_orange", false},
+				{"allow-yellow", 0, "auto_loot", "ipick_yellow", false}
+			}			
+		},
+		{
+			{"item-filter"},
+			{
+				{"filtering_menu", 5, "", "", false, [this]()
+					{
+						auto v = sdk::player::player_->ginv();
+						if (v.size())
+						{
+							ImGui::PushItemWidth(125);
+							ImGui::Combo2("##select-item", &selected_whitelist, v);
+							if (ImGui::Button("to-whitelist")) sys::loot->add_whitelist(sdk::player::player_->gitm_by_name(v[selected_whitelist])); ImGui::SameLine();
+							if (ImGui::Button("to-blacklist")) sys::loot->add_blacklist(sdk::player::player_->gitm_by_name(v[selected_whitelist]));
+							if (ImGui::Button("clear-whitelist")) sys::loot->read_whitelist(); ImGui::SameLine();
+							if (ImGui::Button("clear-blacklist")) sys::loot->read_blacklist();
+						}
+						else ImGui::TextColored(ImColor(255 ,0, 0), "no items found");
+					}
+				}
+			}
+		},
+		{
+			{"set-items"},
+			{
+				{"display_cur_list", 5, "", "", false, [this]()
+					{
+						auto wl = sys::loot->gwl();
+						auto bl = sys::loot->gbl();
+						if (wl.size())
+						{
+							ImGui::Text("whitelist-objects");
+							for (auto a : wl) ImGui::Text(a.c_str());
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no entries in whitelist found");
+						if (bl.size())
+						{
+							ImGui::Text("blacklist-objects");
+							for (auto a : bl) ImGui::Text(a.c_str());
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no entries in blacklist found");
+					}
+				}
+			}
+		}
+		}
+		)) return false;	
+	if (!this->add_tab("buff-bot",
+		{
+		{
+			{"core-options"},
+			{
+				{"enable", 0, "rebuffer", "ienable", false},
+				{"buff_adding_part", 5 , "", "", false, [this]() 
+					{	
+						auto b = sys::rebuff->gbuffs();
+						auto i = sdk::player::player_->ginv();
+						if (b.size() && i.size())
+						{
+							ImGui::PushItemWidth(125); ImGui::Combo2("##buff_select", &this->selected_buff, b); ImGui::SameLine();
+							ImGui::PushItemWidth(125); ImGui::Combo2("##select_item", &this->selected_buff_item, i);
+							if (ImGui::Button("add")) sys::rebuff->add(b[this->selected_buff], sys::rebuff->gibyname(i[this->selected_buff_item]));
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no buffs/items found");
+					}		
+				}
+			}
+		},
+		{
+			{"set-buffs"},
+			{
+				{"listing-and-reset", 5, "", "", false, [this]() 
+					{
+						auto b = sys::rebuff->gabuffs();
+						if (b.size())
+						{
+							for (auto a : b)
+							{
+								ImGui::Text(std::string(a.n).append(" < > ").append(std::to_string(a.i)).c_str());
+							}
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no set buffs found");
+						if (ImGui::Button("reset")) sys::rebuff->reset();
+					}				
+				}
 			}
 		}
 		}
 	)) return false;
-	
 	return true;
 }
 bool sdk::menu::c_menu::add_tab(std::string n, std::vector<s_imgui_treenode> node)
@@ -224,6 +436,7 @@ void sdk::menu::c_menu::work_tabs()
 				if (ImGui::ArrowButton(a.name.c_str(), ImGuiDir_::ImGuiDir_Left)) a.toggle = !a.toggle; 
 				ImGui::SameLine(); ImGui::BulletText(a.name.c_str());
 	
+				ImGui::SetNextWindowSizeConstraints(ImVec2(150,50) ,ImVec2(500, 500));
 				ImGui::Begin(a.name.c_str(), 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
 				{
 					ImGui::TextColored(ImColor(0, 255, 0), a.name.c_str());
@@ -237,7 +450,12 @@ void sdk::menu::c_menu::work_tabs()
 								{
 								case 0://checkbox
 								{
-									ImGui::Checkbox(c.name.c_str(), (bool*)&c.cfg->iv);											
+									if (c.cfg != NULL) ImGui::Checkbox(c.name.c_str(), (bool*)&c.cfg->iv);
+									else
+									{
+										auto v = (bool*)(c.strct);
+										ImGui::Checkbox(c.name.c_str(), v);
+									}
 									break;
 								}
 								case 1://float slider
@@ -293,7 +511,6 @@ void sdk::menu::c_menu::work_tabs()
 			}
 		}
 	}
-	//ImGui::SetNextWindowPos(ImVec2(main_window_pos.x + width + 5, main_window_pos.y), ImGuiCond_::ImGuiCond_Appearing);
 }
 void sdk::menu::c_menu::work()
 {
@@ -304,335 +521,69 @@ void sdk::menu::c_menu::work()
 	//
 	if (!this->was_setup)
 	{
-		ImGui::StyleColorsDark();
+		ImGuiStyle* style = &ImGui::GetStyle();
+
+		style->WindowPadding = ImVec2(15, 15);
+		style->WindowRounding = 5.0f;
+		style->FramePadding = ImVec2(5, 5);
+		style->FrameRounding = 4.0f;
+		style->ItemSpacing = ImVec2(12, 8);
+		style->ItemInnerSpacing = ImVec2(8, 6);
+		style->IndentSpacing = 25.0f;
+		style->ScrollbarSize = 15.0f;
+		style->ScrollbarRounding = 9.0f;
+		style->GrabMinSize = 5.0f;
+		style->GrabRounding = 3.0f;
+
+		style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
+		style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		style->Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		style->Colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
+		style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+		style->Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+		style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style->Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		style->Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		style->Colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		style->Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		style->Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		style->Colors[ImGuiCol_Separator] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		style->Colors[ImGuiCol_SeparatorActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		style->Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+		style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+		style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+		style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+		style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+		style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 		this->was_setup = true;
 	}
 	if (!this->menu_active) return;
-	if (this->using_test_menu) { this->work2(); return; }
-
-	ImGui::Begin("  28802  ", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize);
-	{
-		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
-		this->tab(0, "pack-fn", 18);
-		this->tab(1, "pack-bypasses", 18);
-		this->tab(2, "looting", 18);
-		this->tab(3, "menu", 18);
-		this->tab(4, "roar-bot", 18);
-		this->tab(5, "visuals", 18);
-		this->tab(6, "debug-info", 18);
-		this->tab(7, "rebuffer", 18);
-		switch (this->ctab)
-		{
-		case 0://pack-fn
-		{
-			if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
-			ImGui::Checkbox("teleport-gen2", (bool*)&iteleport_gen2->iv);
-			ImGui::Checkbox("teleport-setup", (bool*)&sys::pack_tp->get_packet_again);
-			if (ImGui::Button("teleport-to-marker")) sys::pack_tp->teleport_to_marker();
-			break;
-		}
-		case 1://pack-bypasses
-		{
-			if (!ibypass_trial) ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
-			ImGui::Checkbox("trial-escape-bypass", (bool*)&ibypass_trial->iv);
-			break;
-		}
-		case 2://looting
-		{
-			if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
-			if (!iloot_enable_filter) iloot_enable_filter = sys::config->gvar("loot", "ienable_filter");
-			if (!grey) grey = sys::config->gvar("auto_loot", "ipick_grey");
-			if (!green) green = sys::config->gvar("auto_loot", "ipick_green");
-			if (!blue) blue = sys::config->gvar("auto_loot", "ipick_blue");
-			if (!orange) orange = sys::config->gvar("auto_loot", "ipick_orange");
-			if (!yellow) yellow = sys::config->gvar("auto_loot", "ipick_yellow");
-			ImGui::Checkbox("enable", (bool*)&iloot_enable->iv); ImGui::SameLine();
-			ImGui::Checkbox("use-filter", (bool*)&iloot_enable_filter->iv);
-
-			ImGui::Checkbox("pick-grey", (bool*)&grey->iv); ImGui::SameLine();
-			ImGui::Checkbox("pick-green", (bool*)&green->iv); ImGui::SameLine();
-			ImGui::Checkbox("pick-blue", (bool*)&blue->iv); ImGui::SameLine();
-			ImGui::Checkbox("pick-orange", (bool*)&orange->iv); ImGui::SameLine();
-			ImGui::Checkbox("pick-yellow", (bool*)&yellow->iv);
-			if (s)
-			{
-				if (*(BYTE*)(s + core::offsets::actor::actor_can_play))
-				{
-					auto il = sdk::player::player_->ginv();
-					if (il.size() > 2)
-					{						
-						ImGui::Combo2("select-item", &selected_whitelist, il);
-						if (ImGui::Button("add-item-to-whitelist")) sys::loot->add_whitelist(sdk::player::player_->gitm_by_name(il[selected_whitelist])); ImGui::SameLine();
-						if (ImGui::Button("add-item-to-blacklist")) sys::loot->add_blacklist(sdk::player::player_->gitm_by_name(il[selected_whitelist]));
-						if (ImGui::Button("clear-whitelist")) sys::loot->read_whitelist(); ImGui::SameLine();
-						if (ImGui::Button("clear-blacklist")) sys::loot->read_blacklist();
-					}
-				}
-			}
-			if (!sys::loot->loot_proxys.empty())
-			{
-				ImGui::Text("loot-acs"); ImGui::Separator();
-				for (auto b : sys::loot->loot_proxys)
-				{
-					ImGui::Text(std::string("actor:").append(sdk::util::log->as_hex(b)).c_str());
-				}
-			}
-			break;
-		}
-		case 3://menu
-		{
-			if (ImGui::Button("reload config")) sys::config->read();
-			if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
-			ImGui::Text(std::string("ikey_tp:").append(std::to_string(ikey_ctp->iv)).c_str());
-			break;
-		}
-		case 4://roar-bot
-		{
-			if (!ibot_timescale) ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
-			if (!ibot_lootrange) ibot_lootrange = sys::config->gvar("roar_bot", "ibot_lootrange");
-			if (!ibot_storage_roar) ibot_storage_roar = sys::config->gvar("roar_bot", "ibot_storage_roar");
-			if (!sys::roar_bot->dwork) if (ImGui::Button("toggle on")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
-			if (sys::roar_bot->dwork) if (ImGui::Button("toggle off")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); sys::roar_bot->load(); }
-			ImGui::Text(std::string("gp:").append(std::to_string(sys::roar_bot->gpsize())).c_str()); ImGui::SameLine();
-			ImGui::Text(std::string("sp:").append(std::to_string(sys::roar_bot->gssize())).c_str()); ImGui::SameLine();
-			ImGui::Text(std::string("si:").append(std::to_string(sys::roar_bot->assize())).c_str());
-			ImGui::InputText("path-name", ct, 128); ImGui::SameLine(); if (ImGui::Button("set-path##ct")) sys::roar_bot->pathname = ct;
-			if (!sdk::util::file->roar_paths.empty())
-			{
-				ImGui::Combo2("##path-select", &ps, sdk::util::file->roar_paths); ImGui::SameLine();
-				if (ImGui::Button("set-path##cs")) sys::roar_bot->pathname = sdk::util::file->roar_paths[ps];
-			}
-			if (ImGui::Button("load path")) sys::roar_bot->load(); ImGui::SameLine(); 
-			if (ImGui::Button("reset-full")) sys::roar_bot->reset(); ImGui::SameLine();
-			if (ImGui::Button("test-SP")) sys::roar_bot->force_store = true;
-
-			ImGui::SliderInt("bot-timescale(ms)", &ibot_timescale->iv, 250, 1000);
-			ImGui::SliderInt("bot-loot-range", &ibot_lootrange->iv, 300, 800);
-			//
-			if (sdk::player::player_->inventory_items.size())
-			{
-				auto v = sys::roar_bot->gitm();
-				if (v.size()) ImGui::Combo2("##iselect", &this->witem_s, v);
-				if (ImGui::Button("add-to-sell-list")) sys::roar_bot->sitem(sys::roar_bot->gitem_bn(v[this->witem_s]));
-			}
-			//
-			ImGui::Checkbox("storage-use-roar", (bool*)&ibot_storage_roar->iv);
-			if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
-			if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
-			if (sys::roar_bot->recording_g)
-			{
-				ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
-				if (ImGui::Button("add-pause")) sys::roar_bot->gppoint(t);
-			}
-			if (si == 0 && sys::roar_bot->recording_s)
-			{
-				sys::roar_bot->store_can_path = true;
-				if (ImGui::Button("done-store-path")) si++;
-			}
-			if (si == 1 && sys::roar_bot->recording_s)
-			{
-				sys::roar_bot->store_can_path = false;
-				auto npcs = sys::roar_bot->gnpcs(); 
-				if (npcs.size())
-				{
-					ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
-					if (ImGui::Button("set-npc")) { sys::roar_bot->glua_actions = true; sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sscr("NONE"); sys::roar_bot->sepoint(); sys::roar_bot->snpc("NONE"); si++; }
-				}
-				else ImGui::TextColored(ImColor(255, 0, 0), "no npc nearby!");
-			}
-			if (si == 2 && sys::roar_bot->recording_s)
-			{
-				sys::roar_bot->glua_actions = true;
-				if (!sys::roar_bot->last_lua_actions.empty())
-				{
-					ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
-					if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
-				}
-				if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
-			}			
-			break;
-		}
-		case 5://visuals
-		{
-			if (!iroar_path) iroar_path = sys::config->gvar("visuals", "ienable_roar_path");
-			if (!iroar_pause) iroar_pause = sys::config->gvar("visuals", "ienable_roar_path_pauses");
-			if (!ienable_portal) ienable_portal = sys::config->gvar("visuals", "ienable_portal");
-			if (!ienable_debug) ienable_debug = sys::config->gvar("visuals", "ienable_debug");
-			if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
-			if (!ivis_linestart) ivis_linestart = sys::config->gvar("roar_bot", "ivis_linestart");
-			if (!ialive_byname) ialive_byname = sys::config->gvar("visuals", "ialive_byname");
-			ImGui::Checkbox("roar-path ", (bool*)&iroar_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-pause", (bool*)&iroar_pause->iv); ImGui::SameLine(); ImGui::Checkbox("portals", (bool*)&ienable_portal->iv); ImGui::SameLine();  ImGui::Checkbox("mob-debug", (bool*)&ienable_debug->iv); 
-			ImGui::Checkbox("store-path", (bool*)&istore_path->iv); ImGui::SameLine(); ImGui::Checkbox("roar-start-line", (bool*)&ivis_linestart->iv); ImGui::SameLine(); ImGui::Checkbox("alive-by-name", (bool*)&ialive_byname->iv);
-			ImGui::InputText("mob-name-esp", mob_target, 128);
-			//
-			if (iroar_path->iv && istore_path->iv) { istore_path->iv = 0; iroar_path->iv = 0; }
-			break;
-		}
-		case 6://debug
-		{
-			auto self = *(uint64_t*)(core::offsets::actor::actor_self);
-			if (!self) 
-			{
-				if (ImGui::Button("use-test-menu"))
-				{
-					ImGuiStyle* style = &ImGui::GetStyle();
-
-					style->WindowPadding = ImVec2(15, 15);
-					style->WindowRounding = 5.0f;
-					style->FramePadding = ImVec2(5, 5);
-					style->FrameRounding = 4.0f;
-					style->ItemSpacing = ImVec2(12, 8);
-					style->ItemInnerSpacing = ImVec2(8, 6);
-					style->IndentSpacing = 25.0f;
-					style->ScrollbarSize = 15.0f;
-					style->ScrollbarRounding = 9.0f;
-					style->GrabMinSize = 5.0f;
-					style->GrabRounding = 3.0f;
-
-					style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
-					style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-					style->Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-					style->Colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-					style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-					style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
-					style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
-					style->Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-					style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-					style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-					style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
-					style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-					style->Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-					style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-					style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
-					style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-					style->Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
-					style->Colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
-					style->Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-					style->Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-					style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-					style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-					style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-					style->Colors[ImGuiCol_Separator] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-					style->Colors[ImGuiCol_SeparatorActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-					style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-					style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-					style->Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
-					style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-					style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
-					style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-					style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
-					style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
-
-					this->using_test_menu = true;
-				}
-
-				ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
-				for (auto a : n) ImGui::Text(a.c_str());
-
-				break;
-			}
-			ImGui::Text(std::string("unsealed-pets:").append(std::to_string(sdk::player::player_->unsealed_pets.size())).c_str());
-			ImGui::Text(std::string("sealed-pets  :").append(std::to_string(sdk::player::player_->sealed_pets.size())).c_str());
-
-			if (sdk::player::player_->sealed_pets.size())
-			{
-				for (auto a : sdk::player::player_->sealed_pets)
-				{
-					auto aws = std::wstring(a.n); auto as = std::string(aws.begin(), aws.end());
-					ImGui::Text(std::string("(sealed)   pet:").append(as).append(" id:").append(std::to_string(a.i)).append(" hunger:").append(std::to_string(a.h)).c_str());
-				}
-			}
-			if (sdk::player::player_->unsealed_pets.size())
-			{
-				for (auto a : sdk::player::player_->unsealed_pets)
-				{
-					auto aws = std::wstring(a.n); auto as = std::string(aws.begin(), aws.end());
-					ImGui::Text(std::string("(unsealed) pet:").append(as).append(" id:").append(std::to_string(a.i)).append(" hunger:").append(std::to_string(a.h)).c_str());
-				}
-			}
-
-			if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
-			ImGui::Checkbox("ent-alt", (bool*)&ient_alt->iv);
-			ImGui::Checkbox("dobuffer-log", &fn::log_dobuffer);
-			if (ImGui::Button("manual-loot")) sys::loot->mloot();
-
-			auto max_weight = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
-			auto inv_weight = *(int*)(self + core::offsets::actor::actor_inv_raw_weight) / 10000;
-			auto inv_gear_weight = *(int*)(self + core::offsets::actor::actor_inv_gear_weight) / 10000;
-			ImGui::Text(std::string("max:").append(std::to_string(max_weight)).c_str());
-			ImGui::Text(std::string("inv w:").append(std::to_string(inv_weight)).c_str());
-			ImGui::Text(std::string("gear w:").append(std::to_string(inv_gear_weight)).c_str());
-			ImGui::Text(std::string("sp:").append(std::to_string(sdk::player::player_->gsp(self))).c_str());
-			ImGui::Text(std::string("anim:").append(sdk::player::player_->ganim(self)).c_str());
-
-			ImGui::InputText("##luatest", this->dscr, 128);
-			if (ImGui::Button("test-lua")) sys::lua_q->add(this->dscr); ImGui::SameLine();
-			if (ImGui::Button("test-interact"))
-			{
-				auto nnpc = sdk::player::player_->npcs.front();
-				if (nnpc.ptr != 0)
-				{
-					sdk::util::log->add(nnpc.name, sdk::util::e_info, true);
-					typedef uint64_t(__stdcall* k)(uint64_t);
-					k l = (k)(core::offsets::fn::start_npc_interaction);
-					l(nnpc.ptr);
-				}
-			}
-			if (ImGui::Button("test-use-0")) sys::lua_q->useitem(0);
-			if (ImGui::Button("test-ghp_")) sdk::player::player_->ghp(self);
-
-
-			ImGui::Text("items left to sell");
-			for (auto sad : sys::roar_bot->gitm_left()) ImGui::Text(std::to_string(sad).c_str());
-
-			ImGui::Text("log"); ImGui::Separator(); auto n = sdk::util::log->gcollector(); std::reverse(std::begin(n), std::end(n));
-			for (auto a : n) ImGui::Text(a.c_str());
-
-			break;
-		}
-		case 7:
-		{
-			auto buffs = sys::rebuff->gbuffs();
-			auto il = sdk::player::player_->ginv();
-			if (buffs.size() && il.size())
-			{
-				if (!irebuffer_enable) irebuffer_enable = sys::config->gvar("rebuffer", "ienable");
-				ImGui::Combo2("##buffselect", &this->selected_buff, buffs);
-				ImGui::Combo2("##select-item", &selected_buff_item, il);
-				ImGui::Checkbox("toggle", (bool*)&irebuffer_enable->iv);//im vegan
-				if (ImGui::Button("add")) sys::rebuff->add(buffs[this->selected_buff], sys::rebuff->gibyname(il[selected_buff_item]));
-				if (ImGui::Button("reset")) sys::rebuff->reset();
-
-				ImGui::Text("registered buffs");
-				for (auto t : sys::rebuff->gabuffs())
-				{
-					ImGui::Text(std::string(t.n).append(":").append(std::to_string(t.i)).c_str());
-				}
-			}
-			else ImGui::Text("no buffs active");
-			break;
-		}
-		default: break;
-		}
-		ImGui::End();
-	}
-
-	sdk::menu::m_packet->work_ui();
-	//
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	this->work2(); 
 }
 void sdk::menu::c_menu::work2()
 {
 	//
 	if (this->tabs.empty()) this->setup();
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 	this->work_tabs();
 	//
 	ImGui::Render();
@@ -644,4 +595,3 @@ void sdk::menu::c_menu::sactive()
 	if (!this->menu_active) sys::config->save();
 }
 sdk::menu::c_menu* sdk::menu::menu;
-
