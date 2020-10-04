@@ -29,7 +29,7 @@ void sdk::util::c_log::add(std::string i, e_log_type t, bool file)
 {
 	this->file_stream.open("end_game_log.txt", std::ios_base::app);
 	this->proc(i, t);
-	if (this->gcollector().size() > 20) this->log_collector.clear();
+	//if (this->gcollector().size() > 20) this->log_collector.clear();
 	if (file) this->file(i); 
 	if (this->console) std::cout << i << "\n";
 	this->array(i);

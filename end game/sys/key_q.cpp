@@ -49,6 +49,7 @@ void __stdcall sys::key_worker(void* a)
 		}
 		sys::key_q->rm();
 		sys::key_q->thread_working = false;
+		delete strc;
 		break;
 	}
 	

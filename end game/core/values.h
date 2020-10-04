@@ -66,6 +66,9 @@ namespace core
 			extern uint64_t actor_mov_cx;
 			extern uint64_t actor_mov_cy;
 			extern uint64_t actor_mov_cz;
+			extern uint64_t actor_mov_pure_alt_x;
+			extern uint64_t actor_mov_pure_alt_y;
+			extern uint64_t actor_mov_pure_alt_z;
 			extern uint64_t actor_mov_pure_x;
 			extern uint64_t actor_mov_pure_y;
 			extern uint64_t actor_mov_pure_z;

@@ -176,7 +176,9 @@ bool sdk::menu::c_menu::setup()
 							{
 								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
+								if (ImGui::Button("test-scr")) sys::lua_q->add(sys::roar_bot->last_lua_actions[is_scr]);
 								if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
+								if (ImGui::Button("add-store/sell")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
 							}
 							if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 						}
@@ -184,8 +186,8 @@ bool sdk::menu::c_menu::setup()
 				}
 			}
 		}
-		}))
-		return false;
+		}
+	)) return false;
 	if (!this->add_tab("visuals",
 		{ 
 		{	{"monster-actor"},
@@ -302,7 +304,7 @@ bool sdk::menu::c_menu::setup()
 			}
 		}
 		}
-		)) return false;
+	)) return false;
 	if (!this->add_tab("looting",
 		{
 		{
@@ -361,7 +363,7 @@ bool sdk::menu::c_menu::setup()
 			}
 		}
 		}
-		)) return false;	
+	)) return false;	
 	if (!this->add_tab("buff-bot",
 		{
 		{
@@ -404,6 +406,32 @@ bool sdk::menu::c_menu::setup()
 		}
 		}
 	)) return false;
+	if (!this->add_tab("debug",
+		{
+		{			
+			{"logs"},
+			{
+				{"log_panel", 5, "", "", false, [this]() 
+					{
+						auto v = sdk::util::log->gcollector(); std::reverse(v.begin(), v.end());
+						if (v.size())
+						{
+							ImGui::BeginChild(1, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+							//
+							for (auto a : v)
+							{
+								ImGui::TextUnformatted(a.c_str());
+							}
+							//
+							ImGui::EndChild();
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no log entries found");
+					}
+				}
+			}			
+		}
+		}
+	)) return false;
 	return true;
 }
 bool sdk::menu::c_menu::add_tab(std::string n, std::vector<s_imgui_treenode> node)
@@ -436,7 +464,7 @@ void sdk::menu::c_menu::work_tabs()
 				if (ImGui::ArrowButton(a.name.c_str(), ImGuiDir_::ImGuiDir_Left)) a.toggle = !a.toggle; 
 				ImGui::SameLine(); ImGui::BulletText(a.name.c_str());
 	
-				ImGui::SetNextWindowSizeConstraints(ImVec2(150,50) ,ImVec2(500, 500));
+				ImGui::SetNextWindowSizeConstraints(ImVec2(150,50) ,ImVec2(650, 500));
 				ImGui::Begin(a.name.c_str(), 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse);
 				{
 					ImGui::TextColored(ImColor(0, 255, 0), a.name.c_str());

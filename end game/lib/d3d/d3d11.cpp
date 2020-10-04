@@ -85,7 +85,6 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 	{
 		sdk::menu::menu->work();
 		sys::visuals->work();
-		sdk::render::render->RenderText(15, 15, 0xff00ff00, (char*)"28802      a new era");
 	}
 
 	return phookD3D11Present(pSwapChain, SyncInterval, Flags);

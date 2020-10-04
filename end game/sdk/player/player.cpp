@@ -160,6 +160,12 @@ sdk::util::c_vector3 sdk::player::c_player::gpos(uint64_t a, bool raw)
 		b.x = this->get<float>(a, core::offsets::actor::actor_mov_pure_x);
 		b.y = this->get<float>(a, core::offsets::actor::actor_mov_pure_y);
 		b.z = this->get<float>(a, core::offsets::actor::actor_mov_pure_z);
+		if (!b.valid())
+		{
+			b.x = this->get<float>(a, core::offsets::actor::actor_mov_pure_alt_x);
+			b.y = this->get<float>(a, core::offsets::actor::actor_mov_pure_alt_y);
+			b.z = this->get<float>(a, core::offsets::actor::actor_mov_pure_alt_z);
+		}
 		return b;
 	}
 	else
