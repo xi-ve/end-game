@@ -90,6 +90,7 @@ namespace sdk
 			ByteBuffer				convert_char_to_buff(const char* charbuff);
 			/*this can convert a char* with bytes to a ByteBuffer that is sendable*/
 			std::string				get_packet_info(s_packet packet);
+			std::string				get_packet_info(ByteBuffer packet);
 			/*gets the content of the packet as str in hex*/
 
 			void					work(uint64_t a1, uint16_t a2, uint8_t a3, uint8_t a4, uint64_t a5, const CHAR* a6);

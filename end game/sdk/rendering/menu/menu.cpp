@@ -346,6 +346,39 @@ bool sdk::menu::c_menu::setup()
 					}
 				}
 			}
+		},
+		{
+			{"packet-log"},
+			{
+				{"packet_log_panel", 5, "", "", false, [this]() 
+					{
+						ImGui::Checkbox("packet-log##343", &this->packet_log_enabled);
+						auto a = fn::packet_log; if (a.empty()) { ImGui::TextColored(ImColor(255,0,0), "no packets logged"); return; }
+						std::reverse(a.begin(), a.end());
+						for (auto o = 0; o < a.size(); o++)
+						{
+							auto b = a[o];
+							if (ImGui::TreeNode(std::string("opcode:").append(std::to_string(b.op)).append(" size:").append(std::to_string(b.size)).append("##pmid").append(std::to_string(o)).c_str()))
+							{
+								auto parts = sdk::menu::m_packet->split(sdk::menu::m_packet->get_packet_info(b.pack), 27);
+								//
+								if (ImGui::Button("copy-body##plp"))
+								{
+									OpenClipboard(lib::d3d11->h); EmptyClipboard();
+									auto hg = GlobalAlloc(GMEM_MOVEABLE, sdk::menu::m_packet->get_packet_info(b.pack).size() + 1);
+									if (!hg) { CloseClipboard(); return; }
+									memcpy(GlobalLock(hg), sdk::menu::m_packet->get_packet_info(b.pack).c_str(), sdk::menu::m_packet->get_packet_info(b.pack).size() + 1);
+									GlobalUnlock(hg); SetClipboardData(CF_TEXT, hg); CloseClipboard(); GlobalFree(hg);
+								}
+								ImGui::Text("packet body     :"); std::string buf;
+								for (auto a : parts) ImGui::Text(a.c_str());
+								//
+								ImGui::TreePop();
+							}							
+						}
+					}
+				}
+			}
 		}
 		}
 	)) return false;

@@ -68,6 +68,16 @@ std::string sdk::menu::c_m_packet::get_packet_info(sdk::menu::s_packet packet)
 	}
 	return log.str();
 }
+std::string sdk::menu::c_m_packet::get_packet_info(ByteBuffer packet)
+{
+	std::stringstream log;
+	for (auto c = 0; c < packet.buf.size(); c++)
+	{
+		if (packet.buf[c] <= 15) log << std::dec << "0";
+		log << std::hex << (int)packet.buf[c] << " " << std::dec;
+	}
+	return log.str();
+}
 void sdk::menu::c_m_packet::reset_packets()
 {
 	this->packets.clear();
@@ -102,23 +112,26 @@ sdk::menu::s_packet sdk::menu::c_m_packet::get_packet(std::string text_desc)
 }
 bool sdk::menu::c_m_packet::register_packet(uint64_t ptr, short packet_size)
 {
-	if (this->packets.size())
-	{
-		for (auto&& obj : this->packets) if (obj.size == packet_size)
-		{
-			auto tmp = ptr;
-			__int16* a = (__int16*)tmp;
-			auto b = *a;
-			if (obj.opcode != b) continue;
-			auto packet = sdk::menu::s_packet(b, packet_size, ptr);
-			obj = packet;
-			return 1;
-		}/*overwrite data of existing packet!*/
-	}
 	auto tmp = ptr;
 	__int16* a = (__int16*)tmp;
 	auto b = *a;
 	auto packet = sdk::menu::s_packet(b, packet_size, ptr);
+
+	if (sdk::menu::menu->packet_log_enabled)
+	{
+		if (fn::packet_log.size() >= 1028) fn::packet_log.clear();
+		fn::packet_log.emplace_back(b, packet_size, packet.data);
+	}
+
+	if (this->packets.size())
+	{
+		for (auto&& obj : this->packets) if (obj.size == packet_size)
+		{
+			if (obj.opcode != b) continue;
+			obj = packet;
+			return 1;
+		}/*overwrite data of existing packet!*/
+	}
 	if (!packet.data.size()) return 0;
 	this->packets.push_back(packet);
 	return 1;

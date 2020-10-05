@@ -194,5 +194,14 @@ public:
 	void printPosition();
 #endif
 };
-
+struct s_packet_log
+{
+	s_packet_log(int a, int b, ByteBuffer c)
+	{
+		op = a; size = b; pack = c;
+	};
+	int op = 0;
+	int size = 0;
+	ByteBuffer pack = {};
+};
 #endif

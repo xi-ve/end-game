@@ -45,4 +45,5 @@ namespace fn
 	extern ULONGLONG time_since_player_playable;
 	//
 	extern std::unordered_map<std::string, int> kill_stats;
+	extern std::vector<s_packet_log> packet_log;
 }

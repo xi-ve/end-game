@@ -131,6 +131,7 @@ namespace sdk
 			//
 			void work_tabs();
 		public:
+			bool packet_log_enabled = false;
 			char mob_target[128] = "Raccoon"; char test_input_ptr[2048] = "Test"; bool using_test_menu = false;
 			void work();
 			//

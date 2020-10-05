@@ -16,6 +16,7 @@ bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
 ULONGLONG fn::time_since_player_playable = 0;
 std::unordered_map<std::string, int> fn::kill_stats;
+std::vector<s_packet_log> fn::packet_log;
 //
 bool fn::setup()
 {
@@ -101,8 +102,8 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);
-	if (GetAsyncKeyState(ikey_ctp->iv)) sys::cursor_tp->work(self_actor_proxy);
-	if (GetAsyncKeyState(ilock_key->iv))
+	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
+	if (GetAsyncKeyState(ilock_key->iv) & 1)
 	{
 		auto c = *(uint64_t*)(self_actor_proxy + core::offsets::actor::actor_char_ctrl);
 		if (!c) return v;
@@ -165,7 +166,7 @@ uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 {
 	auto r = fn::o_proxy_deadbody(a, b, c);
 	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
-	sdk::util::log->add(std::string("[deadbody] b:").append(sdk::util::log->as_hex(b)).append(" c:").append(sdk::util::log->as_hex(c)), sdk::util::e_info, true);
+	//sdk::util::log->add(std::string("[deadbody] b:").append(sdk::util::log->as_hex(b)).append(" c:").append(sdk::util::log->as_hex(c)), sdk::util::e_info, true);
 	if (iloot_enable->iv)
 	{
 		auto self_key = *(int*)(*(uint64_t*)(core::offsets::actor::actor_self) + core::offsets::actor::actor_proxy_key);
@@ -187,13 +188,7 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 			if (k == b) sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f);
 		}
 	}
-	for (auto c : sdk::player::player_->actors)
-	{
-		if (c.type != 1) continue;
-		if (c.key != b) continue;
-		if (c.state != 1) continue;
-		fn::kill_stats[c.name]++;
-	}
+
 	//sdk::util::log->add(std::string("[delete] a:").append(sdk::util::log->as_hex(a)), sdk::util::e_info, true);
 	auto r = fn::o_proxy_delete(a, b);
 	return r;
