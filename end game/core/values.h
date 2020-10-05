@@ -46,6 +46,7 @@ namespace core
 		namespace actor
 		{
 			extern uint64_t actor_self;
+			extern uint64_t interaction_current;
 			extern uint64_t actor_list_base;
 			extern uint64_t actor_list_start;
 			extern uint64_t actor_list_end;

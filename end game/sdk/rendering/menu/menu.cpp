@@ -209,6 +209,20 @@ bool sdk::menu::c_menu::setup()
 					}
 				}
 			}
+		},
+		{
+			{"stats"},
+			{
+				{"kill-stats-panel", 5, "", "", false, [this]() 
+					{
+						for (auto a : fn::kill_stats)
+						{
+							if (a.first.empty()) continue;
+							ImGui::Text(std::string(a.first).append(" ").append(std::to_string(a.second)).c_str());
+						}
+					}
+				}
+			}
 		}
 		}
 	)) return false;
@@ -477,6 +491,33 @@ bool sdk::menu::c_menu::setup()
 					}
 				}
 			}			
+		},
+		{
+			{"lua"},
+			{
+				{"lua-input", 3, "", "", false, (void*)this->lua_input},
+				{"lua_debug_panel", 5, "", "", false, [this]() 
+					{
+						if (ImGui::Button("execute lua")) sys::lua_q->add(this->lua_input);
+					}
+				}
+			}
+		},
+		{
+			{"data-view"},
+			{
+				{"data_panel", 5, "", "", false, [this]() 
+					{
+						if (sdk::player::player_->alive())
+						{
+							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
+							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
+							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no player found");
+					}
+				}
+			}
 		}
 		}
 	)) return false;

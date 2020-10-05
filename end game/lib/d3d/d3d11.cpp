@@ -31,17 +31,8 @@ LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (wParam != vKey) return;
 
-		if (uMsg == WM_KEYDOWN) bButton = true;
-		if (uMsg == WM_KEYUP)	bButton = false;
+		if (uMsg == WM_KEYDOWN) bButton = !bButton;
 	};
-
-	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
-	if (!ilock_key) ilock_key = sys::config->gvar("keybinds", "ilock_key");
-	if (ikey_ctp && ilock_key)
-	{
-		getButtonToggle(ikey_ctp->btn_toggle, ikey_ctp->iv);
-		getButtonToggle(ilock_key->btn_toggle, ilock_key->iv);
-	}
 
 	switch (uMsg)
 	{

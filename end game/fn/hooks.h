@@ -43,4 +43,6 @@ namespace fn
 	//
 	extern ULONGLONG execution_time;
 	extern ULONGLONG time_since_player_playable;
+	//
+	extern std::unordered_map<std::string, int> kill_stats;
 }

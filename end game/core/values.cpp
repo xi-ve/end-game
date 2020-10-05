@@ -62,6 +62,8 @@ uint64_t core::offsets::fn::buff_get_name = 0x1402E1510;
 
 //FromClient_SelfPlayerExpChanged
 uint64_t core::offsets::actor::actor_self = 0x143D1E4F0;
+//
+uint64_t core::offsets::actor::interaction_current = 0x143D23590;
 //48 8D 15 ? ? ? ? 48 8D 4D EF E8 ? ? ? ? 90 4C 8B 75 F7  
 uint64_t core::offsets::actor::actor_list_base = 0x143D1E040;
 uint64_t core::offsets::actor::actor_list_start = 0x143D1E080;//470 delta to local
