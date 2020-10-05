@@ -9,6 +9,7 @@ fn::t_proxy_delete fn::o_proxy_delete;
 fn::t_reset_input_class fn::o_reset_input_class;
 fn::t_is_key_pressed fn::o_is_key_ressed;
 bool fn::log_dobuffer = false;
+bool fn::block_test = false;
 //
 sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL;
 sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL;
@@ -16,6 +17,7 @@ bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
 ULONGLONG fn::time_since_player_playable = 0;
 std::unordered_map<std::string, int> fn::kill_stats;
+std::vector<std::string> fn::lua_log;
 std::vector<s_packet_log> fn::packet_log;
 //
 bool fn::setup()
@@ -55,7 +57,8 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	if (!ibypass_trial) ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
 	if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
 
-	if (ibypass_trial->iv)				if (b == 5471) return 0;
+	if (ibypass_trial->iv)				if (b == 5471 || b == 4688) return 0;
+	if (fn::block_test)					if (b == 5476) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
@@ -121,6 +124,11 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 {
 	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2);
 	sys::lua_q->sparam(arg1);
+	if (fn::log_dobuffer)
+	{
+		if (fn::lua_log.size() > 2048) fn:lua_log.clear();
+		fn::lua_log.push_back(arg2);
+	}
 	if (strstr(arg2, "Over")
 		|| strstr(arg2, "MouseOn")
 		|| strstr(arg2, "Tooltip") || strstr(arg2, "ToolTip")
@@ -137,7 +145,6 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 		|| strstr(arg2, "Hide")
 		|| strstr(arg2, "collect")
 		|| arg2[0] == '\0') return fn::o_lua_dobuffer(arg1, arg2);
-	if (fn::log_dobuffer) sdk::util::log->add(arg2, sdk::util::e_info, true);
 	if (sys::roar_bot->glua_actions)
 	{
 		sys::roar_bot->last_lua_actions.push_back(arg2);

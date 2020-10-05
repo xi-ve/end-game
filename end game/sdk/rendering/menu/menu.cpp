@@ -227,7 +227,7 @@ bool sdk::menu::c_menu::setup()
 		}
 	)) return false;
 	if (!this->add_tab("visuals",
-		{ 
+		{  
 		{	{"monster-actor"},
 			{
 				{"dead-info  "	, 0, "visuals", "ienable_debug", false},
@@ -276,7 +276,8 @@ bool sdk::menu::c_menu::setup()
 			{"functions"},
 			{
 				{"allow-trial-chars", 0, "packet", "ibypass_trial", true},
-				{"cursor-tp-packet ", 0, "packet", "iteleport_gen2", false}
+				{"cursor-tp-packet ", 0, "packet", "iteleport_gen2", false},
+				{"test-block", 0, "", "", false, (void*)&fn::block_test}
 			}
 		},
 		{
@@ -303,7 +304,11 @@ bool sdk::menu::c_menu::setup()
 									GlobalUnlock(hg); SetClipboardData(CF_TEXT, hg); CloseClipboard(); GlobalFree(hg);
 								}
 								ImGui::SameLine();
-								if (ImGui::Button("re-send")) if (pack.timestamp_pos) pack.data.putLong(GetTickCount64(), pack.timestamp_pos);
+								if (ImGui::Button("re-send"))
+								{
+									if (pack.timestamp_pos) pack.data.putLong(GetTickCount64(), pack.timestamp_pos);
+									fn::send_packet(pack.data, pack.opcode, pack.size);
+								}
 								ImGui::TextColored(ImColor(0, 255, 0), std::string("size     :").append(std::to_string(pack.size)).c_str());
 								ImGui::TextColored(ImColor(0, 255, 0), std::string("opcode   :").append(std::to_string(pack.opcode)).c_str());
 								if (pack.timestamp_pos) ImGui::TextColored(ImColor(0, 255, 0), std::string("timestamp:").append(std::to_string(pack.timestamp_pos)).c_str());
@@ -329,6 +334,7 @@ bool sdk::menu::c_menu::setup()
 					{
 						ImGui::PushItemWidth(125); ImGui::InputInt("opcode", &sdk::menu::m_packet->packet_opcode);
 						ImGui::PushItemWidth(125); ImGui::InputInt("size  ", &sdk::menu::m_packet->packet_size);
+						ImGui::Text(sdk::menu::m_packet->packet_body);
 						if (ImGui::Button("send"))
 						{
 							auto buf = sdk::menu::m_packet->convert_char_to_buff(sdk::menu::m_packet->packet_body);
@@ -490,7 +496,7 @@ bool sdk::menu::c_menu::setup()
 						{
 							for (auto a : b)
 							{
-								ImGui::Text(std::string(a.n).append(" < > ").append(std::to_string(a.i)).c_str());
+								ImGui::BulletText(std::string(a.n).append(" <--> ").append(std::to_string(a.i)).c_str());
 							}
 						}
 						else ImGui::TextColored(ImColor(255, 0, 0), "no set buffs found");
@@ -526,12 +532,30 @@ bool sdk::menu::c_menu::setup()
 			}			
 		},
 		{
-			{"lua"},
+			{"lua-execution"},
 			{
 				{"lua-input", 3, "", "", false, (void*)this->lua_input},
 				{"lua_debug_panel", 5, "", "", false, [this]() 
 					{
 						if (ImGui::Button("execute lua")) sys::lua_q->add(this->lua_input);
+					}
+				}
+			}
+		},
+		{
+			{"lua-log"},
+			{
+				{"log-lua-events", 5, "", "", false, [this]() 
+					{
+						ImGui::Checkbox("log-lua-events", &fn::log_dobuffer); ImGui::SameLine(); if (ImGui::Button("clear")) fn::lua_log.clear();
+						if (fn::lua_log.size())
+						{
+							for (auto a : fn::lua_log)
+							{
+								ImGui::Text(a.c_str());
+							}
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no lua log found");
 					}
 				}
 			}
@@ -543,9 +567,26 @@ bool sdk::menu::c_menu::setup()
 					{
 						if (sdk::player::player_->alive())
 						{
+							auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
+							auto hp = sdk::player::player_->ghp(self);
+							auto sp = sdk::player::player_->gsp(self);
+							auto anim = sdk::player::player_->ganim(self);
+							if (hp <= 500) ImGui::TextColored(ImColor(255, 165, 0), std::string("hp:").append(std::to_string((int)hp)).c_str());
+							else ImGui::TextColored(ImColor(0, 255, 0), std::string("hp:").append(std::to_string((int)hp)).c_str());
+							ImGui::SameLine();
+							ImGui::TextColored(ImColor(0, 255, 0), std::string("sp:").append(std::to_string((int)sp)).c_str());
+							ImGui::Text(std::string("animation:").append(anim).c_str());
+							auto in_m = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
+							auto in_w = (*(int*)(self + core::offsets::actor::actor_inv_raw_weight) + *(int*)(self + core::offsets::actor::actor_inv_gear_weight)) / 10000;
+							auto in_l = *(BYTE*)(self + core::offsets::actor::actor_inv_left);
+							ImGui::Text(std::string("weight max:").append(std::to_string(in_m)).c_str()); ImGui::SameLine();
+							ImGui::Text(std::string("weight cur:").append(std::to_string(in_w)).c_str());
+							ImGui::Text(std::string("weight cur:").append(std::to_string(in_w)).c_str()); ImGui::SameLine();
+							ImGui::Text(std::string("slots left:").append(std::to_string(in_l)).c_str());
+
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
 					}

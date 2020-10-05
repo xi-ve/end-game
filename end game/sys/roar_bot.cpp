@@ -597,7 +597,6 @@ void sys::c_roar_bot::work(uint64_t s)
 			}
 			else
 			{
-				if (this->npc_interacted) this->npc_interacted = false;
 				sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 				this->cur_route.pop_front();
 				return;
@@ -605,6 +604,7 @@ void sys::c_roar_bot::work(uint64_t s)
 		}
 		else//path back
 		{
+			this->npc_interacted = false;
 			sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 			this->cur_route.pop_front();
 			if (this->cur_route.empty())

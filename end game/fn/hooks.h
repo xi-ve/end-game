@@ -35,6 +35,7 @@ namespace fn
 	extern HWND __fastcall f_get_focus();
 	//
 	extern bool log_dobuffer;
+	extern bool block_test;
 	extern sys::s_cfg_v* ibypass_trial;
 	extern sys::s_cfg_v* iteleport_gen2;
 	extern sys::s_cfg_v* iloot_enable;
@@ -45,5 +46,6 @@ namespace fn
 	extern ULONGLONG time_since_player_playable;
 	//
 	extern std::unordered_map<std::string, int> kill_stats;
+	extern std::vector<std::string> lua_log;
 	extern std::vector<s_packet_log> packet_log;
 }
