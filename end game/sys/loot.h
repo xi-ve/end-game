@@ -43,6 +43,8 @@ namespace sys
 		bool						lhas(int s);
 	public:
 		int act_id_cur = 0; ULONGLONG pack_time = 0;
+		int loot_count_grey = 0, loot_count_blue = 0, loot_count_green = 0, loot_count_orange = 0, loot_count_yellow = 0;
+		std::unordered_map<int, s_looting_item> looted_items = {}; int last_actor = 0; int last_item = 0;
 		std::vector<uint64_t>       loot_proxys;
 		void	 mloot();
 		bool	 read_whitelist();

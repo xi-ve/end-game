@@ -172,12 +172,12 @@ bool sys::c_loot::pick(s_looting_item ctx)
 	}
 	case 3:
 	{
-		if (orange->iv) return true;
+		if (yellow->iv) return true;
 		break;
 	}
 	case 4:
 	{
-		if (yellow->iv) return true;
+		if (orange->iv) return true;
 		break;
 	}
 	}
@@ -233,7 +233,43 @@ void sys::c_loot::work(uint64_t self)
 		if (ienable_filter->iv) if (!this->pick(ctx)) continue; 					
 		this->f_loot_click_slot(b, ctx.count);
 		did_loot_good_item = true;
+		if (last_actor == actid) continue;		
+		switch (ctx.rarity)
+		{
+		case 0:
+		{
+			this->loot_count_grey++;
+			break;
+		}
+		case 1:
+		{
+			this->loot_count_green++;
+			break;
+		}
+		case 2:
+		{
+			this->loot_count_blue++;
+			break;
+		}
+		case 3:
+		{
+			this->loot_count_yellow++;
+			break;
+		}
+		case 4:
+		{
+			this->loot_count_orange++;
+			break;
+		}
+		}
+		if (this->looted_items[ctx.id].name.empty())
+		{
+			this->looted_items[ctx.id] = ctx;
+			this->looted_items[ctx.id].count = 1;
+		}
+		else this->looted_items[ctx.id].count++;
 	}
+	last_actor = actid;
 	if (!did_loot_good_item && this->f_loot_get_item_count())
 	{
 		if (sys::loot->loot_proxys.size())

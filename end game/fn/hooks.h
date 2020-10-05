@@ -42,4 +42,5 @@ namespace fn
 	extern sys::s_cfg_v* ilock_key;
 	//
 	extern ULONGLONG execution_time;
+	extern ULONGLONG time_since_player_playable;
 }

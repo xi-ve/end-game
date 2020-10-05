@@ -130,6 +130,7 @@ void sys::c_rebuff::work(uint64_t s)
 	this->self = s;
 	if (GetTickCount64() > this->exection) this->exection = GetTickCount64() + 5000;
 	else return;
+	if (GetTickCount64() < fn::time_since_player_playable + 10000) return;
 	if (!this->update()) return;
 	if (!ienable->iv) return;
 	//

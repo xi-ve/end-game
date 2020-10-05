@@ -14,6 +14,7 @@ sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL;
 sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL;
 bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
+ULONGLONG fn::time_since_player_playable = 0;
 //
 bool fn::setup()
 {
@@ -91,7 +92,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
-	if (!can_play) { executing = false; return v; }
+	if (!can_play) { time_since_player_playable = GetTickCount64(); executing = false; return v; }
 	sys::lua_q->work(); sys::key_q->work();
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);

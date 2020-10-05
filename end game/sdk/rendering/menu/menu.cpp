@@ -392,6 +392,24 @@ bool sdk::menu::c_menu::setup()
 					}
 				}
 			}
+		},
+		{
+			{"stats"},
+			{
+				{"session_stats", 5, "", "", false, [this]() 
+					{ 
+						ImGui::BulletText(std::string("grey   items looted: ").append(std::to_string(sys::loot->loot_count_grey)).c_str());
+						ImGui::BulletText(std::string("green  items looted: ").append(std::to_string(sys::loot->loot_count_green)).c_str());
+						ImGui::BulletText(std::string("blue   items looted: ").append(std::to_string(sys::loot->loot_count_blue)).c_str());
+						ImGui::BulletText(std::string("orange items looted: ").append(std::to_string(sys::loot->loot_count_orange)).c_str());
+						ImGui::BulletText(std::string("yellow items looted: ").append(std::to_string(sys::loot->loot_count_yellow)).c_str());
+						for (auto a : sys::loot->looted_items)
+						{
+							ImGui::Text(std::string(a.second.name).append(": ").append(std::to_string(a.second.count)).append("x ").c_str());
+						}
+					}
+				}
+			}
 		}
 		}
 	)) return false;	
