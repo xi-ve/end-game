@@ -26,7 +26,7 @@ void sdk::menu::c_menu::overlay(bool* acti)
 	const float DISTANCE = 10.0f;
 	static bool corner = 0;
 	ImGuiIO& io = ImGui::GetIO();
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	if (corner != 1)
 	{
 		window_flags |= ImGuiWindowFlags_NoMove;
@@ -98,8 +98,9 @@ bool sdk::menu::c_menu::setup()
 		{
 		{	{"core-options"},
 			{
-				{"toggel_switch", 5, "", "", true, [&]() 
+				{"toggel_switch", 5, "", "", false, [&]() 
 					{ 
+						if (!sdk::player::player_->alive()) return;
 						if (!sys::roar_bot->dwork)
 						{
 							if (ImGui::Button("enable-bot")) { sys::roar_bot->snear(); sys::roar_bot->dwork = true; }
@@ -108,15 +109,13 @@ bool sdk::menu::c_menu::setup()
 						{
 							if (ImGui::Button("disable-bot-rb")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); sys::roar_bot->load(); }
 						}
+						ImGui::SameLine();
 					}
 				},								
 				{"timescale", 2, "roar_bot", "ibot_timescale", true, new sdk::menu::s_imgui_intslider(400, 1000)}, 
 				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
 				{"store-roar", 0, "roar_bot", "ibot_storage_roar", true},				
-				{"store-test", 5, "", "", false, [this]() 
-					{
-						ImGui::Checkbox("store-test", &sys::roar_bot->force_store);
-					}}
+				{"store-test", 0, "", "", false, (void*)&sys::roar_bot->force_store}
 			}			
 		},
 		{
@@ -405,7 +404,7 @@ bool sdk::menu::c_menu::setup()
 						ImGui::BulletText(std::string("yellow items looted: ").append(std::to_string(sys::loot->loot_count_yellow)).c_str());
 						for (auto a : sys::loot->looted_items)
 						{
-							ImGui::Text(std::string(a.second.name).append(": ").append(std::to_string(a.second.count)).append("x ").c_str());
+							ImGui::Text(std::string(a.second.name).append(": ").append(std::to_string(a.second.count)).append("x").c_str());
 						}
 					}
 				}
@@ -678,6 +677,6 @@ void sdk::menu::c_menu::work2()
 void sdk::menu::c_menu::sactive()
 {
 	this->menu_active = !this->menu_active;
-	if (!this->menu_active) sys::config->save();
+	if (!this->menu_active) { sys::config->save(); ImGui::SaveIniSettingsToDisk("imgui"); }
 }
 sdk::menu::c_menu* sdk::menu::menu;

@@ -132,6 +132,7 @@ namespace sdk
 			std::string					ganim(uint64_t p);
 			int							gsp(uint64_t a);
 			float						ghp(uint64_t a);
+			bool						alive();
 		};
 		extern c_player* player_;
 	}

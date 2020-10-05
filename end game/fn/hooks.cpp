@@ -100,11 +100,13 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);
-	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
-	if (GetAsyncKeyState(ilock_key->iv) & 1)
+	if (ikey_ctp->btn_toggle) sys::cursor_tp->work(self_actor_proxy);
+	if (ilock_key->btn_toggle)
 	{
 		auto c = *(uint64_t*)(self_actor_proxy + core::offsets::actor::actor_char_ctrl);
+		if (!c) return v;
 		auto s = *(uint64_t*)(c + core::offsets::actor::actor_char_scene);
+		if (!s) return v;
 		auto cur = *(float*)(s + core::offsets::actor::actor_animation_speed);
 		if (cur == 1.f) *(float*)(s + core::offsets::actor::actor_animation_speed) = 8000;
 		else *(float*)(s + core::offsets::actor::actor_animation_speed) = 1.f;

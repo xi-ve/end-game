@@ -31,7 +31,7 @@ namespace sys
 		std::string val;
 		std::string rval;
 		char		cin[2048] = "none";
-		int iv = 0; float fv = 0.f; int t = 0; bool local = false;
+		int iv = 0; float fv = 0.f; int t = 0; bool local = false; bool btn_toggle = false;
 	};
 	class c_config
 	{

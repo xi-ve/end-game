@@ -13,6 +13,9 @@ D3D11PresentHook                phookD3D11Present = nullptr;
 D3D11DrawIndexedHook            phookD3D11DrawIndexed = nullptr;
 D3D11ClearRenderTargetViewHook  phookD3D11ClearRenderTargetViewHook = nullptr;
 
+sys::s_cfg_v* ikey_ctp = NULL;
+sys::s_cfg_v* ilock_key = NULL;
+
 uint64_t* pSwapChainVTable = nullptr;
 uint64_t* pDeviceContextVTable = nullptr;
 using namespace ImGui;
@@ -24,13 +27,21 @@ LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam);
 	
-	const auto getButtonToggle = [uMsg, wParam](int& bButton, int vKey)
+	const auto getButtonToggle = [uMsg, wParam](bool& bButton, int vKey)
 	{
 		if (wParam != vKey) return;
 
-		if (uMsg == WM_KEYDOWN)
-			bButton = !bButton;
+		if (uMsg == WM_KEYDOWN) bButton = true;
+		if (uMsg == WM_KEYUP)	bButton = false;
 	};
+
+	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
+	if (!ilock_key) ilock_key = sys::config->gvar("keybinds", "ilock_key");
+	if (ikey_ctp && ilock_key)
+	{
+		getButtonToggle(ikey_ctp->btn_toggle, ikey_ctp->iv);
+		getButtonToggle(ilock_key->btn_toggle, ilock_key->iv);
+	}
 
 	switch (uMsg)
 	{

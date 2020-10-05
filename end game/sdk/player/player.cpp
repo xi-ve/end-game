@@ -293,4 +293,12 @@ float sdk::player::c_player::ghp(uint64_t a)
 	auto tv = (key1 ^ key2); auto ret = *((float*)&tv);
 	return ret;
 }
+bool sdk::player::c_player::alive()
+{
+	auto p = *(uint64_t*)(core::offsets::actor::actor_self);
+	if (!p) return false;
+	auto s = *(byte*)(p + core::offsets::actor::actor_can_play);
+	if (!s) return false;
+	return true;
+}
 sdk::player::c_player* sdk::player::player_;
