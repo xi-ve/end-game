@@ -3,7 +3,6 @@
 fn::t_packet_outbound fn::o_packet_outbound;
 fn::t_lua_to_string fn::o_lua_to_string;
 fn::t_lua_dobuffer fn::o_lua_dobuffer;
-fn::t_strc_pack fn::o_strc_pack;
 fn::t_proxy_deadbody fn::o_proxy_deadbody;
 fn::t_proxy_delete fn::o_proxy_delete;
 fn::t_reset_input_class fn::o_reset_input_class;
@@ -32,7 +31,6 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
-	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
 	CodeReplaceEnd();
 }
@@ -45,7 +43,7 @@ bool fn::hook(LPVOID offset, LPVOID exchangee, LPVOID* backup)
 }
 void fn::send_packet(ByteBuffer p, int opc, int size)
 {
-	if (sys::pack_tp->param5 != 0) fn::o_packet_outbound(&p.buf[0], size, 1, 0, sys::pack_tp->param5, "eee");
+	if (sys::pack_tp->param5 != 0) fn::o_packet_outbound(&p.buf[0], size, 1, 0, sys::pack_tp->param5, core::gstr(4).c_str());
 }
 uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc, uint8_t unk, uint64_t unk2, const CHAR* xkey)
 {
@@ -54,8 +52,8 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	ByteBuffer buf; for (auto c = 0; c < size; c++) buf.put(*(uint8_t*)((uint64_t)pack + c));
 	sys::pack_tp->param5 = unk2;
 
-	if (!ibypass_trial) ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
-	if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
+	if (!ibypass_trial) ibypass_trial = sys::config->gvar(core::gstr(5), core::gstr(6));
+	if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar(core::gstr(5), core::gstr(7));
 
 	if (ibypass_trial->iv)				if (b == 5471 || b == 4688) return 0;
 	if (fn::block_test)					if (b == 5476) return 0;
@@ -88,9 +86,9 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto v = fn::o_lua_to_string(a1);
 	sys::backend->work();
 	//
-	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
-	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
-	if (!ilock_key) ilock_key = sys::config->gvar("keybinds", "ilock_key");
+	if (!iloot_enable) iloot_enable = sys::config->gvar(core::gstr(8), core::gstr(9));
+	if (!ikey_ctp) ikey_ctp = sys::config->gvar(core::gstr(10), core::gstr(11));
+	if (!ilock_key) ilock_key = sys::config->gvar(core::gstr(10), core::gstr(12));
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
 	else { executing = false; return v; }
@@ -129,21 +127,21 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 		if (fn::lua_log.size() > 2048) fn:lua_log.clear();
 		fn::lua_log.push_back(arg2);
 	}
-	if (strstr(arg2, "Over")
-		|| strstr(arg2, "MouseOn")
-		|| strstr(arg2, "Tooltip") || strstr(arg2, "ToolTip")
-		|| strstr(arg2, "ANI") || strstr(arg2, "Ani")
-		|| strstr(arg2, "Update")
-		|| strstr(arg2, "Frame")
-		|| strstr(arg2, "Help")
-		|| strstr(arg2, "Pushed")
-		|| strstr(arg2, "Chat")
-		|| strstr(arg2, "quest") || strstr(arg2, "Quest")
-		|| strstr(arg2, "MenuRemake")
-		|| strstr(arg2, "Icon")
-		|| strstr(arg2, "QuickSlot")
-		|| strstr(arg2, "Hide")
-		|| strstr(arg2, "collect")
+	if (strstr(arg2, core::gstr(13).c_str())
+		|| strstr(arg2, core::gstr(14).c_str())
+		|| strstr(arg2, core::gstr(15).c_str()) || strstr(arg2, core::gstr(16).c_str())
+		|| strstr(arg2, core::gstr(17).c_str()) || strstr(arg2, core::gstr(18).c_str())
+		|| strstr(arg2, core::gstr(19).c_str())
+		|| strstr(arg2, core::gstr(20).c_str())
+		|| strstr(arg2, core::gstr(21).c_str())
+		|| strstr(arg2, core::gstr(22).c_str())
+		|| strstr(arg2, core::gstr(23).c_str())
+		|| strstr(arg2, core::gstr(24).c_str()) || strstr(arg2, core::gstr(30).c_str())
+		|| strstr(arg2, core::gstr(25).c_str())
+		|| strstr(arg2, core::gstr(26).c_str())
+		|| strstr(arg2, core::gstr(27).c_str())
+		|| strstr(arg2, core::gstr(28).c_str())
+		|| strstr(arg2, core::gstr(29).c_str())
 		|| arg2[0] == '\0') return fn::o_lua_dobuffer(arg1, arg2);
 	if (sys::roar_bot->glua_actions)
 	{
@@ -152,27 +150,11 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex((uint64_t)arg1)).append(" arg2:").append(arg2), sdk::util::e_info, true);
 	return fn::o_lua_dobuffer(arg1, arg2);
 }
-bool fn::f_self_gm()
-{
-	return 1;
-}
-uint64_t fn::f_strc_pack(uint64_t a)
-{
-	auto r = fn::o_strc_pack(a);
-
-	auto ptr = *(uint64_t*)(a + 0x13e0);
-	if (!ptr) return r;
-	auto tb = core::get_vtable_name(*(uint64_t*)(ptr));
-	if (!tb.empty()) sdk::util::log->add(std::string("a:").append(sdk::util::log->as_hex(a)).append(" tb:").append(tb), sdk::util::e_info, true);
-
-	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex(a)).append(" r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
-	return r;
-}
 
 uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 {
 	auto r = fn::o_proxy_deadbody(a, b, c);
-	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
+	if (!iloot_enable) iloot_enable = sys::config->gvar(core::gstr(8), core::gstr(9));
 	//sdk::util::log->add(std::string("[deadbody] b:").append(sdk::util::log->as_hex(b)).append(" c:").append(sdk::util::log->as_hex(c)), sdk::util::e_info, true);
 	if (iloot_enable->iv)
 	{

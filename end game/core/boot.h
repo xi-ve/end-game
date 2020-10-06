@@ -23,11 +23,12 @@ static void __stdcall init_thread()
 	sys::key_q = new sys::c_key_q();
 	sys::rebuff = new sys::c_rebuff();
 	sys::backend = new sys::c_backend();
-	sdk::util::log->add("starting init", sdk::util::e_info, true);
+	core::init_string_table();
+	sdk::util::log->add(core::gstr(0), sdk::util::e_info, true);
 	//
-	if (MH_Initialize() != MH_OK) { sdk::util::log->add("mh failed launch", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
+	if (MH_Initialize() != MH_OK) { sdk::util::log->add(core::gstr(1), sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
 	//
-	auto hk_status = fn::setup(); if (hk_status == false) { sdk::util::log->add("failed hooking!", sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
+	auto hk_status = fn::setup(); if (hk_status == false) { sdk::util::log->add(core::gstr(2), sdk::util::e_log_type::e_critical, true); ExitProcess(0); }
 	//	
 	sys::config->read();
 	sys::config->vars();
@@ -36,6 +37,5 @@ static void __stdcall init_thread()
 	sys::loot->read_blacklist(); sys::loot->read_whitelist();
 	fn::patcher->create_patches();
 	sys::rebuff->load();
-	sdk::util::log->add("done init_thread", sdk::util::e_info, true);
 	ClearEnd();
 }

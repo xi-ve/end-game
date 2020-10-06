@@ -195,6 +195,9 @@
     <ClCompile Include="lib\web\web.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\string_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -399,6 +402,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\web\web.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\string_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

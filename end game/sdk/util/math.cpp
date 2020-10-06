@@ -27,7 +27,8 @@ bool sdk::util::c_math::w2s(c_vector3 p, c_vector3& r)
 	auto _3 = c_4f(gf(start + 48), gf(start + 52), gf(start + 56), gf(start + 60));
 	auto _4x4 = _4x4_float(_0, _1, _2, _3);
 	auto resulting_pos = new double[2];
-	auto svx = FindWindowA("BlackDesertWindowClass", NULL);
+	auto str22_30366_BlackDesertWindowClass34 = new core::s_str_container(std::vector<int>{75, 101, 104, 106, 98, 77, 108, 122, 108, 123, 125, 94, 96, 103, 109, 102, 126, 74, 101, 104, 122, 122}); /*BlackDesertWindowClass*/
+	auto svx = FindWindowA(str22_30366_BlackDesertWindowClass34->get().c_str(), NULL);
 	RECT rect; GetClientRect(svx, &rect);
 	float w = 0.0f;
 	resulting_pos[0] = _4x4.matrice[0][0] * p.x + _4x4.matrice[0][1] * p.y + _4x4.matrice[0][2] * p.z + _4x4.matrice[0][3];

@@ -4,23 +4,24 @@ CodeReplaceStart
 ----------------
 Virtualizing Macros:
 
--> Processing Macro at 0x0000000180010D85: OK
+-> Processing Macro at 0x0000000180014F05: OK
 
 
 VMStart
 -------
 Virtualizing Macros:
 
--> Processing Macro at 0x000000018001917A: OK
--> Processing Macro at 0x000000018011E26B: OK
+-> Processing Macro at 0x000000018001AF5A: OK
+-> Processing Macro at 0x000000018010CA41: OK
 
 
 ClearStart
 ----------
--> Processing Macro at 0x0000000180001FD8: OK
--> Processing Macro at 0x0000000180002917: OK
--> Processing Macro at 0x0000000180018ACE: OK
--> Processing Macro at 0x0000000180019911: OK
+-> Processing Macro at 0x0000000180002018: OK
+-> Processing Macro at 0x00000001800029F7: OK
+-> Processing Macro at 0x000000018001A8AE: OK
+-> Processing Macro at 0x000000018001C2DE: OK
+-> Processing Macro at 0x000000018011549D: OK
 
 
 Macros Processed
@@ -30,7 +31,7 @@ VM Macros = 2/2
 CustomVM Macros = 0/0
 CodeReplace Macros = 1/1
 Encode Macros = 0/0
-Clear Macros = 4/4
+Clear Macros = 5/5
 Mutate Macros = 0/0
 CheckProtection Macros = 0/0
 CheckCodeIntegrity Macros = 0/0

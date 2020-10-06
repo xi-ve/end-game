@@ -334,7 +334,6 @@ bool sdk::menu::c_menu::setup()
 					{
 						ImGui::PushItemWidth(125); ImGui::InputInt("opcode", &sdk::menu::m_packet->packet_opcode);
 						ImGui::PushItemWidth(125); ImGui::InputInt("size  ", &sdk::menu::m_packet->packet_size);
-						ImGui::Text(sdk::menu::m_packet->packet_body);
 						if (ImGui::Button("send"))
 						{
 							auto buf = sdk::menu::m_packet->convert_char_to_buff(sdk::menu::m_packet->packet_body);
@@ -599,23 +598,29 @@ bool sdk::menu::c_menu::setup()
 }
 bool sdk::menu::c_menu::add_tab(std::string n, std::vector<s_imgui_treenode> node)
 {
+	auto str6_1027_locals16 = new core::s_str_container(std::vector<int>{101, 102, 106, 104, 101, 122}); /*locals*/
 	for (auto &&a : node)
 	{
 		for (auto &&b : a.nodes)
 		{
 			if (b.cfg) continue;
-			if (b.cfg_table != "locals") continue;
+			if (b.cfg_table != str6_1027_locals16->get()) continue;
 			sys::config->proc(b.cfg_table, b.cfg_var, "", true);
 			b.cfg = sys::config->gvar(b.cfg_table, b.cfg_var);
 		}
 	}
+	delete str6_1027_locals16;
 	this->tabs.emplace_back(n, node);
 	return true;
 }
 void sdk::menu::c_menu::work_tabs()
 {
-	ImGui::Begin("##core-tab", 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar);
+	auto str10_21942___core_tab22 = new core::s_str_container(std::vector<int>{42, 42, 106, 102, 123, 108, 36, 125, 104, 107}); /*##core-tab*/
+
+	ImGui::Begin(str10_21942___core_tab22->get().c_str(), 0, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar);
 	{
+		delete str10_21942___core_tab22;
+
 		auto main_window_pos = ImGui::GetWindowPos();
 		auto width = ImGui::GetWindowWidth();
 

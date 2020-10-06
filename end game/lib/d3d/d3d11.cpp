@@ -78,7 +78,6 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 		ImGui_ImplWin32_Init(g_hWnd);
 		auto r = ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dContext);
 		sdk::render::render->InitializeRenderClass(g_pd3dDevice, g_pd3dContext, 16, (char*)"Consolas", 0);
-		sdk::util::log->add("init d3d11 ok", sdk::util::e_info, true);
 		oWndProc = (WNDPROC)SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, (__int3264)(LONG_PTR)WndProc);
 		ClearEnd();
 	});
@@ -122,7 +121,6 @@ DWORD __stdcall hook_dx11()
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 		EnumWindows(find_wnd, GetProcessId(GetCurrentProcess()));
 	}
-	sdk::util::log->add("bdo hwnd was found", sdk::util::e_info, true);
 
 	D3D_FEATURE_LEVEL level = D3D_FEATURE_LEVEL_11_0;
 	DXGI_SWAP_CHAIN_DESC sd;
@@ -156,7 +154,6 @@ DWORD __stdcall hook_dx11()
 	if (MH_CreateHook((DWORD*)pSwapChainVTable[50], ClearRenderTargetViewHook, reinterpret_cast<void**>(&phookD3D11ClearRenderTargetViewHook)) != MH_OK) { return 1; }
 	if (MH_EnableHook((DWORD*)pSwapChainVTable[50]) != MH_OK) { return 1; }
 
-	sdk::util::log->add("d3d11 hooking completed", sdk::util::e_info, true);
 	lib::d3d11->h = g_hWnd;
 
 	DWORD old_protect;

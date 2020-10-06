@@ -45,6 +45,7 @@
 #pragma comment (lib, "ws2_32.lib")
 //SDK
 #include <values.h>
+#include <string_table.h>
 #include "..\\lib\web\base64.h"
 #include "..\\lib\web\web.h"
 #include "..\\sys\\backend.h"
