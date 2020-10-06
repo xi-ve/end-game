@@ -47,6 +47,7 @@
 #include <values.h>
 #include "..\\lib\web\base64.h"
 #include "..\\lib\web\web.h"
+#include "..\\sys\str_enc.h"
 #include "..\\sys\\backend.h"
 #include "..\\sdk\rendering\font_wrapper\FW1FontWrapper.h"
 #include "..\\sdk\rendering\shader.h"

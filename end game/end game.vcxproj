@@ -218,6 +218,7 @@
     <ClCompile Include="sys\pet_boost.cpp" />
     <ClCompile Include="sys\rebuff.cpp" />
     <ClCompile Include="sys\roar_bot.cpp" />
+    <ClCompile Include="sys\str_enc.cpp" />
     <ClCompile Include="sys\visual.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -288,6 +289,7 @@
     <ClInclude Include="sys\pet_boost.h" />
     <ClInclude Include="sys\rebuff.h" />
     <ClInclude Include="sys\roar_bot.h" />
+    <ClInclude Include="sys\str_enc.h" />
     <ClInclude Include="sys\visual.h" />
   </ItemGroup>
   <ItemGroup>

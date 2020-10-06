@@ -32,7 +32,6 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
-	sdk::util::log->add("hooking completed", sdk::util::e_info, true);
 	return true;
 	CodeReplaceEnd();
 }
@@ -40,7 +39,7 @@ bool fn::hook(LPVOID offset, LPVOID exchangee, LPVOID* backup)
 {
 	if (MH_CreateHook(offset, exchangee, backup) != MH_OK) return false;
 	if (MH_EnableHook(offset) != MH_OK)					   return false;
-	sdk::util::log->add(std::string(sdk::util::log->as_hex((uint64_t)offset)).append(" -> ").append(sdk::util::log->as_hex((uint64_t)exchangee)), sdk::util::e_info, true);
+	//sdk::util::log->add(std::string(sdk::util::log->as_hex((uint64_t)offset)).append(" -> ").append(sdk::util::log->as_hex((uint64_t)exchangee)), sdk::util::e_info, true);
 	return true;
 }
 void fn::send_packet(ByteBuffer p, int opc, int size)
@@ -54,8 +53,17 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 	ByteBuffer buf; for (auto c = 0; c < size; c++) buf.put(*(uint8_t*)((uint64_t)pack + c));
 	sys::pack_tp->param5 = unk2;
 
-	if (!ibypass_trial) ibypass_trial = sys::config->gvar("packet", "ibypass_trial");
-	if (!iteleport_gen2) iteleport_gen2 = sys::config->gvar("packet", "iteleport_gen2");
+	if (!ibypass_trial || !iteleport_gen2)
+	{
+		auto str6_29647_packet17 = new sys::s_str_container(std::vector<int>{121, 104, 106, 98, 108, 125}); /*packet*/
+		auto str13_46665_ibypass_trial25 = new sys::s_str_container(std::vector<int>{96, 107, 112, 121, 104, 122, 122, 86, 125, 123, 96, 104, 101}); /*ibypass_trial*/
+		auto str14_46665_iteleport_gen226 = new sys::s_str_container(std::vector<int>{96, 125, 108, 101, 108, 121, 102, 123, 125, 86, 110, 108, 103, 59}); /*iteleport_gen2*/
+		ibypass_trial = sys::config->gvar(str6_29647_packet17->get(), str13_46665_ibypass_trial25->get());
+		iteleport_gen2 = sys::config->gvar(str6_29647_packet17->get(), str14_46665_iteleport_gen226->get());
+		delete str6_29647_packet17;
+		delete str13_46665_ibypass_trial25;
+		delete str14_46665_iteleport_gen226;
+	}
 
 	if (ibypass_trial->iv)				if (b == 5471 || b == 4688) return 0;
 	if (fn::block_test)					if (b == 5476) return 0;
@@ -88,9 +96,22 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto v = fn::o_lua_to_string(a1);
 	sys::backend->work();
 	//
-	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
-	if (!ikey_ctp) ikey_ctp = sys::config->gvar("keybinds", "itp_key");
-	if (!ilock_key) ilock_key = sys::config->gvar("keybinds", "ilock_key");
+	if (!iloot_enable || !ikey_ctp || !ilock_key) 
+	{
+		auto str4_25872_loot15 = new sys::s_str_container(std::vector<int>{101, 102, 102, 125}); /*loot*/
+		auto str7_53940_ienable18 = new sys::s_str_container(std::vector<int>{96, 108, 103, 104, 107, 101, 108}); /*ienable*/
+		auto str8_25872_keybinds19 = new sys::s_str_container(std::vector<int>{98, 108, 112, 107, 96, 103, 109, 122}); /*keybinds*/
+		auto str7_53940_itp_key18 = new sys::s_str_container(std::vector<int>{96, 125, 121, 86, 98, 108, 112}); /*itp_key*/
+		auto str9_53940_ilock_key20 = new sys::s_str_container(std::vector<int>{96, 101, 102, 106, 98, 86, 98, 108, 112}); /*ilock_key*/
+		iloot_enable = sys::config->gvar(str4_25872_loot15->get(), str7_53940_ienable18->get());
+		ikey_ctp = sys::config->gvar(str8_25872_keybinds19->get(), str7_53940_itp_key18->get());
+		ilock_key = sys::config->gvar(str8_25872_keybinds19->get(), str9_53940_ilock_key20->get());
+		delete str4_25872_loot15;
+		delete str7_53940_ienable18;
+		delete str8_25872_keybinds19;
+		delete str7_53940_itp_key18;
+		delete str9_53940_ilock_key20;
+	}
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
 	else { executing = false; return v; }
@@ -124,6 +145,7 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 {
 	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2);
 	sys::lua_q->sparam(arg1);
+	auto v = fn::o_lua_dobuffer(arg1, arg2);
 	if (fn::log_dobuffer)
 	{
 		if (fn::lua_log.size() > 2048) fn:lua_log.clear();
@@ -144,35 +166,25 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 		|| strstr(arg2, "QuickSlot")
 		|| strstr(arg2, "Hide")
 		|| strstr(arg2, "collect")
-		|| arg2[0] == '\0') return fn::o_lua_dobuffer(arg1, arg2);
+		|| arg2[0] == '\0') return v;
 	if (sys::roar_bot->glua_actions)
 	{
 		sys::roar_bot->last_lua_actions.push_back(arg2);
 	}
 	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex((uint64_t)arg1)).append(" arg2:").append(arg2), sdk::util::e_info, true);
-	return fn::o_lua_dobuffer(arg1, arg2);
+	return v;
 }
-bool fn::f_self_gm()
-{
-	return 1;
-}
-uint64_t fn::f_strc_pack(uint64_t a)
-{
-	auto r = fn::o_strc_pack(a);
-
-	auto ptr = *(uint64_t*)(a + 0x13e0);
-	if (!ptr) return r;
-	auto tb = core::get_vtable_name(*(uint64_t*)(ptr));
-	if (!tb.empty()) sdk::util::log->add(std::string("a:").append(sdk::util::log->as_hex(a)).append(" tb:").append(tb), sdk::util::e_info, true);
-
-	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex(a)).append(" r:").append(sdk::util::log->as_hex(r)), sdk::util::e_info, true);
-	return r;
-}
-
 uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 {
 	auto r = fn::o_proxy_deadbody(a, b, c);
-	if (!iloot_enable) iloot_enable = sys::config->gvar("loot", "ienable");
+	if (!iloot_enable)
+	{
+		auto str4_6375_loot14 = new sys::s_str_container(std::vector<int>{101, 102, 102, 125}); /*loot*/
+		auto str7_18514_ienable18 = new sys::s_str_container(std::vector<int>{96, 108, 103, 104, 107, 101, 108}); /*ienable*/
+		iloot_enable = sys::config->gvar(str4_6375_loot14->get(), str7_18514_ienable18->get());
+		delete str4_6375_loot14;
+		delete str7_18514_ienable18;
+	}
 	//sdk::util::log->add(std::string("[deadbody] b:").append(sdk::util::log->as_hex(b)).append(" c:").append(sdk::util::log->as_hex(c)), sdk::util::e_info, true);
 	if (iloot_enable->iv)
 	{
