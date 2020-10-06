@@ -39,7 +39,6 @@ namespace sys
 		std::vector<s_cfg_v*> cfg_list;
 	public:
 		bool proc(std::string a, std::string b, std::string c, bool local = false);
-		bool proc(int a, int b, std::string c, bool local = false);
 		s_cfg_v* gvar(std::string t, std::string v);
 		void read();
 		void save();

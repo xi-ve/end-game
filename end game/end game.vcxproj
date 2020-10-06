@@ -151,7 +151,7 @@
       </EnableCOMDATFolding>
       <OptimizeReferences>
       </OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
@@ -160,7 +160,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\core.cpp" />
-    <ClCompile Include="core\string_table.cpp" />
     <ClCompile Include="core\values.cpp" />
     <ClCompile Include="core\workers.cpp" />
     <ClCompile Include="fn\hooks.cpp" />
@@ -224,7 +223,6 @@
   <ItemGroup>
     <ClInclude Include="core\boot.h" />
     <ClInclude Include="core\inc.h" />
-    <ClInclude Include="core\string_table.h" />
     <ClInclude Include="core\values.h" />
     <ClInclude Include="core\workers.h" />
     <ClInclude Include="fn\hooks.h" />

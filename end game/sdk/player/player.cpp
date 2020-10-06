@@ -40,8 +40,14 @@ void sdk::player::c_player::update_inventory(uint64_t self)
 }
 void sdk::player::c_player::update_actors(uint64_t self)
 {
+	if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
 	auto s = *(uint64_t*)(core::offsets::actor::actor_list_start);
 	auto e = *(uint64_t*)(core::offsets::actor::actor_list_end);
+	if (ient_alt->iv == 1)
+	{
+		s = *(uint64_t*)(core::offsets::actor::actor_list_start + 0x8);
+		e = *(uint64_t*)(core::offsets::actor::actor_list_end + 0x8);
+	}
 	if (s == NULL || e == NULL) return;
 	auto se_delta = (e - s) / sizeof(decltype(s));
 	if (se_delta < 1) { this->actors.clear(); this->corpses.clear(); return; }

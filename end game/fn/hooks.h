@@ -16,6 +16,10 @@ namespace fn
 	extern uint64_t f_lua_dobuffer(void*, const char*);
 	typedef uint64_t(__stdcall* t_lua_dobuffer)(void* arg1, const char* arg2);
 	extern t_lua_dobuffer o_lua_dobuffer;
+	extern bool f_self_gm();
+	typedef uint64_t(__fastcall* t_strc_pack)(uint64_t);
+	extern t_strc_pack o_strc_pack;
+	extern uint64_t f_strc_pack(uint64_t a);
 	typedef uint64_t(__fastcall* t_proxy_deadbody)(uint64_t, uint64_t, int);
 	extern t_proxy_deadbody o_proxy_deadbody;
 	extern uint64_t f_proxy_deadbody(uint64_t a, uint64_t b, int c);
