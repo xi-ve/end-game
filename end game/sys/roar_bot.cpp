@@ -523,17 +523,54 @@ void sys::c_roar_bot::work(uint64_t s)
 				if (cur_point.npc_name != "NONE")//npc
 				{
 					if (this->has_aggro()) return;
-					sp_delay = GetTickCount64() + 8400;
+					sp_delay = GetTickCount64() + 6400;
 					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
-					this->f_npc_interaction(sdk::player::player_->npcs.front().ptr);
+
+					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
+					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+
+					this->f_npc_interaction(npc_wanted_ptr);
 					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
-					if (!cinteract || cinteract != sdk::player::player_->npcs.front().ptr) return;
+					if (!cinteract || cinteract != npc_wanted_ptr) return;
+
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 					this->cur_route.pop_front();
 					return;
 				}
 				else if (cur_point.script != "NONE")//scr
 				{
+					if (this->npc_interacted)
+					{
+						if (!sdk::player::player_->npcs.size())
+						{
+							sdk::util::log->add("no npc near, after interaction - stopping bot (???)", sdk::util::e_critical, true);
+							this->dwork = false;
+							return;
+						}
+						std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
+						for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+						for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+						auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
+						if (cinteract != npc_wanted_ptr)
+						{
+							//aborted sp due to something (?)
+							sp_delay = GetTickCount64() + 8000;
+							this->npc_interacted = false;
+							//allow for roar and repath for only scripts
+							this->cur_route.clear();
+							this->cur_route = this->store;
+							while (true)
+							{
+								if (this->cur_route.front().special_event) break;
+								this->cur_route.pop_front();
+							}
+							this->i_sell_state = 0;
+							this->items_left_sell = this->allowed_sell_items;
+							sdk::util::log->add("sp interaction was aborted (?)");
+							return;
+						}
+					}
 					this->npc_interacted = true;
 					sp_delay = GetTickCount64() + 2000;
 					if (cur_point.script == "sell_routine()")

@@ -40,14 +40,8 @@ void sdk::player::c_player::update_inventory(uint64_t self)
 }
 void sdk::player::c_player::update_actors(uint64_t self)
 {
-	if (!ient_alt) ient_alt = sys::config->gvar("debug", "ientity_alt");
 	auto s = *(uint64_t*)(core::offsets::actor::actor_list_start);
 	auto e = *(uint64_t*)(core::offsets::actor::actor_list_end);
-	if (ient_alt->iv == 1)
-	{
-		s = *(uint64_t*)(core::offsets::actor::actor_list_start + 0x8);
-		e = *(uint64_t*)(core::offsets::actor::actor_list_end + 0x8);
-	}
 	if (s == NULL || e == NULL) return;
 	auto se_delta = (e - s) / sizeof(decltype(s));
 	if (se_delta < 1) { this->actors.clear(); this->corpses.clear(); return; }
@@ -282,8 +276,8 @@ std::string sdk::player::c_player::ganim(uint64_t p)
 }
 int sdk::player::c_player::gsp(uint64_t a)
 {
-	auto _x1d30 = *(uint64_t*)(a + 0x1d30); if (!_x1d30) return 0; _x1d30 = *(uint32_t*)(_x1d30);
-	auto _x1d20 = *(uint64_t*)(a + 0x1d20); if (!_x1d20) return 0; auto key1 = _x1d20 >> 5;
+	auto _x1d30 = *(uint64_t*)(a + 0x1d40); if (!_x1d30) return 0; _x1d30 = *(uint32_t*)(_x1d30);
+	auto _x1d20 = *(uint64_t*)(a + 0x1d30); if (!_x1d20) return 0; auto key1 = _x1d20 >> 5;
 	return (key1^_x1d30);
 }
 float sdk::player::c_player::ghp(uint64_t a)
