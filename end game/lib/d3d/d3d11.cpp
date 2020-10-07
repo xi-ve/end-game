@@ -34,6 +34,8 @@ LRESULT APIENTRY WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (uMsg == WM_KEYDOWN) bButton = !bButton;
 	};
 
+	lib::d3d11->last_key_press = uMsg;
+
 	switch (uMsg)
 	{
 	case WM_LBUTTONDOWN:

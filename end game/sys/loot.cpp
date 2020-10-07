@@ -238,36 +238,36 @@ void sys::c_loot::work(uint64_t self)
 		{
 		case 0:
 		{
-			this->loot_count_grey++;
+			this->loot_count_grey += ctx.count;
 			break;
 		}
 		case 1:
 		{
-			this->loot_count_green++;
+			this->loot_count_green += ctx.count;
 			break;
 		}
 		case 2:
 		{
-			this->loot_count_blue++;
+			this->loot_count_blue += ctx.count;
 			break;
 		}
 		case 3:
 		{
-			this->loot_count_yellow++;
+			this->loot_count_yellow += ctx.count;
 			break;
 		}
 		case 4:
 		{
-			this->loot_count_orange++;
+			this->loot_count_orange += ctx.count;
 			break;
 		}
 		}
 		if (this->looted_items[ctx.id].name.empty())
 		{
 			this->looted_items[ctx.id] = ctx;
-			this->looted_items[ctx.id].count = 1;
+			this->looted_items[ctx.id].count = ctx.count;;
 		}
-		else this->looted_items[ctx.id].count++;
+		else this->looted_items[ctx.id].count += ctx.count;
 	}
 	last_actor = actid;
 	if (!did_loot_good_item && this->f_loot_get_item_count())

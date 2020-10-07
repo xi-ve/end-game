@@ -25,7 +25,7 @@ namespace sys
 			default: break;
 			}
 			if (t == 0) strcpy(cin, rval.c_str());
-			sdk::util::log->add(std::string(a).append(":").append(b).append(":").append(c).append(":").append(std::to_string(t)), sdk::util::e_info, true);
+			//sdk::util::log->add(std::string(a).append(":").append(b).append(":").append(c).append(":").append(std::to_string(t)), sdk::util::e_info, true);
 		}
 		std::string table;
 		std::string val;

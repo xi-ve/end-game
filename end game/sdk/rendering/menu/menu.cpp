@@ -207,6 +207,63 @@ bool sdk::menu::c_menu::setup()
 							if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 						}
 					}
+				},
+				{"grind_editor", 5, "", "", false, []()
+					{
+						ImGui::Checkbox("edit-grind-path", &sys::visuals->debug_editor);
+						if (sys::visuals->debug_editor)
+						{
+							if (sys::visuals->selected_pos.valid())
+							{
+								//still bugged something about it does not like some points
+								ImGui::TextColored(ImColor(0,255,0), "selected point!");
+								if (ImGui::Button("unselect-point")) { sys::visuals->new_pos.clear(); sys::visuals->selected_pos.clear(); sys::visuals->first_click = false; sys::visuals->shown_modal = false; sys::visuals->changed_pos = false; return; }
+								if (!sys::visuals->shown_modal)
+								{
+									ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+									ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+									ImGui::OpenPopup("edit-pause");
+									if (ImGui::BeginPopupModal("edit-pause", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+									{
+										ImGui::Text("point information:");
+										ImGui::Separator();
+
+										ImGui::Text(std::string("x:").append(std::to_string(sys::visuals->selected_pos.x)).c_str());
+										ImGui::Text(std::string("y:").append(std::to_string(sys::visuals->selected_pos.y)).c_str());
+										ImGui::Text(std::string("z:").append(std::to_string(sys::visuals->selected_pos.z)).c_str());
+
+										if (sys::visuals->selected_pos.pause > 0.1f) ImGui::TextColored(ImColor(0, 255, 0), "point has a pause registered");
+										else ImGui::TextColored(ImColor(255, 0, 0), "point has no pause");
+
+										ImGui::SliderFloat("pause-time", &sys::visuals->selected_pos.pause, 0.1f, 60.f);
+
+										ImGui::SetItemDefaultFocus();
+
+										if (ImGui::Button("accept", ImVec2(120, 0)))
+										{
+											sys::roar_bot->sgpos(sys::visuals->selected_pos, sys::visuals->selected_pos);
+											sys::roar_bot->save();
+											sys::roar_bot->load();
+											sys::visuals->selected_pos.clear();
+											sys::visuals->new_pos.clear();
+											sys::visuals->first_click = false;
+											sys::visuals->shown_modal = false;
+											sys::visuals->changed_pos = false;
+											ImGui::CloseCurrentPopup();
+										}
+										ImGui::EndPopup();
+									}
+									else
+									{
+										ImGui::TextColored(ImColor(0,255,0), "modal was shown!");
+										sys::visuals->shown_modal = true;
+									}
+								}
+							}
+							else ImGui::TextColored(ImColor(255,0,0), "no point selected");
+						}
+					}
 				}
 			}
 		},
@@ -584,7 +641,6 @@ bool sdk::menu::c_menu::setup()
 							auto in_l = *(BYTE*)(self + core::offsets::actor::actor_inv_left);
 							ImGui::Text(std::string("weight max:").append(std::to_string(in_m)).c_str()); ImGui::SameLine();
 							ImGui::Text(std::string("weight cur:").append(std::to_string(in_w)).c_str());
-							ImGui::Text(std::string("weight cur:").append(std::to_string(in_w)).c_str()); ImGui::SameLine();
 							ImGui::Text(std::string("slots left:").append(std::to_string(in_l)).c_str());
 
 						}
@@ -592,7 +648,7 @@ bool sdk::menu::c_menu::setup()
 					}
 				}
 			}
-		}
+		}		
 		}
 	)) return false;
 	return true;
@@ -785,6 +841,7 @@ void sdk::menu::c_menu::work2()
 	if (this->tabs.empty()) this->setup();
 	//ImGui::ShowDemoWindow();
 	this->work_tabs();
+	//ImGui::ShowDemoWindow();
 	//
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

@@ -27,6 +27,7 @@ namespace core
 			extern uint64_t camera_matrice;
 			extern uint64_t ascii_table;
 			extern uint64_t loot_base;
+			extern uint64_t cursor_world;
 		}
 		namespace fn
 		{

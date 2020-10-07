@@ -10,6 +10,7 @@ namespace lib
 	class c_d3d11
 	{
 	public:
+		UINT last_key_press = NULL;
 		HWND h;
 		void setup();
 	};

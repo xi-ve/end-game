@@ -38,7 +38,7 @@ bool sys::c_roar_bot::pause(uint64_t s, float p)
 			for (auto a : sdk::player::player_->actors)
 			{
 				if (a.ptr == s) continue;
-				if (a.type == 0) continue;
+				if (a.type != 1) continue;
 				if (a.hp <= 0) continue;
 				if (a.state == 1) continue;
 				if (a.rlt_dst >= ibot_lootrange->iv) continue;
@@ -132,7 +132,7 @@ bool sys::c_roar_bot::has_aggro()
 	auto sk = *(int*)(this->self + core::offsets::actor::actor_proxy_key);
 	for (auto a : sdk::player::player_->actors)
 	{
-		if (a.type != 1 || a.hp <= 0 || a.state == 1) continue;
+		if (a.type != 1 || a.hp <= 0 || a.state == 1 || a.rlt_dst >= 2000) continue;
 		auto ag = *(int*)(a.ptr + core::offsets::actor::actor_attack_target);
 		if (sk == ag) return true;
 	}
@@ -462,6 +462,19 @@ void sys::c_roar_bot::load()
 	this->items_left_sell = this->allowed_sell_items;
 	sdk::util::log->add(std::string("done load"), sdk::util::e_info, true);
 }
+void sys::c_roar_bot::save()
+{
+	std::ofstream p(this->pathname);
+	if (!p.is_open()) return;
+	for (auto a : this->grind)
+	{
+		if (a.pause > 0.1f && a.pause != 0.f) p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << a.pause << ")\n";
+		else p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << 0.1f << ")\n";
+	}
+ 	for (auto a : this->store) p << "(sp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
+	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
+	sdk::util::log->add("resaved path");
+}
 void sys::c_roar_bot::work(uint64_t s)
 {
 	this->self = s;
@@ -513,6 +526,8 @@ void sys::c_roar_bot::work(uint64_t s)
 					sp_delay = GetTickCount64() + 8400;
 					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 					this->f_npc_interaction(sdk::player::player_->npcs.front().ptr);
+					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
+					if (!cinteract || cinteract != sdk::player::player_->npcs.front().ptr) return;
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 					this->cur_route.pop_front();
 					return;
@@ -638,6 +653,15 @@ void sys::c_roar_bot::snpc(std::string a)
 void sys::c_roar_bot::sscr(std::string a)
 {
 	this->s_scr = a;
+}
+void sys::c_roar_bot::sgpos(sdk::util::c_vector3 to_replace, sdk::util::c_vector3 new_pos)
+{
+	for (auto&& a : this->grind)
+	{
+		if (!a.cmp(to_replace)) continue;
+		a = new_pos;
+		break;
+	}
 }
 std::vector<std::string> sys::c_roar_bot::gnpcs()
 {

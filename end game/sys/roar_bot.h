@@ -75,6 +75,7 @@ namespace sys
 		bool recording_g = 0, recording_s = 0, store_can_path = 0;
 		void record();
 		void load();
+		void save();
 		void work(uint64_t s);
 		bool snear();
 		void reset();
@@ -85,6 +86,7 @@ namespace sys
 		int gpsize() { return (int)this->grind.size(); }
 		int gssize() { return (int)this->store.size(); }
 		int assize() { return (int)this->allowed_sell_items.size(); }
+		void sgpos(sdk::util::c_vector3 to_replace, sdk::util::c_vector3 new_pos);
 		//
 		std::vector<std::string> gnpcs();
 		//

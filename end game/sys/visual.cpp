@@ -70,7 +70,7 @@ void sys::c_visuals::trace_debug()
 	auto ps = sdk::player::player_->gpos(this->self);
 	auto rot = sdk::player::player_->grot(this->self);
 	auto x = (std::sin(rot) * -1); auto y = (std::cos(rot) * -1);
-	auto v =  sdk::util::c_vector3(ps.x + (200 * x), ps.y + 200, ps.z + (200 * y));
+	auto v = sdk::util::c_vector3(ps.x + (200 * x), ps.y + 200, ps.z + (200 * y));
 
 	auto wv = sdk::util::c_vector3();
 	if (!sdk::util::math->w2s(v, wv)) return;
@@ -102,17 +102,18 @@ void sys::c_visuals::roar_path()
 		sdk::util::c_vector3 l;
 		if (!sdk::util::math->w2s(b, l)) { last.clear(); continue; }
 		if (!last.size())
-		{ 
-			last.push_back(l); 
-			rp = b; 
+		{
+			last.push_back(l);
+			rp = b;
 		}
 		else
 		{
 			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
+			last.clear(); last.push_back(l); rp = b;
 			if (iroar_pause->iv)
 			{
 				if (b.pause > 0.1f || rp.pause > 0.1f)
-				{					
+				{
 					if (ds <= 1200)
 					{
 						auto ta = b;
@@ -131,7 +132,6 @@ void sys::c_visuals::roar_path()
 					}
 				}
 			}
-			last.clear(); last.push_back(l); rp = b;
 		}
 	}
 }
@@ -150,7 +150,7 @@ void sys::c_visuals::store_path()
 		if (!last.size()) last.push_back(l);
 		else
 		{
-			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);			
+			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
 			last.clear(); last.push_back(l); rp = b.pos;
 		}
 	}
@@ -176,6 +176,92 @@ void sys::c_visuals::debug_mobs()
 		sdk::render::render->RenderText(sv.x, sv.z, 0xff00ff00, (char*)std::string("aggro:").append(sdk::util::log->as_hex(a.ptr)).c_str());
 	}
 }
+void sys::c_visuals::editor_debug()
+{
+	if (!sys::roar_bot->gpsize()) return;
+	sdk::util::c_vector3 closest = {}, res = {}; float dst_last = 9999.f;
+	auto cpos = *(sdk::util::c_vector3*)(core::offsets::cl::cursor_world);
+	if (!cpos.valid()) return;
+	if (!sdk::util::math->w2s(cpos, closest)) return;
+	sdk::render::render->DrawBox(closest.x, closest.z, 14, 14, 0xff00ffdd, 0xffff0000);
+
+	if (!sdk::menu::menu->gactive()) sdk::menu::menu->sactive();
+
+	if (!this->first_click)
+	{
+		for (auto a : sys::roar_bot->g_p())
+		{
+			auto dst = sdk::util::math->gdst_3d(a, cpos);
+			if (dst < dst_last && dst < 300)
+			{
+				closest = a;
+				dst_last = dst;
+			}
+		}
+		if (!sdk::util::math->w2s(closest, res)) return;
+		if (!res.valid()) return;
+
+		sdk::render::render->RenderText(res.x, res.z, 0xff00ffdd, (char*)"(X)");
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse)
+		{
+			this->selected_pos = closest;
+			this->first_click = true;
+			this->shown_modal = true;
+			this->changed_pos = false;
+			return;
+		}
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right) && !ImGui::GetIO().WantCaptureMouse && dst_last <= 300)
+		{
+			this->selected_pos = closest;
+			this->shown_modal = false;
+			this->first_click = true;
+			return;
+		}
+	}
+	else
+	{
+		for (auto a : sys::roar_bot->g_p())
+		{
+			auto dst = sdk::util::math->gdst_3d(a, cpos);
+			if (dst < dst_last && dst < 300)
+			{
+				closest = a;
+				dst_last = dst;
+			}
+		}
+
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse && !this->changed_pos)
+		{
+			this->new_pos = cpos;
+			this->new_pos.pause = this->selected_pos.pause;
+			this->changed_pos = true;
+
+			sys::roar_bot->sgpos(sys::visuals->selected_pos, this->new_pos);
+			sys::roar_bot->save();
+			sys::roar_bot->load();
+			sys::visuals->selected_pos.clear();
+			sys::visuals->new_pos.clear();
+			sys::visuals->first_click = false;
+			sys::visuals->shown_modal = false;
+			sys::visuals->changed_pos = false;
+			return;
+		}
+
+		sdk::util::c_vector3 res_to;
+		if (!this->changed_pos)
+		{			
+			if (!sdk::util::math->w2s(this->selected_pos, res)) return;
+			if (sdk::util::math->w2s(cpos, res_to)) sdk::render::render->DrawLine(res.x, res.z, res_to.x, res_to.z, 0xffff0000);
+		}
+
+		if (!this->new_pos.valid()) return;
+		if (!sdk::util::math->w2s(this->selected_pos, res)) return;
+		if (!sdk::util::math->w2s(this->new_pos, res_to)) return;
+		sdk::render::render->RenderText(res_to.x, res_to.z, 0xff00ffdd, (char*)"(+)");
+		sdk::render::render->RenderText(res.x, res.z, 0xff00ffdd, (char*)"(X)");
+		sdk::render::render->DrawLine(res_to.x, res_to.z, res.x, res.z, 0xffff0000);
+	}
+}
 void sys::c_visuals::work()
 {
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
@@ -195,6 +281,7 @@ void sys::c_visuals::work()
 	if (istore_path->iv) this->store_path();
 	if (ivis_linestart->iv) this->lineto_roar();
 	if (ialive_byname->iv) this->alive_proxy_debug();
+	if (this->debug_editor) this->editor_debug();
 	//this->debug_mobs();
 	//this->trace_debug();
 }

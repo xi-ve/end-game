@@ -172,10 +172,7 @@ void sys::c_backend::work()
 	if (!this->usr.size()) this->setup(); 
 	if (this->thread_working) return;
 	if (GetTickCount64() > this->last_run) this->last_run = 120000;
-	else return; auto v = 0;
-	CHECK_PROTECTION(v, 0x1337);	 if (!v == 0x1337) ExitProcess(0);
-	CHECK_CODE_INTEGRITY(v, 0x1337); if (!v == 0x1337) ExitProcess(0);
-	CHECK_VIRTUAL_PC(v, 0x1337);	 if (!v == 0x1337) ExitProcess(0);
+	else return; 
 	if (this->usr == "nigger" || this->usr == "noxiu") return;
 	this->thread_working = true;
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sys::backend_worker, 0, 0, 0);

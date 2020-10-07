@@ -1,41 +1,26 @@
 
 
-SECheckProtection
------------------
--> Processing Macro at 0x0000000180121195: OK
-
-
-SECheckCodeIntegrity
---------------------
--> Processing Macro at 0x00000001801211D0: OK
-
-
-SECheckVirtualPC
-----------------
--> Processing Macro at 0x000000018012120B: OK
-
-
 CodeReplaceStart
 ----------------
 Virtualizing Macros:
 
--> Processing Macro at 0x0000000180010D95: OK
+-> Processing Macro at 0x0000000180010E05: OK
 
 
 VMStart
 -------
 Virtualizing Macros:
 
--> Processing Macro at 0x0000000180018DCA: OK
--> Processing Macro at 0x000000018011F69B: OK
+-> Processing Macro at 0x0000000180018E4A: OK
+-> Processing Macro at 0x00000001801208EB: OK
 
 
 ClearStart
 ----------
 -> Processing Macro at 0x0000000180001FD8: OK
 -> Processing Macro at 0x0000000180002927: OK
--> Processing Macro at 0x000000018001871E: OK
--> Processing Macro at 0x0000000180019561: OK
+-> Processing Macro at 0x000000018001878E: OK
+-> Processing Macro at 0x00000001800195E1: OK
 
 
 Macros Processed
@@ -47,6 +32,6 @@ CodeReplace Macros = 1/1
 Encode Macros = 0/0
 Clear Macros = 4/4
 Mutate Macros = 0/0
-CheckProtection Macros = 1/1
-CheckCodeIntegrity Macros = 1/1
-CheckVirtualPC Macros = 1/1
+CheckProtection Macros = 0/0
+CheckCodeIntegrity Macros = 0/0
+CheckVirtualPC Macros = 0/0

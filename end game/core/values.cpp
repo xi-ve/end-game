@@ -34,6 +34,8 @@ uint64_t core::offsets::cl::camera_matrice = 0x144B4DA00;
 uint64_t core::offsets::cl::ascii_table = 0x143CC9BE0;
 //81 0D ? ? ? ? ? ? ? ? 48 8B 05 ? ? ? ? C6 05 ? ? ? ? ? 
 uint64_t core::offsets::cl::loot_base = 0x143D1F2E0;
+//F2 0F 10 35 ? ? ? ? F2 0F 11 74 24 ? 44 8B 3D ? ? ? ? 
+uint64_t core::offsets::cl::cursor_world = 0x143D1E538;
 
 
 //48 8B C4 56 57 41 56 48 81 EC ? ? ? ? 48 C7 80 ? ? ? ? ? ? ? ? 48 89 58 10 48 89 68 18 0F 29 70 D8 

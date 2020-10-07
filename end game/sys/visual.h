@@ -18,8 +18,12 @@ namespace sys
 		void store_path();
 		void lineto_roar();
 		void debug_mobs();
+		void editor_debug();
 		int filter = 34;
 	public:
+		bool debug_editor = false, first_click = false, shown_modal = false, changed_pos = false;
+		sdk::util::c_vector3 selected_pos = {}, new_pos = {};
+		//
 		std::vector<sdk::util::c_vector3> gcircle(sdk::util::c_vector3 from, float dst, int deg);
 		void work();
 	};
