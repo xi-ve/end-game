@@ -24,7 +24,7 @@ namespace sys
 	{
 	private:
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
-		ULONGLONG max_cooltime = 0;
+		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
 		sys::s_cfg_v* ibot_storage_roar = NULL; sys::s_cfg_v* istop_on_player = NULL; sys::s_cfg_v* iexit_on_player = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
@@ -53,6 +53,7 @@ namespace sys
 		bool loot_near(sdk::util::c_vector3 o);
 		bool has_aggro();
 		//
+		bool stance();
 		void skill();
 		//
 		void gpoint();

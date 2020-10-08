@@ -27,7 +27,7 @@ void sys::c_lua_q::work()
 	if (this->lua_queue.empty() || this->lua_state == NULL) return;
 	auto b = this->lua_queue.back();
 	if (b.empty()) { this->lua_queue.pop_back(); return; }
-	sdk::util::log->add(std::string("running lua:").append(b), sdk::util::e_info, true);
+	//sdk::util::log->add(std::string("running lua:").append(b), sdk::util::e_info, true);
 	fn::o_lua_dobuffer(this->lua_state, b.c_str());
 	this->lua_queue.pop_back();
 }

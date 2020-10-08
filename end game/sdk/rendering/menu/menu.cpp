@@ -481,8 +481,9 @@ bool sdk::menu::c_menu::setup()
 							ImGui::Combo2("##select-item", &selected_whitelist, v);
 							if (ImGui::Button("to-whitelist")) sys::loot->add_whitelist(sdk::player::player_->gitm_by_name(v[selected_whitelist])); ImGui::SameLine();
 							if (ImGui::Button("to-blacklist")) sys::loot->add_blacklist(sdk::player::player_->gitm_by_name(v[selected_whitelist]));
-							if (ImGui::Button("clear-whitelist")) sys::loot->read_whitelist(); ImGui::SameLine();
-							if (ImGui::Button("clear-blacklist")) sys::loot->read_blacklist();
+							if (ImGui::Button("clear-whitelist")) sys::loot->reset_whitelist();
+							ImGui::SameLine();
+							if (ImGui::Button("clear-blacklist")) sys::loot->reset_blacklist();
 						}
 						else ImGui::TextColored(ImColor(255 ,0, 0), "no items found");
 					}

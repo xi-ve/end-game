@@ -138,6 +138,20 @@ bool sys::c_roar_bot::has_aggro()
 	}
 	return false;
 }
+bool sys::c_roar_bot::stance()
+{
+	auto a = sdk::player::player_->ganim(this->self);
+	if (strstr(a.c_str(), "BT_skill_AggroShout_Ing_UP")) return true;//autoskip
+	if (strstr(a.c_str(), "BT_WAIT")) return true;//autoskip
+	if (GetTickCount64() > this->sct) this->sct = GetTickCount64() + 5000;
+	else return false;	
+	if (strstr(a.c_str(), "WAIT"))
+	{
+		sys::key_q->add(new sys::s_key_input({ VK_TAB }, 500));
+		return false;
+	}
+	return true;
+}
 void sys::c_roar_bot::skill()
 {
 	if ((this->npc_interacted && this->p_mode == 1)
@@ -492,6 +506,7 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (sdk::player::player_->ghp(this->self) <= 0) return;
 	if ((istop_on_player->iv || iexit_on_player->iv) && !this->p_mode) if (sys::protection->players_in_range(s)) return;
 	//
+	if (!this->stance()) return;
 	this->skill();
 	//e.g auto scroll combine/event items
 	//
