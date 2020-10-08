@@ -119,6 +119,16 @@ bool sdk::menu::c_menu::setup()
 			}			
 		},
 		{
+			{"protection"},
+			{
+				{"stop-on-player", 0, "protection", "istop_on_player", true},
+				{"exit-on-player", 0, "protection", "iexit_on_player", false},
+				{"smart-mode"	 , 0, "protection", "ismart_detect", false},
+				{"y   range"     , 2, "protection", "iheight_range", false, new sdk::menu::s_imgui_intslider(1000, 15000)},
+				{"x,z range"     , 2, "protection", "iprotection_range", false, new sdk::menu::s_imgui_intslider(1000, 25000)}
+			}
+		},
+		{
 			{"path-utils"},
 			{
 				{"roar_set_button_manual", 5, "", "", false, [this]()

@@ -483,11 +483,14 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (!ibot_timescale) ibot_timescale = sys::config->gvar("roar_bot", "ibot_timescale");
 	if (!ibot_storage_roar) ibot_storage_roar = sys::config->gvar("roar_bot", "ibot_storage_roar");
 	if (!iloot_tp) iloot_tp = sys::config->gvar("roar_bot", "iloot_tp");
+	if (!istop_on_player) istop_on_player = sys::config->gvar("protection", "istop_on_player");
+	if (!iexit_on_player) this->iexit_on_player = sys::config->gvar("protection", "iexit_on_player");
 	if (!this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	else return;
 	//
 	if (sdk::player::player_->ghp(this->self) <= 0) return;
+	if ((istop_on_player->iv || iexit_on_player->iv) && !this->p_mode) if (sys::protection->players_in_range(s)) return;
 	//
 	this->skill();
 	//e.g auto scroll combine/event items

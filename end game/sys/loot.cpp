@@ -97,7 +97,6 @@ void sys::c_loot::starget(int k)
 }
 void sys::c_loot::spack(int k)
 {
-	//b0 15 00 00 00 00 03 44 24 03 
 	ByteBuffer a;
 	a.putShort(5552);
 	a.putEmptyBytes(4);

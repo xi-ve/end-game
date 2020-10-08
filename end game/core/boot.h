@@ -24,6 +24,7 @@ static void __stdcall init_thread()
 	sys::key_q = new sys::c_key_q();
 	sys::rebuff = new sys::c_rebuff();
 	sys::backend = new sys::c_backend();
+	sys::protection = new sys::c_protection();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

@@ -106,7 +106,10 @@ void sys::c_config::vars()
 	this->proc("keybinds", "itp_key", "96");
 	this->proc("keybinds", "ilock_key", "116"); 
 	this->proc("overlay", "ioverlay_toggled", "1");
-	//locals
-
+	this->proc("protection", "iheight_range", "3500");
+	this->proc("protection", "iprotection_range", "5500");
+	this->proc("protection", "ismart_detect", "1");
+	this->proc("protection", "istop_on_player", "0");
+	this->proc("protection", "iexit_on_player", "0");
 }
 sys::c_config* sys::config;
