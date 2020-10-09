@@ -25,6 +25,7 @@ static void __stdcall init_thread()
 	sys::rebuff = new sys::c_rebuff();
 	sys::backend = new sys::c_backend();
 	sys::protection = new sys::c_protection();
+	sys::legit_bot = new sys::c_legit_bot();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

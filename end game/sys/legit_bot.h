@@ -2,13 +2,30 @@
 #include <inc.h>
 namespace sys
 {
-	class c_roar_bot
+	struct s_path_script
+	{
+		s_path_script(sdk::util::c_vector3 p, std::string i, std::string n, bool s = 0)
+		{
+			pos = p;  script = i; npc_name = n; special_event = s; pause = p.pause;
+		};
+		s_path_script()
+		{
+			pos.clear(); pause = 0; script = ""; npc_name = "";
+		}
+		sdk::util::c_vector3 pos = { 0,0,0 };
+		float		   pause = 0;
+		bool		   special_event = 0;
+		bool		   repair_event = 0;
+		std::string    script = "NONE";
+		std::string	   npc_name = "NONE";
+	};
+	typedef uint64_t(__stdcall* t_npc_interaction)(uint64_t);
+
+	class c_legit_bot
 	{
 	private:
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
-		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
-		sys::s_cfg_v* ibot_storage_roar = NULL; sys::s_cfg_v* istop_on_player = NULL; sys::s_cfg_v* iexit_on_player = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
 		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
 		//
@@ -40,6 +57,11 @@ namespace sys
 		//
 		void gpoint();
 		//
+		uint64_t nearest(float max);
+		//
+		void aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s);
+		void spitch(float f);
+		void syaw(float f);
 	public:
 		int loot_act_k = 0;
 		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};
@@ -63,8 +85,8 @@ namespace sys
 		bool snear();
 		void reset();
 		//
-		void snpc(std::string a);
-		void sscr(std::string a);
+		void snpc(std::string a) { this->s_npc = a; };
+		void sscr(std::string a) { this->s_scr = a; };
 		//
 		int gpsize() { return (int)this->grind.size(); }
 		int gssize() { return (int)this->store.size(); }
@@ -76,5 +98,5 @@ namespace sys
 		std::deque<sdk::util::c_vector3> g_p() { return this->grind; }
 		std::deque<s_path_script>		 g_s() { return this->store; }
 	};
-	extern c_roar_bot* roar_bot;
+	extern c_legit_bot* legit_bot;
 }

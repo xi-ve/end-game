@@ -293,6 +293,121 @@ bool sdk::menu::c_menu::setup()
 		}
 		}
 	)) return false;
+	if (!this->add_tab("legit-bot",
+		{
+		{	{"core-options"},
+			{
+				{"toggel_switch", 5, "", "", false, [&]()
+					{
+						if (!sdk::player::player_->alive()) return;
+						if (!sys::legit_bot->dwork)
+						{
+							if (ImGui::Button("enable-bot##lb")) { sys::legit_bot->snear(); sys::legit_bot->dwork = true; }
+						}
+						else
+						{
+							if (ImGui::Button("disable-bot##lb")) { sys::legit_bot->dwork = false; sys::legit_bot->reset(); sys::legit_bot->load(); }
+						}
+						ImGui::SameLine();
+					}
+				},
+				{"store-test", 0, "", "", false, (void*)&sys::legit_bot->force_store}
+			}
+		},
+		{
+			{"path-utils"},
+			{
+				{"roar_set_button_manual", 5, "", "", false, [this]()
+					{
+						if (ImGui::Button("re-list")) sdk::util::file->update();
+						ImGui::SameLine();
+						if (ImGui::Button("load"))
+						{
+							if (sys::legit_bot->pathname != string_last_path->cin)
+							{
+								sys::legit_bot->pathname = string_last_path->cin;
+								string_last_path->rval = string_last_path->cin;
+							}
+							else
+							{
+								sys::legit_bot->pathname = sdk::util::file->legit_paths[this->ps];
+								string_last_path->rval = sdk::util::file->legit_paths[this->ps];
+							}
+							sys::legit_bot->load();
+						}
+					}
+				},
+				{"##lbpath_by_name", 3, "roar_bot", "string_last_path", false},
+				{"combo_path_list##lb", 5, "","",false, [this]()
+					{
+						if (sdk::util::file->legit_paths.size())
+						{
+							ImGui::PushItemWidth(125); ImGui::SameLine();
+							ImGui::Combo2("##lb-paths-combo", &this->ps, sdk::util::file->legit_paths);
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no paths found");
+					}
+				},
+				{"sell_combo_options##lb", 5, "", "", false, [this]()
+					{
+						auto v = sys::legit_bot->gitm();
+						if (v.size())
+						{
+							ImGui::PushItemWidth(125);
+							ImGui::Combo2("##sell_combo_slct", &this->witem_s, v);
+							ImGui::SameLine();
+							if (ImGui::Button("add")) sys::legit_bot->sitem(sys::legit_bot->gitem_bn(v[this->witem_s]));
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no items found");
+					}
+				},
+				{"recording_stuff", 5, "", "", false, [this]()
+					{
+						if (!sys::legit_bot->recording_s) ImGui::Checkbox("record-grind", &sys::legit_bot->recording_g);
+						if (!sys::legit_bot->recording_s && !sys::legit_bot->recording_g) ImGui::SameLine();
+						if (!sys::legit_bot->recording_g) ImGui::Checkbox("record-store", &sys::legit_bot->recording_s);
+						if (sys::legit_bot->recording_g)
+						{
+							ImGui::PushItemWidth(125);
+							ImGui::SliderFloat("pause-time(ms)", &t, 1.1f, 60.f);
+							if (ImGui::Button("add-pause")) sys::legit_bot->gppoint(t);
+						}
+						if (si == 0 && sys::legit_bot->recording_s)
+						{
+							sys::legit_bot->store_can_path = true;
+							if (ImGui::Button("done-store-path")) si++;
+						}
+						if (si == 1 && sys::legit_bot->recording_s)
+						{
+							sys::legit_bot->store_can_path = false;
+							auto npcs = sys::legit_bot->gnpcs();
+							if (npcs.size())
+							{
+								ImGui::PushItemWidth(125);
+								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
+								if (ImGui::Button("set-npc")) { sys::legit_bot->glua_actions = true; sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("NONE"); sys::legit_bot->sepoint(); sys::legit_bot->snpc("NONE"); si++; }
+							}
+							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
+						}
+						if (si == 2 && sys::legit_bot->recording_s)
+						{
+							sys::legit_bot->glua_actions = true;
+							if (!sys::legit_bot->last_lua_actions.empty())
+							{
+								ImGui::PushItemWidth(125);
+								ImGui::Combo2("##script", &is_scr, sys::legit_bot->last_lua_actions); ImGui::SameLine();
+								if (ImGui::Button("test-scr")) sys::lua_q->add(sys::legit_bot->last_lua_actions[is_scr]);
+								if (ImGui::Button("add-scr")) { sys::legit_bot->sscr(sys::legit_bot->last_lua_actions[is_scr]); sys::legit_bot->sepoint(); sys::legit_bot->last_lua_actions.clear(); }
+								if (ImGui::Button("add-store/sell")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->last_lua_actions.clear(); }
+							}
+							if (ImGui::Button("done-store")) { si = 0; sys::legit_bot->glua_actions = false; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_s = false; sys::legit_bot->load(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+						}
+					}
+				}
+			}
+		}
+		}
+	)) return false;
 	if (!this->add_tab("visuals",
 		{  
 		{	{"monster-actor"},

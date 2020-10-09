@@ -125,6 +125,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//sdk::player::player_->update_pets(self_actor_proxy);
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);
+	sys::legit_bot->work(self_actor_proxy);
 	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
 	if (GetAsyncKeyState(ilock_key->iv) & 1)
 	{

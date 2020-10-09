@@ -2,13 +2,13 @@
 void sys::c_key_q::bypass()
 {
 	auto fw = GetForegroundWindow();
+	auto base = *(uint64_t*)(core::offsets::cl::client_base); if (!base) return;
+	auto x1b0 = *(uint64_t*)(base + 0x1B0);					  if (!x1b0) return;
+	*(byte*)(x1b0 + 0xd1) = 0; *(byte*)(x1b0 + 0xd2) = 0; *(byte*)(x1b0 + 0xda) = 0;
 	if (this->lh != fw)
 	{
 		this->lh = fw;
-		auto& key_p = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x8));
-		auto base = *(uint64_t*)(core::offsets::cl::client_base); if (!base) return;
-		auto x1b0 = *(uint64_t*)(base + 0x1B0);					  if (!x1b0) return;
-		*(byte*)(x1b0 + 0xd1) = 0; *(byte*)(x1b0 + 0xd2) = 0; *(byte*)(x1b0 + 0xda) = 0;
+		auto& key_p = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x8));		
 		fn::o_reset_input_class(key_p);
 	}
 }

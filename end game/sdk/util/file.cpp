@@ -2,7 +2,7 @@
 #include "..\\..\\lib\win\dirent.h"
 void sdk::util::c_file::update()
 {
-	this->roar_paths.clear();
+	this->roar_paths.clear(); this->legit_paths.clear();
 	char r[MAX_PATH];
 	auto p = std::string(r, GetModuleFileNameA(NULL, r, MAX_PATH));
 	for (auto a = 0; a < 17; a++) p.pop_back();
@@ -10,8 +10,8 @@ void sdk::util::c_file::update()
 	auto dir = opendir(p.c_str()); struct dirent* h;
 	while ((h = readdir(dir)) != NULL)
 	{
-		if (!strstr(h->d_name, ".28")) continue;
-		this->roar_paths.push_back(h->d_name);
+		if (strstr(h->d_name, ".28")) this->roar_paths.push_back(h->d_name);
+		if (strstr(h->d_name, ".27")) this->legit_paths.push_back(h->d_name);
 	}
 	closedir(dir);
 }
