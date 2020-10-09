@@ -12,6 +12,23 @@ namespace sys
 		}
 		int k[4] = {0,0,0,0}; int d = 0;
 	};
+	struct s_skill
+	{
+		s_skill()
+		{
+			input = new sys::s_key_input({0,0,0},0);
+		};
+		sys::s_key_input*   input = NULL;
+		int					condition = 0;
+		int					mp = 0;
+		int					cd = 0;
+		int					awakening = 0;
+		//
+		uint64_t			last_use = 0;
+		uint64_t			next_possible_use = 0;
+		int					total_uses = 0;
+
+	};
 	extern void __stdcall key_worker(void* a);
 	class c_key_q
 	{

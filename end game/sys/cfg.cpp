@@ -111,5 +111,11 @@ void sys::c_config::vars()
 	this->proc("protection", "ismart_detect", "1");
 	this->proc("protection", "istop_on_player", "0");
 	this->proc("protection", "iexit_on_player", "0");
+
+	this->proc("legit_bot", "string_last_path", "def.27");
+	this->proc("legit_bot", "string_last_combo", "def.combo");
+	this->proc("legit_bot", "ipot", "1");
+	this->proc("legit_bot", "isp_pot_pct", "50");
+	this->proc("legit_bot", "ihp_pot_pct", "65");
 }
 sys::c_config* sys::config;

@@ -92,8 +92,10 @@ void sdk::menu::test_func()
 }
 bool sdk::menu::c_menu::setup()
 {
-	//s_imgui_node(std::string n, int t, std::string ct, std::string vn)
+	// sys::s_cfg_v* string_last_path_lb = NULL; sys::s_cfg_v* string_last_combo_lb = NULL;
 	if (!string_last_path) string_last_path = sys::config->gvar("roar_bot", "string_last_path");
+	if (!string_last_path_lb) string_last_path_lb = sys::config->gvar("legit_bot", "string_last_path");
+	if (!string_last_combo_lb) string_last_combo_lb = sys::config->gvar("legit_bot", "string_last_combo");
 	if (!this->add_tab("roar-bot",
 		{
 		{	{"core-options"},
@@ -295,7 +297,8 @@ bool sdk::menu::c_menu::setup()
 	)) return false;
 	if (!this->add_tab("legit-bot",
 		{
-		{	{"core-options"},
+		{	
+			{"core-options"},
 			{
 				{"toggel_switch", 5, "", "", false, [&]()
 					{
@@ -323,15 +326,15 @@ bool sdk::menu::c_menu::setup()
 						ImGui::SameLine();
 						if (ImGui::Button("load"))
 						{
-							if (sys::legit_bot->pathname != string_last_path->cin)
+							if (sys::legit_bot->pathname != string_last_path_lb->cin)
 							{
-								sys::legit_bot->pathname = string_last_path->cin;
-								string_last_path->rval = string_last_path->cin;
+								sys::legit_bot->pathname = string_last_path_lb->cin;
+								string_last_path_lb->rval = string_last_path_lb->cin;
 							}
 							else
 							{
 								sys::legit_bot->pathname = sdk::util::file->legit_paths[this->ps];
-								string_last_path->rval = sdk::util::file->legit_paths[this->ps];
+								string_last_path_lb->rval = sdk::util::file->legit_paths[this->ps];
 							}
 							sys::legit_bot->load();
 						}
@@ -404,6 +407,74 @@ bool sdk::menu::c_menu::setup()
 						}
 					}
 				}
+			}
+		},					
+		{
+			{"skill-editor"},
+			{
+				{"skill_panel", 5, "", "", false, [this]() 
+					{
+						if (!this->current_skill) this->current_skill = new sys::s_skill();
+						ImGui::PushItemWidth(125); ImGui::InputText("##combo_file_name", string_last_combo_lb->cin, 2048);
+						if (ImGui::Button("load")) { sys::legit_bot->combo_name = string_last_combo_lb->cin; sys::legit_bot->load_skill_profile(); }
+						ImGui::SameLine();
+						if (ImGui::Button("save")) sys::legit_bot->save_skill_profile();
+
+						ImGui::BulletText("key-1"); ImGui::SameLine(); ImGui::Combo2("##key1", &this->current_skill->input->k[0], sys::v_keys_s);
+						ImGui::BulletText("key-2"); ImGui::SameLine(); ImGui::Combo2("##key2", &this->current_skill->input->k[1], sys::v_keys_s);
+						ImGui::BulletText("key-3"); ImGui::SameLine(); ImGui::Combo2("##key3", &this->current_skill->input->k[2], sys::v_keys_s);
+
+						ImGui::BulletText("mp-use  "); ImGui::SameLine(); ImGui::InputInt("##mpused", &this->current_skill->mp, 5, 1500);
+						ImGui::BulletText("cooldown"); ImGui::SameLine(); ImGui::InputInt("##cooldown", &this->current_skill->cd, 0, 260);
+						ImGui::BulletText("duration"); ImGui::SameLine(); ImGui::InputInt("##duration", &this->current_skill->input->d, 500, 2500);
+						ImGui::Checkbox("awakening", (bool*)&this->current_skill->awakening);
+
+						if (ImGui::Button("add-skill"))
+						{
+							sys::legit_bot->add_skill(sys::v_keys_i[this->current_skill->input->k[0]], sys::v_keys_i[this->current_skill->input->k[1]], sys::v_keys_i[this->current_skill->input->k[2]], this->current_skill->input->d, this->current_skill->cd, this->current_skill->mp, this->current_skill->awakening, this->current_skill->condition);
+							delete this->current_skill;
+							this->current_skill = new sys::s_skill();
+						}
+						if (ImGui::Button("run-possible")) sys::legit_bot->rskill();
+						static bool runpls = false;
+						ImGui::Checkbox("run-all", &runpls);
+						if (runpls) sys::legit_bot->rskill();						
+					}
+				}
+			}
+		},
+		{
+			{"skill-info"},
+			{
+				{"skill_info_panel", 5, "", "", false, [this]()
+					{
+						if (sys::legit_bot->skills.size())
+						{
+							for (auto b = 0; b < sys::legit_bot->skills.size(); b++)
+							{
+								auto a = sys::legit_bot->skills[b];
+								if (!a) continue;
+								if (ImGui::TreeNode(std::string("skill-info ").append(std::to_string(b)).c_str()))
+								{
+									ImGui::Text(std::string("k[0] ").append(std::to_string(a->input->k[0])).append("\nk[1] ").append(std::to_string(a->input->k[1])).append("\nk[2] ").append(std::to_string(a->input->k[2])).append("\nmp ").append(std::to_string(a->mp)).append("\ncd ").append(std::to_string(a->cd)).append("\npress time ").append(std::to_string(a->input->d)).c_str());
+									if (GetTickCount64() >= a->next_possible_use) ImGui::TextColored(ImColor(0, 255, 0), "can be used");
+									else ImGui::TextColored(ImColor(255,0,0), "can't be used");
+									ImGui::Text(std::string("total uses ").append(std::to_string(a->total_uses)).c_str());
+									ImGui::TreePop();
+								}
+							}
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no skills found");
+					}
+				}
+			}
+		},
+		{
+			{"auto-pot"},
+			{
+				{"auto-potion", 0, "legit_bot", "ipot", false},
+				{"SP/WP potion %", 2, "legit_bot", "isp_pot_pct", false, new sdk::menu::s_imgui_intslider(5, 95)},
+				{"HO potion    %", 2, "legit_bot", "ihp_pot_pct", false, new sdk::menu::s_imgui_intslider(5, 95)}
 			}
 		}
 		}
@@ -755,12 +826,21 @@ bool sdk::menu::c_menu::setup()
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
 							auto hp = sdk::player::player_->ghp(self);
+							auto max_hp = sdk::player::player_->gmhp(self);
 							auto sp = sdk::player::player_->gsp(self);
+							auto max_sp = sdk::player::player_->gmsp(self);
 							auto anim = sdk::player::player_->ganim(self);
-							if (hp <= 500) ImGui::TextColored(ImColor(255, 165, 0), std::string("hp:").append(std::to_string((int)hp)).c_str());
-							else ImGui::TextColored(ImColor(0, 255, 0), std::string("hp:").append(std::to_string((int)hp)).c_str());
+							if (hp <= 500) ImGui::TextColored(ImColor(255, 165, 0), std::string("hp:").append(std::to_string((int)hp)).append("/").append(std::to_string((int)max_hp)).c_str());
+							else ImGui::TextColored(ImColor(0, 255, 0), std::string("hp:").append(std::to_string((int)hp)).append("/").append(std::to_string((int)max_hp)).c_str());
 							ImGui::SameLine();
-							ImGui::TextColored(ImColor(0, 255, 0), std::string("sp:").append(std::to_string((int)sp)).c_str());
+							ImGui::TextColored(ImColor(0, 255, 0), std::string("sp:").append(std::to_string((int)sp)).append("/").append(std::to_string(max_sp)).c_str());
+							//				
+							auto hp_pct_cur = (hp / max_hp) * 100;	
+							auto sp_pct_cur = (float)((float)sp / (float)max_sp) * 100.f;
+							//
+							ImGui::TextColored(ImColor(0, 255, 125), std::string("hp %:").append(std::to_string((int)hp_pct_cur)).c_str());
+							ImGui::TextColored(ImColor(0, 255, 125), std::string("mp %:").append(std::to_string((int)sp_pct_cur)).c_str());
+							//
 							ImGui::Text(std::string("animation:").append(anim).c_str());
 							auto in_m = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
 							auto in_w = (*(int*)(self + core::offsets::actor::actor_inv_raw_weight) + *(int*)(self + core::offsets::actor::actor_inv_gear_weight)) / 10000;

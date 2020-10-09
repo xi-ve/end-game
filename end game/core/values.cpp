@@ -106,3 +106,5 @@ uint64_t core::offsets::actor::actor_inv_max_weight = 0x1098;
 uint64_t core::offsets::actor::actor_guild_name = 0x1102;
 uint64_t core::offsets::actor::actor_inv_gear_weight = 0x2128;
 uint64_t core::offsets::actor::actor_attack_target = 0xB40;
+uint64_t core::offsets::actor::actor_max_sp = 0x124;
+uint64_t core::offsets::actor::actor_combat_stance = 0x47c;

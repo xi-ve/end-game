@@ -1,4 +1,114 @@
 #include <inc.h>
+std::vector<int> sys::v_keys_i =
+{
+	-1,
+	VK_LBUTTON,
+	VK_RBUTTON,
+	VK_SPACE,
+	VK_TAB,
+	VK_SHIFT,
+	0x57,
+	0x41,
+	0x53,
+	0x44,
+	0x45,
+	0x46,
+	0x51,
+	0x43,
+	9000,
+	9001,
+	9002,
+	9003,
+	9004,
+	9005,
+	9006,
+	9007,
+	9008,
+	9009
+};
+std::vector<std::string> sys::v_keys_s =
+{
+	{"None       "},
+	{"Left  mouse"},
+	{"Right mouse"},
+	{"Space key  "},
+	{"TAB   key  "},
+	{"Shift key  "},
+	{"W key"},
+	{"A key"},
+	{"S key"},
+	{"D key"},
+	{"E key"},
+	{"F key"},
+	{"Q key"},
+	{"C key"},
+	{"1 slot"},
+	{"2 slot"},
+	{"3 slot"},
+	{"4 slot"},
+	{"5 slot"},
+	{"6 slot"},
+	{"7 slot"},
+	{"8 slot"},
+	{"9 slot"},
+	{"10 slot"}
+};
+std::unordered_map<int, int> sys::v_quickslot =
+{
+	{9000, 0},
+	{9001, 1},
+	{9002, 2},
+	{9003, 3},
+	{9004, 4},
+	{9005, 5},
+	{9006, 6},
+	{9007, 7},
+	{9008, 8},
+	{9009, 9}
+};
+std::unordered_map<int, std::string> sys::v_keys =
+{
+	{-1        , "None"		  },
+	{VK_LBUTTON, "Left  mouse"},
+	{VK_RBUTTON, "Right mouse"},
+	{VK_SPACE  , "Space key  "},
+	{VK_TAB    , "TAB   key  "},
+	{VK_SHIFT  , "Shift key  "},
+	{0x57      , "W key"},
+	{0x41	   , "A key"},
+	{0x53	   , "S key"},
+	{0x44	   , "D key"},
+	{0x45	   , "E key"},
+	{0x46	   , "F key"},
+	{0x51	   , "Q key"},
+	{0x43	   , "C key"},
+	{9000      , "1 slot"},
+	{9001      , "2 slot"},
+	{9002      , "3 slot"},
+	{9003      , "4 slot"},
+	{9004      , "5 slot"},
+	{9005      , "6 slot"},
+	{9006      , "7 slot"},
+	{9007      , "8 slot"},
+	{9008      , "9 slot"},
+	{9009      , "10 slot"}
+};
+std::unordered_map<int, int> sys::v_keys_flags =
+{
+	{VK_LBUTTON, 0x40000},
+	{VK_RBUTTON, 0x80000},
+	{VK_SPACE  , 0x20000},
+	{VK_TAB    , 0x4000 },
+	{VK_SHIFT  , 0x8000 },
+	{0x57      , 0x2    },
+	{0x41	   , 0x20   },
+	{0x53	   , 0x40   },
+	{0x44	   , 0x80   },
+	{0x45	   , 0x4    },
+	{0x46	   , 0x100  },
+	{0x51	   , 0x1    },
+	{0x43	   , 0x800  }
+};
 uint64_t sys::c_legit_bot::nearest(float max)
 {
 	auto n = uint64_t(0); auto l = float(99999);
@@ -15,6 +125,125 @@ uint64_t sys::c_legit_bot::nearest(float max)
 	}
 	if (n != 0 && l < max) return n;
 	return 0;
+}
+bool sys::c_legit_bot::add_skill(int key, int key2, int key3, int interval, int cd, int mp, int awakening, int condition)
+{
+	for (auto obj : this->skills)
+	{
+		if (key2 != -1)
+		{
+			if (obj->input->k[0] == key &&
+				obj->input->k[1] == key2 &&
+				obj->input->k[2] == key3 &&
+				obj->mp == mp &&
+				obj->cd == cd)
+				return 0;
+		}
+		else
+		{
+			if (obj->input->k[0] == key &&
+				obj->mp == mp &&
+				obj->cd == cd)
+				return 0;
+		}
+	}
+	auto t = new sys::s_skill();
+	t->input = new sys::s_key_input({ key, key2, key3 }, interval);
+	t->cd = cd; t->mp = mp;
+	if (condition > 0) t->condition = condition;
+	else t->condition = -1;
+	if (t->mp == 0) t->mp = 5;
+	if (t->cd == 0) t->cd = 5;
+	if (t->condition == 0) t->condition = -1;
+	t->awakening = awakening;
+	this->skills.push_back(t);
+	sdk::util::log->add("skill was added to list");
+	return 1;
+}
+bool sys::c_legit_bot::save_skill_profile()
+{
+	/*skill profile example line:
+	[s](  1)(  2)(  3)( 10)(100)(500)(  1)
+		key1 key2 key3 cd   mp   press  condition
+	*/
+	std::ofstream r(combo_name);
+	for (auto&& obj : this->skills)
+	{
+		r << "[s](" << obj->input->k[0] << ")(" << obj->input->k[1] << ")(" << obj->input->k[2] << ")(" << obj->cd << ")(" << obj->mp << ")(" << obj->input->d << ")(" << obj->awakening << ")(" << obj->condition << ")" << "\n";
+	}
+	r.close();
+	//utils::cfg->cheat_log.push_back("(save-profile) saved profile!");
+	return 1;
+}
+bool sys::c_legit_bot::load_skill_profile()
+{
+	/*skill profile example line:
+	[s](  1)(  2)(  3)( 10)(100)(500)(  1)
+		key1 key2 key3 cd   mp   press  awakening
+	*/
+	this->skills.clear();
+
+	std::ifstream in(combo_name); std::string tmp;
+	auto parse_skill = [&](std::string l) -> bool
+	{
+		auto line = l;
+		auto res = new sys::s_skill();
+
+		int key1 = 0, key2 = 0, key3 = 0, mp = 0, cd = 0, interval = 0, awakening = 0, condition = 0;
+
+		while (line.size() > 0)
+		{
+			if (condition == -1 || condition >= 1) break; /*finish*/
+			/*parse all 6 parts*/
+			auto pos = line.find("(");
+			if (!pos) break;
+			line.erase(0, pos + 1);
+			pos = line.find(")");
+
+			auto cpy = line;
+			cpy.erase(pos, cpy.size()); /*cpy only contains the seperated string now*/
+
+			line.erase(0, pos); /*line now has the seperated part removed from it*/
+
+			auto flt = std::stoi(cpy);
+
+			if (key1 == 0) key1 = flt;
+			else if (key2 == 0) key2 = flt;
+			else if (key3 == 0) key3 = flt;
+			else if (cd == 0) cd = flt;
+			else if (mp == 0) mp = flt;
+			else if (interval == 0) interval = flt;
+			else if (awakening == 0) awakening = flt;
+			else if (condition == 0) condition = flt;
+		}
+
+		res->input = new sys::s_key_input({ key1,key2,key3 }, interval);
+
+		res->cd = cd;
+		res->mp = mp;
+		res->awakening = awakening;
+		res->condition = condition;
+
+		if (awakening == 0) res->awakening = 1;
+		if (awakening == -1) res->awakening = -1;
+
+		std::stringstream k;
+		k << "key1:" << key1 << " key2:" << key2 << " key3:" << key3 << " cd:" << cd << " mp:" << mp << " iv:" << interval << " aw:" << awakening << " cn:" << condition;
+		sdk::util::log->add(k.str(), sdk::util::e_info, true);
+
+		this->skills.push_back(res);
+
+		return 1;
+	};
+
+	while (std::getline(in, tmp))
+	{
+		if (tmp.empty()) continue;
+		auto skill = parse_skill(tmp);
+		if (!skill) sdk::util::log->add("failed to load skill from file");
+	}
+	sdk::util::log->add("profile was loaded");
+	return 1;
 }
 void sys::c_legit_bot::aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s)
 {
@@ -210,58 +439,39 @@ bool sys::c_legit_bot::stance()
 	}
 	return true;
 }
-void sys::c_legit_bot::skill()
+void sys::c_legit_bot::rskill()
 {
-	if ((this->npc_interacted && this->p_mode == 1)
-		|| (this->p_mode == 1))
+	if (GetTickCount64() > this->skill_delay) this->skill_delay = 25;
+	else return;
+
+	if (sys::key_q->thread_working) return;
+
+	auto msp = sdk::player::player_->gsp(this->self);
+	auto stance = *(BYTE*)(this->self + core::offsets::actor::actor_combat_stance);
+
+	for (auto &&a : this->skills)
 	{
-		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
-		if (!ctrl) return;
-		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
-		if (!scene) return;
-		auto cv = *(float*)(scene + core::offsets::actor::actor_animation_speed);
-		if (cv >= 800000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
-		return;
-	}
-	if (this->skill_delay > GetTickCount64()) return;
-	auto an = sdk::player::player_->ganim(this->self);
-	if (!an.size()) return;
-	if ((strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP") && !this->skill_locked))
-	{
-		this->skill_locked = 1;
-		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
-		if (!ctrl) return;
-		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
-		if (!scene) return;
-		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 800000.f;
-		return;
-	}
-	else if (!strstr(an.c_str(), "BT_skill_AggroShout_Ing_UP"))
-	{
-		if (sdk::player::player_->gsp(this->self) < 65)
+		if (GetTickCount64() < a->next_possible_use) continue;
+		if (msp < a->mp) continue;
+
+		if ((stance != 2 && a->awakening == 1) ||
+			(stance != 1 && a->awakening == -1))
 		{
-			auto used = 0;
-			for (auto a : sdk::player::player_->inventory_items)
-			{
-				if (std::find(this->wp_items.begin(), this->wp_items.end(), a.item_index) != this->wp_items.end())
-				{
-					sys::lua_q->useitem(a.item_slot);
-					used = true;
-					break;
-				}
-			}
-			if (!used) { this->skill_delay = GetTickCount64() + 1000; this->skill_locked = 0; return; }
+			//need to swap
+			if (stance == 0) sys::key_q->add(new sys::s_key_input({VK_TAB}, 500));
+			else sys::key_q->add(new sys::s_key_input({ 0x43 }, 500));
+			return;
 		}
 
-		auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
-		if (!ctrl) return;
-		auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
-		if (!scene) return;
-		*(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
+		a->next_possible_use = GetTickCount64() + (a->cd * 1000);
+		a->last_use = GetTickCount64();
+		
+		//todo: condition&awakening swap
 
-		this->skill_delay = GetTickCount64() + 1000;
-		this->skill_locked = 0;
-		sys::key_q->add(new sys::s_key_input({ 81 }, 200));
+		sys::key_q->add(a->input);
+		a->total_uses++;
+
+		return;
 	}
 }
 bool sys::c_legit_bot::snear()
@@ -375,6 +585,48 @@ int sys::c_legit_bot::gitem_bn(std::string s)
 {
 	for (auto a : sdk::player::player_->inventory_items) if (a.name == s) return a.item_index;
 	return {};
+}
+void sys::c_legit_bot::autopot()
+{
+	if (!ipot || !ihp_pct || !isp_pct)
+	{
+		ipot = sys::config->gvar("legit_bot", "ipot");
+		ihp_pct = sys::config->gvar("legit_bot", "ihp_pot_pct");
+		isp_pct = sys::config->gvar("legit_bot", "isp_pot_pct");
+	}
+	if (!ipot->iv) return;
+	auto hp_c = sdk::player::player_->ghp(this->self);
+	auto hp_m = sdk::player::player_->gmhp(this->self);
+	auto sp_c = sdk::player::player_->gsp(this->self);
+	auto sp_m = sdk::player::player_->gmsp(this->self);
+	//
+	auto hp_pct = (hp_m / 100);
+	auto sp_pct = (sp_m / 100);
+
+	auto hp_pct_cur = hp_c / hp_m * 100;
+	auto hp_conf = hp_pct * ihp_pct->iv;
+
+	auto sp_pct_cur = (float)((float)sp_c / (float)sp_m) * 100.f;
+	auto sp_conf = sp_pct * isp_pct->iv;
+	//
+	if (hp_pct_cur < hp_conf)
+	{
+		for (auto a : this->hp_pots)
+		{
+			if (!sys::rebuff->hitem(a)) continue;
+			sys::lua_q->useitem(a);
+			break;
+		}
+	}
+	if (sp_pct_cur < sp_conf)
+	{
+		for (auto a : this->mp_pots)
+		{
+			if (!sys::rebuff->hitem(a)) continue;
+			sys::lua_q->useitem(a);
+			break;
+		}
+	}
 }
 void sys::c_legit_bot::gppoint(float t)
 {
@@ -595,6 +847,8 @@ void sys::c_legit_bot::work(uint64_t s)
 		sdk::util::log->add("repathed SP conform", sdk::util::e_info, true);
 	}
 	//
+	this->autopot();
+	//
 	auto spos = sdk::player::player_->gpos(s);
 	auto cur_point = this->cur_route.front();
 	if (this->p_mode == 1)
@@ -607,7 +861,7 @@ void sys::c_legit_bot::work(uint64_t s)
 				if (cur_point.npc_name != "NONE")//npc
 				{
 					if (this->has_aggro()) return;
-					sp_delay = GetTickCount64() + 6400;
+					sp_delay = GetTickCount64() + 2400;
 					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
@@ -765,9 +1019,7 @@ void sys::c_legit_bot::work(uint64_t s)
 		}
 		return;
 	}
-
 	//
-
 	auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
 	if (dst_to > 100)
 	{

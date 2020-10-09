@@ -22,9 +22,9 @@ namespace sys
 		bool update();
 		std::vector<s_buff_info> buffs_set = {};
 		std::vector<std::string> buffs = {};
-		bool hitem(int i);
 		int  gslot(int i);
 	public:
+		bool hitem(int i);
 		int gibyname(std::string n);
 		std::vector<std::string> gbuffs();
 		std::vector<std::string> gsbuffs();

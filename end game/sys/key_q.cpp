@@ -38,18 +38,19 @@ void __stdcall sys::key_worker(void* a)
 		auto delay = strc->d;
 		for (auto a : strc->k)
 		{
+			if (a == -1) continue;
 			auto k = a;
 			*((uint64_t*)((key_p + 0x840) + (k * 4))) = 1;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		for (auto a : strc->k)
 		{
+			if (a == -1) continue;
 			auto k = a;
 			*((uint64_t*)((key_p + 0x840) + (k * 4))) = 0;
 		}
 		sys::key_q->rm();
 		sys::key_q->thread_working = false;
-		delete strc;
 		break;
 	}
 	

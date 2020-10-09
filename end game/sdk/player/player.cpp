@@ -287,6 +287,17 @@ float sdk::player::c_player::ghp(uint64_t a)
 	auto tv = (key1 ^ key2); auto ret = *((float*)&tv);
 	return ret;
 }
+int sdk::player::c_player::gmsp(uint64_t a)
+{
+	return *(int*)(a + core::offsets::actor::actor_max_sp);
+}
+float sdk::player::c_player::gmhp(uint64_t a)
+{
+	auto _xa0 = *(uint32_t*)(a + 0xc0); if (!_xa0) return 0; auto key2 = _xa0 >> 5;
+	auto _xb0 = *(uint64_t*)(a + 0xd0); if (!_xb0) return 0; auto key1 = *(uint32_t*)(_xb0); if (!key1) return 0;
+	auto tv = (key1 ^ key2); auto ret = *((float*)&tv);
+	return ret;
+}
 bool sdk::player::c_player::alive()
 {
 	auto p = *(uint64_t*)(core::offsets::actor::actor_self);

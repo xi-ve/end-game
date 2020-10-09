@@ -86,6 +86,8 @@ namespace core
 			extern uint64_t actor_guild_name;
 			extern uint64_t actor_inv_gear_weight;
 			extern uint64_t actor_attack_target;
+			extern uint64_t actor_max_sp;
+			extern uint64_t actor_combat_stance;
 		}
 	}
 }

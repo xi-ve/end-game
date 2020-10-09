@@ -2,6 +2,11 @@
 #include <inc.h>
 namespace sys
 {
+	extern std::vector<int> v_keys_i;
+	extern std::vector<std::string> v_keys_s;
+	extern std::unordered_map<int, int> v_quickslot;
+	extern std::unordered_map<int, std::string> v_keys;;
+	extern std::unordered_map<int, int> v_keys_flags;
 	struct s_path_script
 	{
 		s_path_script(sdk::util::c_vector3 p, std::string i, std::string n, bool s = 0)
@@ -20,14 +25,16 @@ namespace sys
 		std::string	   npc_name = "NONE";
 	};
 	typedef uint64_t(__stdcall* t_npc_interaction)(uint64_t);
-
 	class c_legit_bot
 	{
 	private:
+		sys::s_cfg_v* ipot = NULL; sys::s_cfg_v* isp_pct = NULL; sys::s_cfg_v* ihp_pct = NULL;
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
-		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
+		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };		
+		std::vector<int> hp_pots = { 529, 524, 530, 525, 528, 519, 514, 518, 513, 517, 583, 580, 750108 };
+		std::vector<int> mp_pots = { 532, 526, 533, 527, 531, 522, 516, 521, 515, 520, 581, 17688, 19936, 19937, 19938 };
 		//
 		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
 		//
@@ -53,7 +60,6 @@ namespace sys
 		bool has_aggro();
 		//
 		bool stance();
-		void skill();
 		//
 		void gpoint();
 		//
@@ -63,6 +69,7 @@ namespace sys
 		void spitch(float f);
 		void syaw(float f);
 	public:
+		std::deque<s_skill*> skills;
 		int loot_act_k = 0;
 		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};
 		//
@@ -74,9 +81,15 @@ namespace sys
 		std::vector<std::string> gitm();
 		std::vector<int> gitm_left();
 		int gitem_bn(std::string s);
+		void autopot();
+		//
+		bool add_skill(int key, int key2, int key3, int interval, int cd, int mp, int awakening, int condition);
+		bool save_skill_profile();
+		bool load_skill_profile();
+		void rskill();
 		//
 		sdk::util::c_vector3 lp = {};
-		std::string pathname = "";
+		std::string pathname = "", combo_name = "def.combo";
 		bool recording_g = 0, recording_s = 0, store_can_path = 0;
 		void record();
 		void load();
