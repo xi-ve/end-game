@@ -13,6 +13,7 @@ namespace core
 			extern uint64_t proxy_delete;
 			extern uint64_t is_key_pressed;
 			extern uint64_t reset_input_class;
+			extern uint64_t focus_validator;
 		}
 		namespace patch
 		{

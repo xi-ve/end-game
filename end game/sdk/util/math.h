@@ -77,7 +77,7 @@ namespace sdk
 				return false;
 			}
 			float x = 0, y = 0, z = 0;
-			float pause = 0.1f;
+			float pause = 0;
 		};
 		class c_math
 		{

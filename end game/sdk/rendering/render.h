@@ -158,7 +158,7 @@ namespace sdk
 			void DrawCircle(int x, int y, int radius, DWORD color/*ARGB*/);
 			void DrawBorder(int x, int y, int w, int h, int px, DWORD BorderColor);
 			void DrawBox(int x, int y, int w, int h, DWORD BoxColor, DWORD BorderColor);
-			void DrawHealthBox(int x, int y, DWORD m_dColorOut, DWORD m_dColorIn, int m_iHealth, int m_iMaxHealth);
+			void DrawHealthBox(int x, int y, int m_iHealth, int m_iMaxHealth);
 			void DrawRadar(int x, int y, int size);
 			void DrawPoint(int x, int y, DWORD color);
 			void DrawPixel(int x, int y, DWORD color);

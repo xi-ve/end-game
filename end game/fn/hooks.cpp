@@ -8,6 +8,8 @@ fn::t_proxy_deadbody fn::o_proxy_deadbody;
 fn::t_proxy_delete fn::o_proxy_delete;
 fn::t_reset_input_class fn::o_reset_input_class;
 fn::t_is_key_pressed fn::o_is_key_ressed;
+fn::t_get_active_window fn::o_get_active_window;
+fn::t_focus_validator fn::o_focus_validator;
 bool fn::log_dobuffer = false;
 bool fn::block_test = false;
 //
@@ -31,7 +33,9 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
 	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
+	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
+	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
 	return true;
 	CodeReplaceEnd();
 }
@@ -214,7 +218,7 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 }
 int __fastcall fn::f_reset_input_class(uint64_t a)
 {
-	if (sys::key_q->thread_working) return 1;
+	if (sys::key_q->thread_working || sys::legit_bot->dwork) return 1;
 	else return fn::o_reset_input_class(a);
 }
 bool __fastcall fn::f_is_key_pressed(uint64_t a, int b, BYTE c)
@@ -232,4 +236,17 @@ HWND __fastcall fn::f_get_focus()
 {
 	if (!lib::d3d11->h) return GetForegroundWindow();
 	return lib::d3d11->h;
+}
+
+HWND fn::f_get_active_window()
+{
+	if (!lib::d3d11->h) return fn::o_get_active_window();
+	return lib::d3d11->h;
+}
+
+bool __fastcall fn::f_focus_validator(uint64_t a, HWND b)
+{	
+	*(HWND*)(a + 0xB50) = lib::d3d11->h;
+	fn::o_focus_validator(a, b);
+	return 1;
 }

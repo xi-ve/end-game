@@ -459,7 +459,7 @@ bool sdk::menu::c_menu::setup()
 									ImGui::Text(std::string("k[0] ").append(std::to_string(a->input->k[0])).append("\nk[1] ").append(std::to_string(a->input->k[1])).append("\nk[2] ").append(std::to_string(a->input->k[2])).append("\nmp ").append(std::to_string(a->mp)).append("\ncd ").append(std::to_string(a->cd)).append("\npress time ").append(std::to_string(a->input->d)).c_str());
 									if (GetTickCount64() >= a->next_possible_use) ImGui::TextColored(ImColor(0, 255, 0), "can be used");
 									else ImGui::TextColored(ImColor(255,0,0), "can't be used");
-									ImGui::Text(std::string("total uses ").append(std::to_string(a->total_uses)).c_str());
+									ImGui::Text(std::string("total uses ").append(std::to_string(a->total_uses)).append("\nlast use:").append(sdk::util::log->as_hex(a->last_use)).c_str());
 									ImGui::TreePop();
 								}
 							}
@@ -489,12 +489,20 @@ bool sdk::menu::c_menu::setup()
 			}			
 		},
 		{
+			{"player-actor"},
+			{
+				{"player-info", 0, "visuals", "ienable_player", false}
+			}
+		},
+		{
 			{"environment"},
 			{
-				{"roar-grind-path"	, 0, "visuals", "ienable_roar_path", true},
-				{"roar-store-path"	, 0, "visuals", "ienable_store_path", false},
-				{"roar-start     "  , 0, "roar_bot", "ivis_linestart", true},
-				{"roar-pauses    "  , 0, "visuals", "ienable_roar_path_pauses", false},
+				{"roar-grind-path "	, 0, "visuals", "ienable_roar_path", true},
+				{"roar-store-path "	, 0, "visuals", "ienable_store_path", false},
+				{"roar-start      "  , 0, "roar_bot", "ivis_linestart", true},
+				{"roar-pauses     "  , 0, "visuals", "ienable_roar_path_pauses", false},
+				{"legit-grind-path"  , 0, "visuals", "ienable_legit_path_pauses", true},
+				{"legit-pauses    "  , 0, "visuals", "ienable_legit_path", false},
 				{"show-portals   "  , 0, "visuals", "ienable_portal", false}
 			}
 		},
@@ -821,6 +829,7 @@ bool sdk::menu::c_menu::setup()
 					{
 						if (sdk::player::player_->alive())
 						{
+
 							auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
@@ -837,9 +846,19 @@ bool sdk::menu::c_menu::setup()
 							//				
 							auto hp_pct_cur = (hp / max_hp) * 100;	
 							auto sp_pct_cur = (float)((float)sp / (float)max_sp) * 100.f;
+
+							auto ihp_pct = sys::config->gvar("legit_bot", "ihp_pot_pct");
+							auto isp_pct = sys::config->gvar("legit_bot", "isp_pot_pct");
+							auto hp_pct = (max_hp / 100);
+							auto sp_pct = (max_sp / 100);
+							auto hp_conf = hp_pct * ihp_pct->iv;
+							auto sp_conf = sp_pct * isp_pct->iv;
 							//
 							ImGui::TextColored(ImColor(0, 255, 125), std::string("hp %:").append(std::to_string((int)hp_pct_cur)).c_str());
 							ImGui::TextColored(ImColor(0, 255, 125), std::string("mp %:").append(std::to_string((int)sp_pct_cur)).c_str());
+							ImGui::TextColored(ImColor(0, 255, 125), std::string("rlt set hp:").append(std::to_string((int)hp_conf)).c_str());
+							ImGui::TextColored(ImColor(0, 255, 125), std::string("rlt set sp:").append(std::to_string((int)sp_conf)).c_str());
+
 							//
 							ImGui::Text(std::string("animation:").append(anim).c_str());
 							auto in_m = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;

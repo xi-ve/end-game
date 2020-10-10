@@ -232,16 +232,23 @@ void sdk::render::c_render::DrawBox(int x, int y, int w, int h, DWORD BoxColor, 
 	DrawBorder(x, y, w, h, 1, BorderColor);
 }
 
-void sdk::render::c_render::DrawHealthBox(int x, int y, DWORD m_dColorOut, DWORD m_dColorIn, int m_iHealth, int m_iMaxHealth)
+void sdk::render::c_render::DrawHealthBox(int x, int y, int m_iHealth, int m_iMaxHealth)
 {
-	float mx = (float)m_iMaxHealth / 4;
-	float w = (float)m_iHealth / 4;
-	x -= ((int)mx / 2);
+	if (m_iHealth <= 0) return;
+	if (m_iMaxHealth <= m_iHealth || m_iMaxHealth <= 0) return;
+
+	float mx = (float)m_iMaxHealth / (m_iMaxHealth / 100);
+	float w = (float)m_iHealth / (m_iMaxHealth / 100);
+
+	auto R = (255 * m_iHealth) / m_iMaxHealth;
+	auto G = (255 * (m_iMaxHealth - m_iHealth)) / m_iMaxHealth;
+
+	auto clr = D3DCOLOR_ARGB(255, G, R, 0);
 
 	//background
-	FillARGB(x, y, (int)mx, 4, m_dColorOut);
+	FillARGB(x, y, (int)mx, 4, D3DCOLOR_ARGB(255, 30, 30, 30));
 	//inside
-	FillARGB(x, y, (int)w, 4, m_dColorIn);
+	FillARGB(x, y, (int)w, 4, clr);
 	//outline
 	DrawBorder(x - 1, y - 1, (int)mx + 2, 6, 1, D3DCOLOR_ARGB(255, 30, 30, 30));
 }

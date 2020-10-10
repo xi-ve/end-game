@@ -14,6 +14,8 @@ uint64_t core::offsets::hk::proxy_delete = 0x1407D5160;
 uint64_t core::offsets::hk::is_key_pressed = 0x1419302A0;
 //40 53 48 83 EC 20 48 8B D9 33 D2 48 83 C1 40 
 uint64_t core::offsets::hk::reset_input_class = 0x141930330;
+//40 53 48 83 EC 20 48 8B C2 48 8B D9 48 85 D2 75 06 
+uint64_t core::offsets::hk::focus_validator = 0x1419044E0;
 
 
 //C6 83 ? ? ? ? ? 48 85 FF 

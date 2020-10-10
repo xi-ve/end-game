@@ -109,22 +109,41 @@ std::unordered_map<int, int> sys::v_keys_flags =
 	{0x51	   , 0x1    },
 	{0x43	   , 0x800  }
 };
-uint64_t sys::c_legit_bot::nearest(float max)
+bool sys::c_legit_bot::mobs_near(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
+{
+	auto self_key = *(int*)(core::offsets::actor::actor_proxy_key);
+	for (auto a : sdk::player::player_->actors)
+	{
+		if (a.type != 1
+			|| a.hp <= 0
+			|| !a.ptr
+			|| !a.pos.valid()
+			|| a.state == 1) continue;
+		auto d = sdk::util::math->gdst_2d(p, a.pos);
+		if (d > 800) continue;
+		return true;
+	}
+	return false;
+}
+uint64_t sys::c_legit_bot::nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max)
 {
 	auto n = uint64_t(0); auto l = float(99999);
 	for (auto a : sdk::player::player_->actors)
 	{
-		if (a.type != 1) continue;
-		if (a.state == 1) continue;
-		if (a.ptr == this->self) continue;
-		if (a.rlt_dst < l)
+		if (a.type != 1
+			|| a.hp <= 0
+			|| !a.ptr
+			|| !a.pos.valid()
+			|| a.state == 1) continue;
+		auto d = sdk::util::math->gdst_2d(from, a.pos);
+		if (d > 800) continue;
+		if (d < l)
 		{
+			l = d;
 			n = a.ptr;
-			l = a.rlt_dst;
 		}
 	}
-	if (n != 0 && l < max) return n;
-	return 0;
+	return n;
 }
 bool sys::c_legit_bot::add_skill(int key, int key2, int key3, int interval, int cd, int mp, int awakening, int condition)
 {
@@ -446,33 +465,42 @@ void sys::c_legit_bot::rskill()
 
 	if (sys::key_q->thread_working) return;
 
+	uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
+	*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+
 	auto msp = sdk::player::player_->gsp(this->self);
 	auto stance = *(BYTE*)(this->self + core::offsets::actor::actor_combat_stance);
 
-	for (auto &&a : this->skills)
+	auto cur_anim = sdk::player::player_->ganim(this->self);
+	auto loc = std::locale();
+	for (std::string::size_type i = 0; i < cur_anim.length(); ++i) std::cout << std::tolower(cur_anim[i], loc);
+	auto cur_anim_lower = loc.c_str();
+
+	for (auto&& a : this->skills)
 	{
+		if (strstr(cur_anim_lower, "stop")) continue;
 		if (GetTickCount64() < a->next_possible_use) continue;
 		if (msp < a->mp) continue;
+		if (sys::key_q->gq().size() || sys::key_q->thread_working) return;
 
-		if ((stance != 2 && a->awakening == 1) ||
-			(stance != 1 && a->awakening == -1))
-		{
-			//need to swap
-			if (stance == 0) sys::key_q->add(new sys::s_key_input({VK_TAB}, 500));
-			else sys::key_q->add(new sys::s_key_input({ 0x43 }, 500));
-			return;
-		}
+		//if ((stance != 2 && a->awakening == 1) ||
+		//	(stance != 1 && a->awakening == -1))
+		//{
+		//	//need to swap
+		//	if (stance == 0) sys::key_q->add(new sys::s_key_input({ VK_TAB }, 500));
+		//	else sys::key_q->add(new sys::s_key_input({ 0x43 }, 500));
+		//	return;
+		//}
 
 		a->next_possible_use = GetTickCount64() + (a->cd * 1000);
 		a->last_use = GetTickCount64();
-		
-		//todo: condition&awakening swap
 
 		sys::key_q->add(a->input);
 		a->total_uses++;
 
 		return;
 	}
+	if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ VK_LBUTTON }, 150));
 }
 bool sys::c_legit_bot::snear()
 {
@@ -595,35 +623,35 @@ void sys::c_legit_bot::autopot()
 		isp_pct = sys::config->gvar("legit_bot", "isp_pot_pct");
 	}
 	if (!ipot->iv) return;
-	auto hp_c = sdk::player::player_->ghp(this->self);
-	auto hp_m = sdk::player::player_->gmhp(this->self);
-	auto sp_c = sdk::player::player_->gsp(this->self);
-	auto sp_m = sdk::player::player_->gmsp(this->self);
+	auto hp = sdk::player::player_->ghp(self);
+	auto max_hp = sdk::player::player_->gmhp(self);
+	auto sp = sdk::player::player_->gsp(self);
+	auto max_sp = sdk::player::player_->gmsp(self);
+	//				
+	auto hp_pct_cur = (hp / max_hp) * 100.f;
+	auto sp_pct_cur = (float)((float)sp / (float)max_sp) * 100.f;
 	//
-	auto hp_pct = (hp_m / 100);
-	auto sp_pct = (sp_m / 100);
-
-	auto hp_pct_cur = hp_c / hp_m * 100;
-	auto hp_conf = hp_pct * ihp_pct->iv;
-
-	auto sp_pct_cur = (float)((float)sp_c / (float)sp_m) * 100.f;
-	auto sp_conf = sp_pct * isp_pct->iv;
-	//
-	if (hp_pct_cur < hp_conf)
+	if (hp_pct_cur <= ihp_pct->iv)
 	{
 		for (auto a : this->hp_pots)
 		{
 			if (!sys::rebuff->hitem(a)) continue;
-			sys::lua_q->useitem(a);
+			sys::lua_q->useitem_id(a);
 			break;
 		}
 	}
-	if (sp_pct_cur < sp_conf)
+	if (sp_pct_cur <= isp_pct->iv)
 	{
 		for (auto a : this->mp_pots)
 		{
 			if (!sys::rebuff->hitem(a)) continue;
-			sys::lua_q->useitem(a);
+			sys::lua_q->useitem_id(a);
+			break;
+		}
+		for (auto a : this->wp_items)
+		{
+			if (!sys::rebuff->hitem(a)) continue;
+			sys::lua_q->useitem_id(a);
 			break;
 		}
 	}
@@ -817,16 +845,30 @@ void sys::c_legit_bot::save()
 	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
 	sdk::util::log->add("resaved path");
 }
+void sys::c_legit_bot::nav_to(const sdk::util::c_vector3& spos, sys::s_path_script& cur_point)
+{
+	auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
+	if (dst_to > 150)
+	{
+		this->aim_pos(cur_point.pos, spos);
+		uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
+		*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
+		return;
+	}
+	else
+	{
+		this->cur_route.pop_front();
+	}
+}
 void sys::c_legit_bot::work(uint64_t s)
 {
 	this->self = s;
 	if (this->recording_g || this->recording_s) { this->record(); return; }
 	if (!this->dwork) return;
-	if (!this->execution) this->execution = GetTickCount64() + 50;
-	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + 50;
+	if (!this->execution) this->execution = GetTickCount64() + 75;
+	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + 75;
 	else return;
 	if (!sdk::player::player_->ghp(s)) return;
-	if (this->grind.empty()) return;
 	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
 	{
 		this->repath(1, 1);
@@ -848,6 +890,7 @@ void sys::c_legit_bot::work(uint64_t s)
 	}
 	//
 	this->autopot();
+	sys::key_q->bypass();
 	//
 	auto spos = sdk::player::player_->gpos(s);
 	auto cur_point = this->cur_route.front();
@@ -1004,7 +1047,7 @@ void sys::c_legit_bot::work(uint64_t s)
 			if (dst_to > 100)
 			{
 				this->aim_pos(cur_point.pos, spos);
-				if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({0x57}, 500));
+				if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 0x57 }, 500));
 				return;
 			}
 			this->npc_interacted = false;
@@ -1019,14 +1062,49 @@ void sys::c_legit_bot::work(uint64_t s)
 		}
 		return;
 	}
-	//
-	auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
-	if (dst_to > 100)
+	if (this->p_mode == 0 && cur_point.pos.pause > 1.1f)
 	{
-		this->aim_pos(cur_point.pos, spos);
-		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 0x57 }, 500));
-		return;
+		auto point_mobs = [&]() -> uint64_t
+		{
+			uint64_t n = 0; float w = 800;
+			for (auto a : sdk::player::player_->actors)
+			{
+				if (a.ptr == s
+					|| a.state == 1
+					|| a.hp <= 0) continue;
+				auto d = sdk::util::math->gdst_3d(a.pos, cur_point.pos);
+				if (d > 800) continue;
+				if (a.rlt_dst < w)
+				{
+					w = a.rlt_dst;
+					n = a.ptr;
+				}
+			}
+			return n;
+		};
+		auto n_m = point_mobs();
+		if (n_m != NULL)
+		{
+			this->att_target = n_m;
+			auto n_pos = sdk::player::player_->gpos(this->att_target);
+			if (!n_pos.valid()) { this->att_target = NULL; return; }
+			if (sdk::player::player_->ghp(this->att_target) <= 0) { this->att_target = NULL; return; }
+			auto n_dst = sdk::util::math->gdst_3d(n_pos, spos);
+			if (n_dst > 300)
+			{
+				this->aim_pos(n_pos, spos);
+				uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
+				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
+			}
+			else
+			{
+				this->aim_pos(n_pos, spos);
+				this->rskill();
+				return;
+			}
+			return;
+		}
 	}
-	else this->cur_route.pop_front();
+	nav_to(spos, cur_point);
 }
 sys::c_legit_bot* sys::legit_bot;

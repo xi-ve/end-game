@@ -4,9 +4,8 @@ namespace fn
 {
 	class c_patcher
 	{
-	private:
-		void patch(uint64_t a, uint64_t e, BYTE i);
 	public:
+		void patch(uint64_t a, uint64_t e, BYTE i);
 		void create_patches();
 	};
 	extern c_patcher* patcher;

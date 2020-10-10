@@ -33,6 +33,13 @@ namespace fn
 	extern t_is_key_pressed o_is_key_ressed;
 	extern bool __fastcall f_is_key_pressed(uint64_t a, int b, BYTE c);
 	extern HWND __fastcall f_get_focus();
+	typedef HWND(__fastcall* t_get_active_window)();
+	extern t_get_active_window o_get_active_window;
+	extern HWND f_get_active_window();
+	//char __fastcall sub_1419044E0(__int64 a1, HWND a2)
+	typedef bool(__fastcall* t_focus_validator)(uint64_t, HWND);
+	extern t_focus_validator o_focus_validator;
+	extern bool __fastcall f_focus_validator(uint64_t a, HWND b);
 	//
 	extern bool log_dobuffer;
 	extern bool block_test;

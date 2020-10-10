@@ -24,6 +24,7 @@
 #include "..\\sdk\rendering\fx\d3dx11effect.h"
 #include <ThemidaSDK.h>
 #include <winhttp.h>
+#include <locale>
 #include <iomanip>
 //
 #pragma warning ( disable: 4102 )

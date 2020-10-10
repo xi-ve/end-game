@@ -262,6 +262,45 @@ void sys::c_visuals::editor_debug()
 		sdk::render::render->DrawLine(res_to.x, res_to.z, res.x, res.z, 0xffff0000);
 	}
 }
+void sys::c_visuals::legit_path()
+{
+	if (!sys::legit_bot->g_p().size()) return;
+	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
+	auto spos = sdk::player::player_->gpos(this->self);
+	for (auto b : sys::legit_bot->g_p())
+	{
+		auto ds = sdk::util::math->gdst_3d(b, spos);
+		if (ds >= 5000) { last.clear(); continue; }
+		sdk::util::c_vector3 l;
+		if (!sdk::util::math->w2s(b, l)) { last.clear(); continue; }
+		//sdk::render::render->RenderText(l.x, l.z,  0xff00ff00, (char*)std::string(std::to_string(b.pause)).c_str());
+		if (!last.size()) last.push_back(l);
+		else
+		{
+			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
+			last.clear(); last.push_back(l); rp = b;
+		}
+	}
+}
+void sys::c_visuals::player_esp()
+{
+	auto m = sdk::player::player_->gpos(this->self); sdk::util::c_vector3 t, d;
+	for (auto a : sdk::player::player_->actors)
+	{
+		if (a.type != 0
+			|| a.state != 0
+			|| a.ptr == this->self
+			|| a.hp <= 0
+			|| !a.ptr) continue;
+		if (!sdk::util::math->w2s(a.pos, t)) continue;
+		if (!sdk::util::math->w2s(m, d)) continue;
+		auto mhp = sdk::player::player_->gmhp(a.ptr);
+		sdk::render::render->DrawLine(t.x, t.z, d.x, d.z, 0xff00ff00);
+		sdk::render::render->RenderText(t.x, t.z	 , 0xff00ff00, (char*)std::string(a.name).c_str());
+		sdk::render::render->RenderText(t.x, t.z + 20, 0xff00ff00, (char*)std::string("dst:").append(std::to_string((int)a.rlt_dst)).c_str());
+		sdk::render::render->RenderText(t.x, t.z + 40, 0xff00ff00, (char*)std::string("hp :").append(std::to_string((int)a.hp)).append("/").append(std::to_string((int)mhp)).c_str());
+	}
+}
 void sys::c_visuals::work()
 {
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
@@ -275,12 +314,17 @@ void sys::c_visuals::work()
 	if (!istore_path) istore_path = sys::config->gvar("visuals", "ienable_store_path");
 	if (!ivis_linestart) ivis_linestart = sys::config->gvar("roar_bot", "ivis_linestart");
 	if (!ialive_byname) ialive_byname = sys::config->gvar("visuals", "ialive_byname");
+	if (!ienable_legit_path_pauses) ienable_legit_path_pauses = sys::config->gvar("visuals", "ienable_legit_path_pauses");
+	if (!ienable_legit_path) ienable_legit_path = sys::config->gvar("visuals", "ienable_legit_path");
+	if (!ienable_player) ienable_player = sys::config->gvar("visuals", "ienable_player");
 	if (ienable_debug->iv) this->monster_proxy_debug();
 	if (ienable_portal->iv) this->portal();
 	if (iroar_visual->iv) this->roar_path();
 	if (istore_path->iv) this->store_path();
 	if (ivis_linestart->iv) this->lineto_roar();
 	if (ialive_byname->iv) this->alive_proxy_debug();
+	if (ienable_legit_path->iv) this->legit_path();
+	if (ienable_player->iv) this->player_esp();
 	if (this->debug_editor) this->editor_debug();
 	//this->debug_mobs();
 	//this->trace_debug();

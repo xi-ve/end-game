@@ -32,11 +32,12 @@ namespace sys
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
-		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };		
+		std::vector<int> wp_items = { 591, 592, 593, 594, 582, 977, 17710, 17709, 17708, 830, 829, 828, 827, -1 };		
 		std::vector<int> hp_pots = { 529, 524, 530, 525, 528, 519, 514, 518, 513, 517, 583, 580, 750108 };
 		std::vector<int> mp_pots = { 532, 526, 533, 527, 531, 522, 516, 521, 515, 520, 581, 17688, 19936, 19937, 19938 };
 		//
 		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
+		uint64_t att_target = NULL;
 		//
 		ULONGLONG execution = 0;
 		uint64_t self = 0;
@@ -63,7 +64,8 @@ namespace sys
 		//
 		void gpoint();
 		//
-		uint64_t nearest(float max);
+		bool mobs_near(sdk::util::c_vector3 p, sdk::util::c_vector3 s);
+		uint64_t nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max);
 		//
 		void aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s);
 		void spitch(float f);
@@ -94,6 +96,7 @@ namespace sys
 		void record();
 		void load();
 		void save();
+		void nav_to(const sdk::util::c_vector3& spos, sys::s_path_script& cur_point);
 		void work(uint64_t s);
 		bool snear();
 		void reset();

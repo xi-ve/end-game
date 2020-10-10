@@ -5,7 +5,7 @@ void* sys::c_lua_q::glp()
 }
 void sys::c_lua_q::sparam(void* a)
 {
-	this->lua_state = a;;
+	this->lua_state = a;
 }
 void sys::c_lua_q::add(std::string q)
 {
@@ -16,6 +16,17 @@ void sys::c_lua_q::useitem(int s)
 	for (auto a : sdk::player::player_->inventory_items)
 	{
 		if (a.item_slot == s && a.count != 0)
+		{
+			this->add(std::string("inventoryUseItem(CppEnums.ItemWhereType.eInventory, ").append(std::to_string(a.item_slot + 2)).append(", 0, true)"));
+			return;
+		}
+	}
+}
+void sys::c_lua_q::useitem_id(int s)
+{
+	for (auto a : sdk::player::player_->inventory_items)
+	{
+		if (a.item_index == s && a.count != 0)
 		{
 			this->add(std::string("inventoryUseItem(CppEnums.ItemWhereType.eInventory, ").append(std::to_string(a.item_slot + 2)).append(", 0, true)"));
 			return;

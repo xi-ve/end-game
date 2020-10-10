@@ -91,9 +91,12 @@ void sys::c_config::vars()
 	this->proc("auto_loot", "ienable_filter", "1");
 	this->proc("visuals", "ienable_store_path", "1");
 	this->proc("visuals", "ienable_roar_path", "1");
+	this->proc("visuals", "ienable_legit_path", "1");
 	this->proc("visuals", "ienable_roar_path_pauses", "0");
+	this->proc("visuals", "ienable_legit_path_pauses", "0");
 	this->proc("visuals", "ienable_portal", "1");
 	this->proc("visuals", "ienable_debug", "0");
+	this->proc("visuals", "ienable_player", "1");
 	this->proc("visuals", "ialive_byname", "0");
 	this->proc("roar_bot", "ibot_timescale", "350");
 	this->proc("roar_bot", "ibot_lootrange", "400");
