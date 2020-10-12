@@ -264,7 +264,7 @@ void sdk::render::c_render::DrawRadar(int x, int y, int size)
 
 void sdk::render::c_render::DrawPoint(int x, int y, DWORD color)
 {
-	FillARGB(x - 1, y - 1, 2, 2, color);
+	FillARGB(x - 1, y - 1, 8, 8, color);
 }
 
 void sdk::render::c_render::DrawPixel(int x, int y, DWORD color)

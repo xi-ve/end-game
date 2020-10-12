@@ -65,12 +65,15 @@ namespace sys
 		void gpoint();
 		//
 		bool mobs_near(sdk::util::c_vector3 p, sdk::util::c_vector3 s);
-		uint64_t nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max);
+		sdk::player::s_blank_proxy nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max);
+		bool update_target();
 		//
 		void aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s);
 		void spitch(float f);
 		void syaw(float f);
 	public:
+		sdk::player::s_blank_proxy target_actor = {};
+
 		std::deque<s_skill*> skills;
 		int loot_act_k = 0;
 		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};

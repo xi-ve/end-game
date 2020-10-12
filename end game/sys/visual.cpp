@@ -65,29 +65,50 @@ void sys::c_visuals::portal()
 		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b.ptr).c_str());
 	}
 }
+void sys::c_visuals::ptrace()
+{
+	this->t_map.clear();
+	sdk::util::c_vector3 t; auto f = sdk::player::player_->gpos(this->self);
+	auto i_c = this->gcircle(f, 200, 4);
+	for (auto a : i_c)
+	{
+		auto c_f = this->gcircle(a, 350, 4);
+		for (auto b : c_f)
+		{
+			auto c = sdk::util::c_vector3(b.x, b.y + 600, b.z);
+			auto r = sdk::player::player_->trace(c, b, this->self, 600, 34, false);
+			if (!sdk::util::math->w2s(r.end_point, t)) continue;
+			this->t_map.push_back(r);
+		}
+	}
+	/*for (auto a = 100; a < 1500; a += 100)
+	{
+		auto c_e = this->gcircle(f, a, 4);
+		for (auto b : c_e)
+		{
+			auto c = sdk::util::c_vector3(b.x, b.y + 600, b.z);
+			auto r = sdk::player::player_->trace(c, b, this->self, 600, 34, false);
+			if (!sdk::util::math->w2s(r.end_point, t)) continue;
+			this->t_map.push_back(r);	
+		}
+	}*/
+}
 void sys::c_visuals::trace_debug()
 {
-	auto ps = sdk::player::player_->gpos(this->self);
-	auto rot = sdk::player::player_->grot(this->self);
-	auto x = (std::sin(rot) * -1); auto y = (std::cos(rot) * -1);
-	auto v = sdk::util::c_vector3(ps.x + (200 * x), ps.y + 200, ps.z + (200 * y));
-
-	auto wv = sdk::util::c_vector3();
-	if (!sdk::util::math->w2s(v, wv)) return;
-
-	auto t = sdk::player::player_->trace(ps, v, this->self, 100, filter);
-
-	if (t.success) sdk::render::render->DrawCircle(wv.x, wv.z, 16, 0xff00ff00);
-	else sdk::render::render->DrawCircle(wv.x, wv.z, 16, 0xffff0000);
-
-	if (!sdk::util::math->w2s(t.end_point, wv)) return;
-	sdk::render::render->DrawCircle(wv.x, wv.z, 16, 0xff000fff);
-
-	if (!sdk::util::math->w2s(t.start_point, wv)) return;
-	sdk::render::render->DrawCircle(wv.x, wv.z, 16, 0xff000fff);
-
-	sdk::render::render->RenderText(200, 200, 0xff00ff00, (char*)std::string("dst:").append(std::to_string(t.end_distance)).c_str());
-	sdk::render::render->RenderText(200, 230, 0xff00ff00, (char*)std::string("state:").append(std::to_string(t.success)).c_str());
+	if (this->t_map.empty()) return;
+	sdk::util::c_vector3 t; auto f = sdk::player::player_->gpos(this->self);
+	for (auto a : this->t_map)
+	{
+		if (!sdk::util::math->w2s(a.end_point, t)) continue;
+		if (a.success)
+		{
+			sdk::render::render->DrawPoint(t.x, t.z, 0xff00ffdd);
+		}
+		else
+		{
+			sdk::render::render->DrawPoint(t.x, t.z, 0xffff0000);
+		}
+	}
 }
 void sys::c_visuals::roar_path()
 {
@@ -317,6 +338,7 @@ void sys::c_visuals::work()
 	if (!ienable_legit_path_pauses) ienable_legit_path_pauses = sys::config->gvar("visuals", "ienable_legit_path_pauses");
 	if (!ienable_legit_path) ienable_legit_path = sys::config->gvar("visuals", "ienable_legit_path");
 	if (!ienable_player) ienable_player = sys::config->gvar("visuals", "ienable_player");
+	if (!itrace_debug) itrace_debug = sys::config->gvar("debug", "itrace_debug");
 	if (ienable_debug->iv) this->monster_proxy_debug();
 	if (ienable_portal->iv) this->portal();
 	if (iroar_visual->iv) this->roar_path();
@@ -325,6 +347,7 @@ void sys::c_visuals::work()
 	if (ialive_byname->iv) this->alive_proxy_debug();
 	if (ienable_legit_path->iv) this->legit_path();
 	if (ienable_player->iv) this->player_esp();
+	if (itrace_debug->iv) this->trace_debug();
 	if (this->debug_editor) this->editor_debug();
 	//this->debug_mobs();
 	//this->trace_debug();

@@ -111,39 +111,59 @@ std::unordered_map<int, int> sys::v_keys_flags =
 };
 bool sys::c_legit_bot::mobs_near(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 {
-	auto self_key = *(int*)(core::offsets::actor::actor_proxy_key);
+	//auto self_key = *(int*)(this->self + core::offsets::actor::actor_proxy_key);
 	for (auto a : sdk::player::player_->actors)
 	{
 		if (a.type != 1
 			|| a.hp <= 0
 			|| !a.ptr
 			|| !a.pos.valid()
-			|| a.state == 1) continue;
+			|| a.state == 1
+			|| a.ptr == this->self) continue;
 		auto d = sdk::util::math->gdst_2d(p, a.pos);
 		if (d > 800) continue;
 		return true;
 	}
 	return false;
 }
-uint64_t sys::c_legit_bot::nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max)
+sdk::player::s_blank_proxy sys::c_legit_bot::nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max)
 {
-	auto n = uint64_t(0); auto l = float(99999);
+	auto n = sdk::player::s_blank_proxy(); auto l = float(max);
 	for (auto a : sdk::player::player_->actors)
 	{
 		if (a.type != 1
 			|| a.hp <= 0
 			|| !a.ptr
 			|| !a.pos.valid()
-			|| a.state == 1) continue;
+			|| a.state == 1
+			|| a.ptr == this->self) continue;
 		auto d = sdk::util::math->gdst_2d(from, a.pos);
-		if (d > 800) continue;
-		if (d < l)
+		if (d > max) continue;
+		if (a.rlt_dst < l)
 		{
 			l = d;
-			n = a.ptr;
+			n = a;
 		}
 	}
 	return n;
+}
+bool sys::c_legit_bot::update_target()
+{
+	for (auto a : sdk::player::player_->actors)
+	{
+		if (a.ptr == this->target_actor.ptr && a.key == this->target_actor.key)
+		{
+			if (a.hp <= 0 || a.state == 1)
+			{
+				this->target_actor = {};
+				return false;
+			}
+			this->target_actor = a;
+			return true;
+		}
+	}
+	this->target_actor = {};
+	return false;
 }
 bool sys::c_legit_bot::add_skill(int key, int key2, int key3, int interval, int cd, int mp, int awakening, int condition)
 {
@@ -888,6 +908,8 @@ void sys::c_legit_bot::work(uint64_t s)
 		}
 		sdk::util::log->add("repathed SP conform", sdk::util::e_info, true);
 	}
+	auto& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
+	if (!input_adr) return;
 	//
 	this->autopot();
 	sys::key_q->bypass();
@@ -1064,45 +1086,52 @@ void sys::c_legit_bot::work(uint64_t s)
 	}
 	if (this->p_mode == 0 && cur_point.pos.pause > 1.1f)
 	{
-		auto point_mobs = [&]() -> uint64_t
+		auto has_mobs = this->mobs_near(cur_point.pos, spos);
+		if (!has_mobs)
 		{
-			uint64_t n = 0; float w = 800;
-			for (auto a : sdk::player::player_->actors)
+			*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+			this->cur_route.front().pos.pause = 0.1f;
+			this->target_actor = {};
+			return;
+		}
+		if (this->target_actor.ptr == NULL)
+		{
+			auto n = this->nearest(cur_point.pos, spos, 800);
+			if (n.ptr == NULL)
 			{
-				if (a.ptr == s
-					|| a.state == 1
-					|| a.hp <= 0) continue;
-				auto d = sdk::util::math->gdst_3d(a.pos, cur_point.pos);
-				if (d > 800) continue;
-				if (a.rlt_dst < w)
-				{
-					w = a.rlt_dst;
-					n = a.ptr;
-				}
+				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+				this->cur_route.front().pos.pause = 0.1f;
+				this->target_actor = {};
+				return;
 			}
-			return n;
-		};
-		auto n_m = point_mobs();
-		if (n_m != NULL)
+			this->target_actor = n;
+			return;
+		}
+		else
 		{
-			this->att_target = n_m;
-			auto n_pos = sdk::player::player_->gpos(this->att_target);
-			if (!n_pos.valid()) { this->att_target = NULL; return; }
-			if (sdk::player::player_->ghp(this->att_target) <= 0) { this->att_target = NULL; return; }
-			auto n_dst = sdk::util::math->gdst_3d(n_pos, spos);
-			if (n_dst > 300)
+			auto u = this->update_target();
+			if (u)
 			{
-				this->aim_pos(n_pos, spos);
-				uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
-				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
+				if (this->target_actor.rlt_dst > 300)
+				{
+					this->aim_pos(this->target_actor.pos, spos);
+					*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
+					return;
+				}
+				else
+				{
+					*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+					this->aim_pos(this->target_actor.pos, spos);
+					this->rskill();
+					return;
+				}
 			}
 			else
 			{
-				this->aim_pos(n_pos, spos);
-				this->rskill();
+				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+				this->target_actor = {};
 				return;
 			}
-			return;
 		}
 	}
 	nav_to(spos, cur_point);

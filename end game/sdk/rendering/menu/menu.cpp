@@ -111,10 +111,9 @@ bool sdk::menu::c_menu::setup()
 						{
 							if (ImGui::Button("disable-bot-rb")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); sys::roar_bot->load(); }
 						}
-						ImGui::SameLine();
 					}
 				},								
-				{"timescale", 2, "roar_bot", "ibot_timescale", true, new sdk::menu::s_imgui_intslider(400, 1000)}, 
+				{"timescale", 2, "roar_bot", "ibot_timescale", false, new sdk::menu::s_imgui_intslider(400, 1000)}, 
 				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
 				{"store-roar", 0, "roar_bot", "ibot_storage_roar", true},				
 				{"store-test", 0, "", "", false, (void*)&sys::roar_bot->force_store}
@@ -311,6 +310,7 @@ bool sdk::menu::c_menu::setup()
 						{
 							if (ImGui::Button("disable-bot##lb")) { sys::legit_bot->dwork = false; sys::legit_bot->reset(); sys::legit_bot->load(); }
 						}
+						ImGui::Text(std::string("target:").append(sdk::util::log->as_hex(sys::legit_bot->target_actor.ptr)).c_str());
 						ImGui::SameLine();
 					}
 				},
@@ -503,7 +503,13 @@ bool sdk::menu::c_menu::setup()
 				{"roar-pauses     "  , 0, "visuals", "ienable_roar_path_pauses", false},
 				{"legit-grind-path"  , 0, "visuals", "ienable_legit_path_pauses", true},
 				{"legit-pauses    "  , 0, "visuals", "ienable_legit_path", false},
-				{"show-portals   "  , 0, "visuals", "ienable_portal", false}
+				{"show-portals   "  , 0, "visuals", "ienable_portal", false},
+				{"trace-debug    "  , 0, "debug", "itrace_debug", false},
+				{"trace-dbg", 5 , "", "", false, []() 
+					{
+						if (ImGui::Button("populate-traces")) sys::visuals->ptrace();
+					}
+				}
 			}
 		},
 		{

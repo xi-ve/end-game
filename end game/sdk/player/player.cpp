@@ -239,13 +239,13 @@ sdk::player::s_trace sdk::player::c_player::trace(sdk::util::c_vector3 f, sdk::u
 	else r.success = 1;
 	if (!r.success)
 	{
-		r.start_point = sdk::player::player_->gpos(s); r.start_point.y += h;
+		r.start_point = f; r.start_point.y += h;
 		r.end_distance = _a7;
 		r.end_point = sdk::util::c_vector3(_a6[0], _a6[1], _a6[2]);
 	}
 	else
 	{
-		r.start_point = sdk::player::player_->gpos(s); r.start_point.y += h;
+		r.start_point = f; r.start_point.y += h;
 		r.end_distance = dst;
 		r.end_point = sdk::util::c_vector3(t.x,t.y + 20,t.z);
 	}
