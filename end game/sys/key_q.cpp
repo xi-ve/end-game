@@ -69,6 +69,7 @@ void __stdcall sys::key_worker(void* a)
 			auto k = a;
 			*((uint64_t*)((key_p + 0x840) + (k * 4))) = 0;
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		sys::key_q->rm();
 		sys::key_q->thread_working = false;
 		break;

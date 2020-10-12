@@ -223,6 +223,7 @@ sdk::player::s_trace sdk::player::c_player::trace(sdk::util::c_vector3 f, sdk::u
 	else p2n = sdk::util::c_vector3(t.x + 1, t.y + 20, t.z + 1);
 	auto dst = sdk::util::math->gdst_3d(p1n, p2n);
 	auto rv = this->ray_cast_rvec(p1n, p2n);
+	if (!rv.valid()) return r;
 	float p1[3];    float p2[3];
 	p1[0] = p1n.x;  p2[0] = rv.x;
 	p1[1] = p1n.y;  p2[1] = rv.y;

@@ -122,6 +122,7 @@ bool sys::c_legit_bot::mobs_near(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 			|| a.ptr == this->self) continue;
 		auto d = sdk::util::math->gdst_2d(p, a.pos);
 		if (d > 800) continue;
+		if (!sdk::player::player_->trace(s, a.pos, this->self, 200).success) continue;
 		return true;
 	}
 	return false;
@@ -139,6 +140,7 @@ sdk::player::s_blank_proxy sys::c_legit_bot::nearest(sdk::util::c_vector3 from, 
 			|| a.ptr == this->self) continue;
 		auto d = sdk::util::math->gdst_2d(from, a.pos);
 		if (d > max) continue;
+		if (!sdk::player::player_->trace(s, a.pos, this->self, 200).success) continue;
 		if (a.rlt_dst < l)
 		{
 			l = d;
@@ -498,7 +500,7 @@ void sys::c_legit_bot::rskill()
 
 	for (auto&& a : this->skills)
 	{
-		if (strstr(cur_anim_lower, "stop")) continue;
+		if (strstr(cur_anim_lower, "stop") || strstr(cur_anim_lower, "end")) continue;
 		if (GetTickCount64() < a->next_possible_use) continue;
 		if (msp < a->mp) continue;
 		if (sys::key_q->gq().size() || sys::key_q->thread_working) return;
@@ -520,7 +522,7 @@ void sys::c_legit_bot::rskill()
 
 		return;
 	}
-	if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ VK_LBUTTON }, 150));
+	if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ VK_LBUTTON }, 100));
 }
 bool sys::c_legit_bot::snear()
 {
@@ -1089,9 +1091,9 @@ void sys::c_legit_bot::work(uint64_t s)
 		auto has_mobs = this->mobs_near(cur_point.pos, spos);
 		if (!has_mobs)
 		{
-			*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 			this->cur_route.front().pos.pause = 0.1f;
 			this->target_actor = {};
+			this->execution = GetTickCount64() + 1000;
 			return;
 		}
 		if (this->target_actor.ptr == NULL)
@@ -1102,6 +1104,7 @@ void sys::c_legit_bot::work(uint64_t s)
 				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 				this->cur_route.front().pos.pause = 0.1f;
 				this->target_actor = {};
+				this->execution = GetTickCount64() + 1000;
 				return;
 			}
 			this->target_actor = n;
@@ -1130,6 +1133,7 @@ void sys::c_legit_bot::work(uint64_t s)
 			{
 				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 				this->target_actor = {};
+				this->execution = GetTickCount64() + 1000;
 				return;
 			}
 		}

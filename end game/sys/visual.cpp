@@ -69,16 +69,19 @@ void sys::c_visuals::ptrace()
 {
 	this->t_map.clear();
 	sdk::util::c_vector3 t; auto f = sdk::player::player_->gpos(this->self);
-	auto i_c = this->gcircle(f, 200, 4);
-	for (auto a : i_c)
+	for (auto g = 100; g < 1000; g += 200)
 	{
-		auto c_f = this->gcircle(a, 350, 4);
-		for (auto b : c_f)
+		auto i_c = this->gcircle(f, g, 4);
+		for (auto a : i_c)
 		{
-			auto c = sdk::util::c_vector3(b.x, b.y + 600, b.z);
-			auto r = sdk::player::player_->trace(c, b, this->self, 600, 34, false);
-			if (!sdk::util::math->w2s(r.end_point, t)) continue;
-			this->t_map.push_back(r);
+			auto c_f = this->gcircle(a, 350, 4);
+			for (auto b : c_f)
+			{
+				auto c = sdk::util::c_vector3(b.x, b.y + 600, b.z);
+				auto r = sdk::player::player_->trace(c, b, this->self, 600, 34, false);
+				if (!sdk::util::math->w2s(r.end_point, t)) continue;
+				this->t_map.push_back(r);
+			}
 		}
 	}
 	/*for (auto a = 100; a < 1500; a += 100)
@@ -100,11 +103,7 @@ void sys::c_visuals::trace_debug()
 	for (auto a : this->t_map)
 	{
 		if (!sdk::util::math->w2s(a.end_point, t)) continue;
-		if (a.success)
-		{
-			sdk::render::render->DrawPoint(t.x, t.z, 0xff00ffdd);
-		}
-		else
+		if (!a.success)
 		{
 			sdk::render::render->DrawPoint(t.x, t.z, 0xffff0000);
 		}
