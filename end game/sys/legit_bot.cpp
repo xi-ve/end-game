@@ -869,6 +869,7 @@ void sys::c_legit_bot::save()
 }
 void sys::c_legit_bot::nav_to(const sdk::util::c_vector3& spos, sys::s_path_script& cur_point)
 {
+	//pot. per point trace validated nav (?)
 	auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
 	if (dst_to > 150)
 	{
