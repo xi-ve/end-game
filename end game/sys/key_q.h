@@ -39,6 +39,7 @@ namespace sys
 	public:
 		void bypass();
 
+		ULONGLONG stopped_time = 0;
 		bool thread_working = false;
 		void add(s_key_input* k);
 		void rm();

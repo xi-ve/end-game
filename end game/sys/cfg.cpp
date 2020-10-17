@@ -121,5 +121,9 @@ void sys::c_config::vars()
 	this->proc("legit_bot", "ipot", "1");
 	this->proc("legit_bot", "isp_pot_pct", "50");
 	this->proc("legit_bot", "ihp_pot_pct", "65");
+
+	this->proc("scroll_bot", "ienable", "0");
+	this->proc("scroll_bot", "ienable_do_all", "1");
+	this->proc("scroll_bot", "ienable_do_num", "0");
 }
 sys::c_config* sys::config;

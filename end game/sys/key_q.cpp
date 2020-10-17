@@ -32,7 +32,11 @@ void sys::c_key_q::work()
 	if (this->key_queue.empty() || this->thread_working) return;
 	auto f = this->key_queue.front();
 	this->bypass();
-	if (!f->n) CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sys::key_worker, (PVOID)f, 0, 0);
+	if (!f->n)
+	{
+		sys::key_q->thread_working = true;
+		CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sys::key_worker, (PVOID)f, 0, 0);
+	}
 	else
 	{
 		uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
@@ -48,7 +52,6 @@ void sys::c_key_q::work()
 }
 void __stdcall sys::key_worker(void* a)
 {
-	sys::key_q->thread_working = true;
 	auto strc = (sys::s_key_input*)a;
 	if (strc == NULL) return;
 	auto& key_p = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x8));
@@ -58,20 +61,15 @@ void __stdcall sys::key_worker(void* a)
 		auto delay = strc->d;
 		for (auto a : strc->k)
 		{
-			if (a == -1) continue;
+			if (a == -1 && a < 9000) continue;
 			auto k = a;
 			*((uint64_t*)((key_p + 0x840) + (k * 4))) = 1;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-		for (auto a : strc->k)
-		{
-			if (a == -1) continue;
-			auto k = a;
-			*((uint64_t*)((key_p + 0x840) + (k * 4))) = 0;
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		for (auto p : sys::v_keys_i) if (p < 9000) *((uint64_t*)((key_p + 0x840) + (p * 4))) = 0;
 		sys::key_q->rm();
 		sys::key_q->thread_working = false;
+		sys::key_q->stopped_time = GetTickCount64() + 1250;
 		break;
 	}
 	

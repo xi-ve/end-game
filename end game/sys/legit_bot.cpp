@@ -167,6 +167,12 @@ bool sys::c_legit_bot::update_target()
 	this->target_actor = {};
 	return false;
 }
+bool sys::c_legit_bot::blockage(sdk::util::c_vector3 s)
+{
+	auto fr = sdk::util::math->front(this->self, 80, 175);
+	if (sdk::player::player_->trace(s, fr, this->self, 80, 150, false).success) { this->cur_route.front().pos.pause = 999.f; return false; }
+	return true;
+}
 bool sys::c_legit_bot::add_skill(int key, int key2, int key3, int interval, int cd, int mp, int awakening, int condition)
 {
 	for (auto obj : this->skills)
@@ -392,6 +398,26 @@ bool sys::c_legit_bot::pause(uint64_t s, float p)
 
 	return false;
 }
+bool sys::c_legit_bot::find_node(sdk::util::c_vector3 t, sdk::util::c_vector3 f, float md)
+{
+	this->walk_node.clear();
+	auto n = sys::visuals->gcircle_front(f, md, 200, 5);
+	this->scan_nodes = n;
+	sdk::util::c_vector3 g; float ldst = 9999.f;
+	for (auto b : n)
+	{
+		auto tr = sdk::player::player_->trace(f, b, this->self, 80);
+		if (!tr.success) continue;
+		auto dst = sdk::util::math->gdst_2d(t, b);
+		if (dst < ldst)
+		{
+			g = b;
+			ldst = dst;
+		}
+	}
+	if (g.valid()) { this->walk_node = g; return true; }
+	else return false;
+}
 bool sys::c_legit_bot::has_lootables(sdk::util::c_vector3 spp)
 {
 	if (sys::loot->loot_proxys.empty()) return 0;
@@ -488,7 +514,6 @@ void sys::c_legit_bot::rskill()
 	if (sys::key_q->thread_working) return;
 
 	uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
-	*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 
 	auto msp = sdk::player::player_->gsp(this->self);
 	auto stance = *(BYTE*)(this->self + core::offsets::actor::actor_combat_stance);
@@ -500,7 +525,7 @@ void sys::c_legit_bot::rskill()
 
 	for (auto&& a : this->skills)
 	{
-		if (strstr(cur_anim_lower, "stop") || strstr(cur_anim_lower, "end")) continue;
+		if (strstr(cur_anim_lower, "stop") || strstr(cur_anim_lower, "end")) { return; }
 		if (GetTickCount64() < a->next_possible_use) continue;
 		if (msp < a->mp) continue;
 		if (sys::key_q->gq().size() || sys::key_q->thread_working) return;
@@ -516,6 +541,8 @@ void sys::c_legit_bot::rskill()
 
 		a->next_possible_use = GetTickCount64() + (a->cd * 1000);
 		a->last_use = GetTickCount64();
+
+		for (auto p : sys::v_keys_i) if (p < 9000) *((uint64_t*)((input_adr + 0x840) + (p * 4))) = 0;
 
 		sys::key_q->add(a->input);
 		a->total_uses++;
@@ -867,29 +894,28 @@ void sys::c_legit_bot::save()
 	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
 	sdk::util::log->add("resaved path");
 }
-void sys::c_legit_bot::nav_to(const sdk::util::c_vector3& spos, sys::s_path_script& cur_point)
+bool sys::c_legit_bot::nav_to(sdk::util::c_vector3 spos, float dstf)
 {
-	//pot. per point trace validated nav (?)
-	auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
-	if (dst_to > 150)
-	{
-		this->aim_pos(cur_point.pos, spos);
-		uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
-		*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
-		return;
-	}
-	else
-	{
-		this->cur_route.pop_front();
-	}
+	if (!this->walk_node.valid()) return false;
+
+	this->aim_pos(this->walk_node, spos);
+	return true;
+
+}
+void sys::c_legit_bot::set_walk()
+{
+	auto& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
+	if (!input_adr) return;
+	if (this->walk_node.valid()) *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
+	else *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 }
 void sys::c_legit_bot::work(uint64_t s)
 {
 	this->self = s;
 	if (this->recording_g || this->recording_s) { this->record(); return; }
 	if (!this->dwork) return;
-	if (!this->execution) this->execution = GetTickCount64() + 75;
-	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + 75;
+	if (!this->execution) this->execution = GetTickCount64() + 55;
+	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + 55;
 	else return;
 	if (!sdk::player::player_->ghp(s)) return;
 	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
@@ -911,182 +937,16 @@ void sys::c_legit_bot::work(uint64_t s)
 		}
 		sdk::util::log->add("repathed SP conform", sdk::util::e_info, true);
 	}
-	auto& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
-	if (!input_adr) return;
 	//
 	this->autopot();
 	sys::key_q->bypass();
 	//
 	auto spos = sdk::player::player_->gpos(s);
 	auto cur_point = this->cur_route.front();
-	if (this->p_mode == 1)
-	{
-		if (this->sp_delay > GetTickCount64()) return; else sp_delay = 0;
-		if (this->reversed)//path to
-		{
-			if (cur_point.special_event)
-			{
-				if (cur_point.npc_name != "NONE")//npc
-				{
-					if (this->has_aggro()) return;
-					sp_delay = GetTickCount64() + 2400;
-					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 
-					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
-					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
-					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+	if (cur_point.pos.pause < 1.1f) this->find_node(cur_point.pos, spos, 150);
+	if (GetTickCount64() > sys::key_q->stopped_time) this->set_walk();
 
-					this->f_npc_interaction(npc_wanted_ptr);
-					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
-					if (!cinteract || cinteract != npc_wanted_ptr) return;
-
-					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
-					this->cur_route.pop_front();
-					return;
-				}
-				else if (cur_point.script != "NONE")//scr
-				{
-					if (this->npc_interacted)
-					{
-						if (!sdk::player::player_->npcs.size())
-						{
-							sdk::util::log->add("no npc near, after interaction - stopping bot (???)", sdk::util::e_critical, true);
-							this->dwork = false;
-							return;
-						}
-						std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
-						for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
-						for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
-						auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
-						if (cinteract != npc_wanted_ptr)
-						{
-							//aborted sp due to something (?)
-							sp_delay = GetTickCount64() + 8000;
-							this->npc_interacted = false;
-							//allow for roar and repath for only scripts
-							this->cur_route.clear();
-							this->cur_route = this->store;
-							while (true)
-							{
-								if (this->cur_route.front().special_event) break;
-								this->cur_route.pop_front();
-							}
-							this->i_sell_state = 0;
-							this->items_left_sell = this->allowed_sell_items;
-							sdk::util::log->add("sp interaction was aborted (?)");
-							return;
-						}
-					}
-					this->npc_interacted = true;
-					sp_delay = GetTickCount64() + 2000;
-					if (cur_point.script == "sell_routine()")
-					{
-						auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
-						if (!ctrl) return;
-						auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
-						if (!scene) return;
-						auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
-						if (speed >= 8000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
-
-						if (this->i_sell_state == 3 && !this->items_left_sell.empty())
-						{
-							for (auto a : sdk::player::player_->inventory_items)
-							{
-								if (a.item_index == this->items_left_sell.back())
-								{
-									this->i_sell_state = 0; //wasnt sold
-									sdk::util::log->add("failed last sell", sdk::util::e_info, true);
-									return;
-								}
-							}
-							this->items_left_sell.pop_back();
-							this->i_sell_state = 0;
-							sdk::util::log->add("next item", sdk::util::e_info, true);
-						}
-						if (this->i_sell_state == 3 && this->items_left_sell.empty())//end state
-						{
-							this->items_left_sell = this->allowed_sell_items;
-
-							sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
-							this->cur_route.pop_front();
-							sdk::util::log->add("items sold", sdk::util::e_info, true);
-
-							return;
-						}
-						auto t = this->items_left_sell.back();
-						switch (this->i_sell_state)
-						{
-						case 0:
-						{
-							for (auto a : sdk::player::player_->inventory_items)
-							{
-								if (a.item_index == t)
-								{
-									auto _t = std::string("HandleEventRUp_Inventory_All_SlotRClick(").append(std::to_string(a.item_slot)).append(")");
-									sys::lua_q->add(_t);
-									this->i_sell_state++;
-									return;
-								}
-							}
-							sdk::util::log->add(std::string("item not found: ").append(std::to_string(t)), sdk::util::e_info, true);
-							this->i_sell_state = 3;
-							return;
-						}
-						case 1:
-						{
-							sys::lua_q->add("HandleEventLUp_NumberPad_All_AllButton_Click(0)");
-							this->i_sell_state++;
-							return;
-						}
-						case 2:
-						{
-							sys::lua_q->add("HandleEventLUp_NumberPad_All_ConfirmButton_Click()");
-							this->i_sell_state++;
-							return;
-						}
-						}
-					}
-					sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
-					sys::lua_q->add(cur_point.script);
-					this->cur_route.pop_front();
-					return;
-				}
-			}
-			else
-			{
-				auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
-				if (dst_to > 100)
-				{
-					this->aim_pos(cur_point.pos, spos);
-					if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 0x57 }, 500));
-					return;
-				}
-				//sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
-				this->cur_route.pop_front();
-				return;
-			}
-		}
-		else//path back
-		{
-			auto dst_to = sdk::util::math->gdst_2d(spos, cur_point.pos);
-			if (dst_to > 100)
-			{
-				this->aim_pos(cur_point.pos, spos);
-				if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 0x57 }, 500));
-				return;
-			}
-			this->npc_interacted = false;
-			this->cur_route.pop_front();
-			if (this->cur_route.empty())
-			{
-				this->p_mode = 0;
-				this->repath(0, 0);
-				sdk::util::log->add("completed SP", sdk::util::e_info, true);
-				this->npc_interacted = false;
-			}
-		}
-		return;
-	}
 	if (this->p_mode == 0 && cur_point.pos.pause > 1.1f)
 	{
 		auto has_mobs = this->mobs_near(cur_point.pos, spos);
@@ -1094,18 +954,17 @@ void sys::c_legit_bot::work(uint64_t s)
 		{
 			this->cur_route.front().pos.pause = 0.1f;
 			this->target_actor = {};
-			this->execution = GetTickCount64() + 1000;
-			return;
+			this->find_node(cur_point.pos, spos, 150);
 		}
 		if (this->target_actor.ptr == NULL)
 		{
 			auto n = this->nearest(cur_point.pos, spos, 800);
 			if (n.ptr == NULL)
 			{
-				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 				this->cur_route.front().pos.pause = 0.1f;
 				this->target_actor = {};
-				this->execution = GetTickCount64() + 1000;
+				this->find_node(cur_point.pos, spos, 150);
+				this->aim_pos(this->walk_node, spos);
 				return;
 			}
 			this->target_actor = n;
@@ -1116,15 +975,14 @@ void sys::c_legit_bot::work(uint64_t s)
 			auto u = this->update_target();
 			if (u)
 			{
-				if (this->target_actor.rlt_dst > 300)
+				if (this->target_actor.rlt_dst >= 300)
 				{
-					this->aim_pos(this->target_actor.pos, spos);
-					*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
+					this->find_node(this->target_actor.pos, spos, 150);
+					this->nav_to(spos, 75);
 					return;
 				}
 				else
 				{
-					*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 					this->aim_pos(this->target_actor.pos, spos);
 					this->rskill();
 					return;
@@ -1132,13 +990,24 @@ void sys::c_legit_bot::work(uint64_t s)
 			}
 			else
 			{
-				*((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+				this->scan_nodes.clear();
+				this->walk_node.clear();
 				this->target_actor = {};
-				this->execution = GetTickCount64() + 1000;
+				this->execution = GetTickCount64() + 750;
 				return;
 			}
 		}
 	}
-	nav_to(spos, cur_point);
+
+	if (this->blockage(spos)) return;
+	
+	auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
+	if (dtn <= 75)
+	{
+		this->cur_route.pop_front();
+		this->walk_node.clear();
+		return;
+	}
+	this->aim_pos(this->walk_node, spos);
 }
 sys::c_legit_bot* sys::legit_bot;

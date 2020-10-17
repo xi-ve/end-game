@@ -1,9 +1,9 @@
 #include <inc.h>
-std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 from, float dst, int deg)
+std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 from, float dst, int deg, int rad)
 {
 	auto r = std::vector<sdk::util::c_vector3>();
 #define M_PI		3.14159265358979323846
-	for (auto c = 0; c < 360; c += deg)
+	for (auto c = 0; c < rad; c += deg)
 	{
 		auto x = from.x + (dst * std::cos(c / (180 / M_PI)));
 		auto y = from.y;
@@ -11,6 +11,30 @@ std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle(sdk::util::c_vector3 f
 		r.emplace_back(x, y, z);
 	}
 	r.push_back(r.front());//completes circle
+	return r;
+}
+std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle_front(sdk::util::c_vector3 from, float dst, int deg, int rad)
+{
+#define M_PI		3.14159265358979323846
+	auto r = std::vector<sdk::util::c_vector3>();
+	auto controller = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+	if (!controller) return {};
+	auto c_base = *(uint64_t*)(controller + 0x10);
+	if (!c_base) return {};
+	auto rot = *(float*)(c_base + 0x43C);
+	if (!rot) return r;
+	auto xr = (std::sin(rot) * -1);
+	auto zr = (std::cos(rot) * -1);
+	auto start_x = from.x;
+	auto start_z = from.z;
+	auto radius = dst;
+	for (auto c = 0; c < deg; c += rad)
+	{
+		auto angle = 11 - (c)*M_PI / 180;
+		auto x = start_x + radius * std::sin((rot)+angle);
+		auto z = start_z + radius * std::cos((rot)+angle);
+		r.push_back(sdk::util::c_vector3(x, from.y, z));
+	}
 	return r;
 }
 void sys::c_visuals::monster_proxy_debug()
@@ -92,7 +116,7 @@ void sys::c_visuals::ptrace()
 			auto c = sdk::util::c_vector3(b.x, b.y + 600, b.z);
 			auto r = sdk::player::player_->trace(c, b, this->self, 600, 34, false);
 			if (!sdk::util::math->w2s(r.end_point, t)) continue;
-			this->t_map.push_back(r);	
+			this->t_map.push_back(r);
 		}
 	}*/
 }
@@ -269,7 +293,7 @@ void sys::c_visuals::editor_debug()
 
 		sdk::util::c_vector3 res_to;
 		if (!this->changed_pos)
-		{			
+		{
 			if (!sdk::util::math->w2s(this->selected_pos, res)) return;
 			if (sdk::util::math->w2s(cpos, res_to)) sdk::render::render->DrawLine(res.x, res.z, res_to.x, res_to.z, 0xffff0000);
 		}
@@ -287,6 +311,27 @@ void sys::c_visuals::legit_path()
 	if (!sys::legit_bot->g_p().size()) return;
 	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
 	auto spos = sdk::player::player_->gpos(this->self);
+
+	if (!sys::legit_bot->scan_nodes.empty())
+	{
+		for (auto q : sys::legit_bot->scan_nodes)
+		{
+			sdk::util::c_vector3 l;
+			if (!sdk::util::math->w2s(q, l)) continue;
+			sdk::render::render->DrawPoint(l.x, l.z, 0xff00ff00);
+		}
+	}
+	if (sys::legit_bot->walk_node.valid())
+	{
+		sdk::util::c_vector3 l;
+		if (sdk::util::math->w2s(sys::legit_bot->walk_node, l)) sdk::render::render->DrawPoint(l.x, l.z, 0xffff0000);
+	}
+	if (sys::legit_bot->cur_route.size())
+	{
+		sdk::util::c_vector3 l;
+		if (sdk::util::math->w2s(sys::legit_bot->cur_route.front().pos, l)) sdk::render::render->DrawPoint(l.x, l.z, 0xffff0000);
+	}
+
 	for (auto b : sys::legit_bot->g_p())
 	{
 		auto ds = sdk::util::math->gdst_3d(b, spos);
@@ -316,7 +361,7 @@ void sys::c_visuals::player_esp()
 		if (!sdk::util::math->w2s(m, d)) continue;
 		auto mhp = sdk::player::player_->gmhp(a.ptr);
 		sdk::render::render->DrawLine(t.x, t.z, d.x, d.z, 0xff00ff00);
-		sdk::render::render->RenderText(t.x, t.z	 , 0xff00ff00, (char*)std::string(a.name).c_str());
+		sdk::render::render->RenderText(t.x, t.z, 0xff00ff00, (char*)std::string(a.name).c_str());
 		sdk::render::render->RenderText(t.x, t.z + 20, 0xff00ff00, (char*)std::string("dst:").append(std::to_string((int)a.rlt_dst)).c_str());
 		sdk::render::render->RenderText(t.x, t.z + 40, 0xff00ff00, (char*)std::string("hp :").append(std::to_string((int)a.hp)).append("/").append(std::to_string((int)mhp)).c_str());
 	}

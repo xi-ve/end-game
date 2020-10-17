@@ -204,6 +204,9 @@
     <ClCompile Include="sys\legit_bot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sys\scroll_bot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -417,6 +420,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sys\legit_bot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\scroll_bot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

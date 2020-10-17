@@ -479,6 +479,18 @@ bool sdk::menu::c_menu::setup()
 		}
 		}
 	)) return false;
+	if (!this->add_tab("scroll-bot",
+		{
+		{
+			{"core-options"},
+			{
+				{"enable", 0, "scroll_bot", "ienable", false},
+				{"do-all-scrolls", 0, "scroll_bot", "ienable_do_all", false},
+				{"do-num-scrolls", 2, "scroll_bot", "ienable_do_num", false, new sdk::menu::s_imgui_intslider(1, 250)}
+			}
+		}
+		}
+	)) return false;
 	if (!this->add_tab("visuals",
 		{  
 		{	{"monster-actor"},
@@ -837,6 +849,7 @@ bool sdk::menu::c_menu::setup()
 						{
 
 							auto self = *(uint64_t*)(core::offsets::actor::actor_self);
+							auto self_pos = sdk::player::player_->gpos(self);
 							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
@@ -874,6 +887,10 @@ bool sdk::menu::c_menu::setup()
 							ImGui::Text(std::string("weight cur:").append(std::to_string(in_w)).c_str());
 							ImGui::Text(std::string("slots left:").append(std::to_string(in_l)).c_str());
 
+							//
+							ImGui::Text(std::string("x:").append(std::to_string(self_pos.x)).c_str());
+							ImGui::Text(std::string("y:").append(std::to_string(self_pos.y)).c_str());
+							ImGui::Text(std::string("z:").append(std::to_string(self_pos.z)).c_str());
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
 					}

@@ -1,4 +1,17 @@
 #include <inc.h>
+sdk::util::c_vector3 sdk::util::c_math::front(uint64_t s, float h, float d)
+{
+	auto controller = *(uint64_t*)(s + core::offsets::actor::actor_char_ctrl);
+	if (!controller) return {};
+	auto c_base = *(uint64_t*)(controller + 0x10);
+	if (!c_base) return {};
+	auto rot = *(float*)(c_base + 0x43C);
+	if (!rot) return {};
+	auto fp = sdk::player::player_->gpos(s);
+	auto xr = (std::sin(rot) * -1);
+	auto zr = (std::cos(rot) * -1);
+	return sdk::util::c_vector3(fp.x + (d*xr), fp.y + h, fp.z + (d*zr));
+}
 float sdk::util::c_math::gdst_3d(c_vector3 f, c_vector3 t)
 {
 	auto a = f.x - t.x; auto b = f.y - t.y; auto c = f.z - t.z;

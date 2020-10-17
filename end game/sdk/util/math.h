@@ -82,6 +82,7 @@ namespace sdk
 		class c_math
 		{
 		public:
+			c_vector3 front(uint64_t s, float h, float d);
 			float gdst_3d(c_vector3 f, c_vector3 t);
 			float gdst_2d(c_vector3 f, c_vector3 t);
 			float gdst_1d(float f, float t);

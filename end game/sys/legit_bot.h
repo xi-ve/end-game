@@ -50,11 +50,11 @@ namespace sys
 		int p_mode = 0;//0,grind 1,store
 		int reversed = 0;
 		bool skill_locked = 0; bool npc_interacted = false;
-		std::deque<s_path_script> cur_route = {};
 		//
 		bool ssp(s_path_script s);
 		void repath(int a, int b);
 		bool pause(uint64_t s, float p);
+		bool find_node(sdk::util::c_vector3 t, sdk::util::c_vector3 f, float md);
 		//
 		bool has_lootables(sdk::util::c_vector3 s);
 		bool loot_near(sdk::util::c_vector3 o);
@@ -68,15 +68,19 @@ namespace sys
 		sdk::player::s_blank_proxy nearest(sdk::util::c_vector3 from, sdk::util::c_vector3 s, float max);
 		bool update_target();
 		//
-		void aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s);
 		void spitch(float f);
 		void syaw(float f);
 	public:
+		std::deque<s_path_script> cur_route = {};
 		sdk::player::s_blank_proxy target_actor = {};
+		sdk::util::c_vector3 walk_node = {}; std::vector<sdk::util::c_vector3> scan_nodes = {};
 
 		std::deque<s_skill*> skills;
 		int loot_act_k = 0;
 		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};
+		//
+		void aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s);
+		bool blockage(sdk::util::c_vector3 s);
 		//
 		void gppoint(float t);
 		void spoint();
@@ -99,7 +103,8 @@ namespace sys
 		void record();
 		void load();
 		void save();
-		void nav_to(const sdk::util::c_vector3& spos, sys::s_path_script& cur_point);
+		bool nav_to(sdk::util::c_vector3 spos, float dst);
+		void set_walk();
 		void work(uint64_t s);
 		bool snear();
 		void reset();

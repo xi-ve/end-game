@@ -29,7 +29,8 @@ namespace sys
 		sdk::util::c_vector3 selected_pos = {}, new_pos = {};
 		//
 		void ptrace();
-		std::vector<sdk::util::c_vector3> gcircle(sdk::util::c_vector3 from, float dst, int deg);
+		std::vector<sdk::util::c_vector3> gcircle(sdk::util::c_vector3 from, float dst, int deg, int rad = 360);
+		std::vector<sdk::util::c_vector3> gcircle_front(sdk::util::c_vector3 from, float dst, int deg, int rad = 5);
 		void work();
 	};
 	extern c_visuals* visuals;

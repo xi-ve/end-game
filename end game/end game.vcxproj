@@ -220,6 +220,7 @@
     <ClCompile Include="sys\protection.cpp" />
     <ClCompile Include="sys\rebuff.cpp" />
     <ClCompile Include="sys\roar_bot.cpp" />
+    <ClCompile Include="sys\scroll_bot.cpp" />
     <ClCompile Include="sys\str_enc.cpp" />
     <ClCompile Include="sys\visual.cpp" />
   </ItemGroup>
@@ -293,6 +294,7 @@
     <ClInclude Include="sys\protection.h" />
     <ClInclude Include="sys\rebuff.h" />
     <ClInclude Include="sys\roar_bot.h" />
+    <ClInclude Include="sys\scroll_bot.h" />
     <ClInclude Include="sys\str_enc.h" />
     <ClInclude Include="sys\visual.h" />
   </ItemGroup>

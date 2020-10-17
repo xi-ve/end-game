@@ -77,6 +77,7 @@
 #include "..\\sys\loot.h"
 #include "..\\sys\protection.h"
 #include "..\\sys\legit_bot.h"
+#include "..\\sys\scroll_bot.h"
 #include "..\\sys\\roar_bot.h"
 #include "..\\sys\visual.h"
 #include "..\\lib\d3d\d3d11.h"

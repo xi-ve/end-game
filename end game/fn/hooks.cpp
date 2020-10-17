@@ -13,7 +13,7 @@ fn::t_focus_validator fn::o_focus_validator;
 bool fn::log_dobuffer = false;
 bool fn::block_test = false;
 //
-sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL;
+sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL; sys::s_cfg_v* ienable = NULL;
 sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL;
 bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
@@ -109,6 +109,11 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 		iloot_enable = sys::config->gvar(str4_25872_loot15->get(), str7_53940_ienable18->get());
 		ikey_ctp = sys::config->gvar(str8_25872_keybinds19->get(), str7_53940_itp_key18->get());
 		ilock_key = sys::config->gvar(str8_25872_keybinds19->get(), str9_53940_ilock_key20->get());
+		auto str10_22761_scroll_bot22 = new sys::s_str_container(std::vector<int>{122, 106, 123, 102, 101, 101, 86, 107, 102, 125}); /*scroll_bot*/
+		auto str7_40216_ienable18 = new sys::s_str_container(std::vector<int>{96, 108, 103, 104, 107, 101, 108}); /*ienable*/
+		ienable = sys::config->gvar(str10_22761_scroll_bot22->get(), str7_40216_ienable18->get());
+		delete str10_22761_scroll_bot22;
+		delete str7_40216_ienable18;
 		delete str4_25872_loot15;
 		delete str7_53940_ienable18;
 		delete str8_25872_keybinds19;
@@ -121,7 +126,12 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
-	if (!can_play) { time_since_player_playable = GetTickCount64(); executing = false; return v; }
+	if (!can_play)
+	{ 
+		time_since_player_playable = GetTickCount64();
+		executing = false;
+		return v; 
+	}
 	sys::lua_q->work(); sys::key_q->work();
 	sdk::player::player_->update_actors(self_actor_proxy);
 	sdk::player::player_->update_inventory(self_actor_proxy);
@@ -130,6 +140,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (iloot_enable->iv) sys::loot->work(self_actor_proxy);
 	sys::roar_bot->work(self_actor_proxy);
 	sys::legit_bot->work(self_actor_proxy);
+	if (ienable->iv) sys::scrollbot->work(self_actor_proxy, GetTickCount64());
 	if (GetAsyncKeyState(ikey_ctp->iv) & 1) sys::cursor_tp->work(self_actor_proxy);
 	if (GetAsyncKeyState(ilock_key->iv) & 1)
 	{
