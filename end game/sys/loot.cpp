@@ -129,17 +129,17 @@ uint64_t sys::c_loot::hnear()
 	for (auto b = 0; b < this->loot_proxys.size(); b++)
 	{
 		auto a = this->loot_proxys[b];
-		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted) || GetTickCount64() > a.regtime + 30000)
 		{  
 			this->loot_proxys.erase(this->loot_proxys.begin() + b);
 			continue;
 		}
-		auto ap = sdk::player::player_->gpos(a);
+		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, sp);
 		if (rd <= l && rd <= 300)
 		{
 			l = rd;
-			rr = a;
+			rr = a.ptr;
 			continue;
 		}
 	}
@@ -190,10 +190,10 @@ bool sys::c_loot::lhas(int s)
 	auto m = sdk::player::player_->gpos(this->self);
 	for (auto a : this->loot_proxys)
 	{
-		auto k = *(int*)(a + core::offsets::actor::actor_proxy_key);
+		auto k = *(int*)(a.ptr + core::offsets::actor::actor_proxy_key);
 		if (k == s)
 		{
-			auto p = sdk::player::player_->gpos(a);
+			auto p = sdk::player::player_->gpos(a.ptr);
 			auto d = sdk::util::math->gdst_3d(m, p);
 			if (d <= 300) return true;
 			else return false;
@@ -277,8 +277,8 @@ void sys::c_loot::work(uint64_t self)
 		{
 			for (auto f = 0; f < sys::loot->loot_proxys.size(); f++)
 			{
-				auto c = sys::loot->loot_proxys[f]; if (!c) continue;
-				auto k = *(int*)(c + core::offsets::actor::actor_proxy_key);
+				auto c = sys::loot->loot_proxys[f]; if (!c.ptr) continue;
+				auto k = *(int*)(c.ptr + core::offsets::actor::actor_proxy_key);
 				if (k == this->act_id_cur) { sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f); break; }
 			}
 		}

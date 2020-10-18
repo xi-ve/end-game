@@ -72,18 +72,18 @@ bool sys::c_roar_bot::has_lootables(sdk::util::c_vector3 spp)
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
 		auto a = sys::loot->loot_proxys[b];
-		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted))
 		{
 			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
 			continue;
 		}
-		auto ap = sdk::player::player_->gpos(a);
+		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, spp);
 		if (rd <= l && rd <= ibot_lootrange->iv)
 		{
 			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
 			l = rd;
-			rr = a;
+			rr = a.ptr;
 			continue;
 		}
 	}
@@ -102,18 +102,18 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
 		auto a = sys::loot->loot_proxys[b];
-		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted) || GetTickCount64() > a.regtime + 30000)
 		{
 			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
 			continue;
 		}
-		auto ap = sdk::player::player_->gpos(a);
+		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, o);
 		if (rd <= l && rd <= ibot_lootrange->iv)
 		{
-			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
+			if (!sdk::player::player_->trace(selfpos, ap, this->self, 80, 34, false).success) continue;
 			l = rd;
-			rr = a;
+			rr = a.ptr;
 			continue;
 		}
 	}

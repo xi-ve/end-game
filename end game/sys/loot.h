@@ -12,6 +12,15 @@ namespace sys
 		int count = 0, id = 0, rarity = 0;
 		std::string name = "";
 	};
+	struct s_actor_data
+	{
+		s_actor_data(uint64_t a, ULONGLONG b)
+		{
+			ptr = a; regtime = b;
+		};
+		uint64_t ptr = 0;
+		ULONGLONG regtime = 0;
+	};
 
 	typedef uint64_t(__fastcall* t_loot_get_base)(int);
 	typedef uint64_t(__fastcall* t_loot_get_rarity)(uint64_t);
@@ -45,7 +54,7 @@ namespace sys
 		int act_id_cur = 0; ULONGLONG pack_time = 0;
 		int loot_count_grey = 0, loot_count_blue = 0, loot_count_green = 0, loot_count_orange = 0, loot_count_yellow = 0;
 		std::unordered_map<int, s_looting_item> looted_items = {}; int last_actor = 0; int last_item = 0;
-		std::vector<uint64_t>       loot_proxys;
+		std::vector<s_actor_data> loot_proxys;
 		void	 mloot();
 		bool	 read_whitelist();
 		bool	 read_blacklist();

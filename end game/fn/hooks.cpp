@@ -206,7 +206,7 @@ uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 		auto self_key = *(int*)(*(uint64_t*)(core::offsets::actor::actor_self) + core::offsets::actor::actor_proxy_key);
 		auto owner = *(int*)(r + core::offsets::actor::actor_loot_owner);
 		if (self_key != owner) return r;
-		sys::loot->loot_proxys.push_back(r);
+		sys::loot->loot_proxys.emplace_back(r, GetTickCount64());
 	}
 	return r;
 }
@@ -217,8 +217,8 @@ bool fn::f_proxy_delete(uint64_t a, int b)
 	{
 		for (auto f = 0; f < sys::loot->loot_proxys.size(); f++)
 		{
-			auto c = sys::loot->loot_proxys[f]; if (!c) continue;
-			auto k = *(int*)(c + core::offsets::actor::actor_proxy_key);
+			auto c = sys::loot->loot_proxys[f]; if (!c.ptr) continue;
+			auto k = *(int*)(c.ptr + core::offsets::actor::actor_proxy_key);
 			if (k == b) sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f);
 		}
 	}

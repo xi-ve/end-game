@@ -45,13 +45,13 @@ void sys::c_visuals::monster_proxy_debug()
 	if (!sdk::util::math->w2s(sdk::player::player_->gpos(this->self), sv)) return;
 	for (auto b : a)
 	{
-		if (b == NULL) continue;
-		if (*(BYTE*)(b + core::offsets::actor::actor_was_looted)) continue;
-		auto bpos = sdk::player::player_->gpos(b);
+		if (b.ptr == NULL) continue;
+		if (*(BYTE*)(b.ptr + core::offsets::actor::actor_was_looted)) continue;
+		auto bpos = sdk::player::player_->gpos(b.ptr);
 		auto v = sdk::util::c_vector3();
 		if (!sdk::util::math->w2s(bpos, v)) continue;
 		sdk::render::render->DrawLine(sv.x, sv.z, v.x, v.z, 0xff00ff0f);
-		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b).c_str());
+		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b.ptr).c_str());
 	}
 }
 void sys::c_visuals::alive_proxy_debug()

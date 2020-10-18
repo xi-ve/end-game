@@ -426,18 +426,18 @@ bool sys::c_legit_bot::has_lootables(sdk::util::c_vector3 spp)
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
 		auto a = sys::loot->loot_proxys[b];
-		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted))
 		{
 			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
 			continue;
 		}
-		auto ap = sdk::player::player_->gpos(a);
+		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, spp);
 		if (rd <= l && rd <= 800)
 		{
 			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
 			l = rd;
-			rr = a;
+			rr = a.ptr;
 			continue;
 		}
 	}
@@ -456,18 +456,18 @@ bool sys::c_legit_bot::loot_near(sdk::util::c_vector3 o)
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
 		auto a = sys::loot->loot_proxys[b];
-		if (*(BYTE*)(a + core::offsets::actor::actor_was_looted))
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted))
 		{
 			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
 			continue;
 		}
-		auto ap = sdk::player::player_->gpos(a);
+		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, o);
 		if (rd <= l && rd <= 800)
 		{
 			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
 			l = rd;
-			rr = a;
+			rr = a.ptr;
 			continue;
 		}
 	}
@@ -547,6 +547,7 @@ void sys::c_legit_bot::rskill()
 		sys::key_q->add(a->input);
 		a->total_uses++;
 
+		this->skill_delay = GetTickCount64() + 1500;
 		return;
 	}
 	if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ VK_LBUTTON }, 100));
@@ -907,7 +908,7 @@ void sys::c_legit_bot::set_walk()
 	auto& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
 	if (!input_adr) return;
 	if (this->walk_node.valid()) *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
-	else *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+	else *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;	
 }
 void sys::c_legit_bot::work(uint64_t s)
 {
@@ -945,7 +946,7 @@ void sys::c_legit_bot::work(uint64_t s)
 	auto cur_point = this->cur_route.front();
 
 	if (cur_point.pos.pause < 1.1f) this->find_node(cur_point.pos, spos, 150);
-	if (GetTickCount64() > sys::key_q->stopped_time) this->set_walk();
+	if (!sys::key_q->thread_working) this->set_walk();
 
 	if (this->p_mode == 0 && cur_point.pos.pause > 1.1f)
 	{
@@ -983,6 +984,7 @@ void sys::c_legit_bot::work(uint64_t s)
 				}
 				else
 				{
+					this->walk_node.clear();
 					this->aim_pos(this->target_actor.pos, spos);
 					this->rskill();
 					return;
@@ -993,7 +995,6 @@ void sys::c_legit_bot::work(uint64_t s)
 				this->scan_nodes.clear();
 				this->walk_node.clear();
 				this->target_actor = {};
-				this->execution = GetTickCount64() + 750;
 				return;
 			}
 		}
