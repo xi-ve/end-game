@@ -14,6 +14,7 @@ namespace core
 			extern uint64_t is_key_pressed;
 			extern uint64_t reset_input_class;
 			extern uint64_t focus_validator;
+			extern uint64_t add_damage;
 		}
 		namespace patch
 		{

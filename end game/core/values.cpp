@@ -16,6 +16,8 @@ uint64_t core::offsets::hk::is_key_pressed = 0x1419386B0;
 uint64_t core::offsets::hk::reset_input_class = 0x141938740;
 //40 53 48 83 EC 20 48 8B C2 48 8B D9 48 85 D2 75 06 
 uint64_t core::offsets::hk::focus_validator = 0x14190C8F0;
+//44 89 4C 24 ? 44 89 44 24 ? 89 54 24 10 48 89 4C 24 ? 55 
+uint64_t core::offsets::hk::add_damage = 0x140B25B00;
 
 
 //C6 83 ? ? ? ? ? 48 85 FF 

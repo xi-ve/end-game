@@ -36,7 +36,7 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
 	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;	
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
-	fn::hook((void*)0x140B25B00, &fn::f_adddamage, (void**)&fn::o_adddamage);
+	if (!fn::hook((void*)core::offsets::hk::add_damage, &fn::f_adddamage, (void**)&fn::o_adddamage)) return false;
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
 	return true;
 	CodeReplaceEnd();

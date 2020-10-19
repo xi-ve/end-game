@@ -982,8 +982,6 @@ bool sdk::menu::c_menu::setup()
 							ImGui::Text(std::string("x:").append(std::to_string(self_pos.x)).c_str());
 							ImGui::Text(std::string("y:").append(std::to_string(self_pos.y)).c_str());
 							ImGui::Text(std::string("z:").append(std::to_string(self_pos.z)).c_str());
-
-							if (ImGui::Button("hk-dmg")) fn::hook((void*)0x140B25B00, &fn::f_adddamage, (void**)&fn::o_adddamage);
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
 					}
