@@ -10,11 +10,12 @@ fn::t_reset_input_class fn::o_reset_input_class;
 fn::t_is_key_pressed fn::o_is_key_ressed;
 fn::t_get_active_window fn::o_get_active_window;
 fn::t_focus_validator fn::o_focus_validator;
+fn::t_adddamage fn::o_adddamage;
 bool fn::log_dobuffer = false;
 bool fn::block_test = false;
 //
 sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL; sys::s_cfg_v* ienable = NULL;
-sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL;
+sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL; sys::s_cfg_v* igather_instant = NULL;
 bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
 ULONGLONG fn::time_since_player_playable = 0;
@@ -33,8 +34,9 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
 	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
-	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;
+	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;	
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
+	fn::hook((void*)0x140B25B00, &fn::f_adddamage, (void**)&fn::o_adddamage);
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
 	return true;
 	CodeReplaceEnd();
@@ -112,6 +114,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 		auto str10_22761_scroll_bot22 = new sys::s_str_container(std::vector<int>{122, 106, 123, 102, 101, 101, 86, 107, 102, 125}); /*scroll_bot*/
 		auto str7_40216_ienable18 = new sys::s_str_container(std::vector<int>{96, 108, 103, 104, 107, 101, 108}); /*ienable*/
 		ienable = sys::config->gvar(str10_22761_scroll_bot22->get(), str7_40216_ienable18->get());
+		igather_instant = sys::config->gvar("packet", "igather_instant");
 		delete str10_22761_scroll_bot22;
 		delete str7_40216_ienable18;
 		delete str4_25872_loot15;
@@ -128,6 +131,8 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play)
 	{ 
+		sys::damage->actors_hp.clear();
+		sys::damage->dmg_events.clear();
 		time_since_player_playable = GetTickCount64();
 		executing = false;
 		return v; 
@@ -151,6 +156,10 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 		auto cur = *(float*)(s + core::offsets::actor::actor_animation_speed);
 		if (cur == 1.f) *(float*)(s + core::offsets::actor::actor_animation_speed) = 8000;
 		else *(float*)(s + core::offsets::actor::actor_animation_speed) = 1.f;
+	}
+	if (igather_instant->iv)
+	{
+		if (strstr(sdk::player::player_->ganim(self_actor_proxy).c_str(), "COLLECT")) sys::lua_q->add("getSelfPlayer():setActionChart('WAIT')");
 	}
 	executing = false;
 	//
@@ -260,4 +269,17 @@ bool __fastcall fn::f_focus_validator(uint64_t a, HWND b)
 	*(HWND*)(a + 0xB50) = lib::d3d11->h;
 	fn::o_focus_validator(a, b);
 	return 1;
+}
+//function DamageOutputFunction_OnDamage(       attakeeKeyRaw, effectNumber, effectType, additionalDamageType, posFloat3, attackerActorKeyRaw, isNotRandom)
+int __fastcall fn::f_adddamage(__int64 crap, __int64 target_ptr, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 attacker_ptr)
+{
+	//sdk::util::log->add(std::string("> ").append(sdk::util::log->as_hex(a1)).append(" > ").append(sdk::util::log->as_hex(a2)).append(" > ").append(sdk::util::log->as_hex(a3)).append(" > ").append(sdk::util::log->as_hex(a4)).append(" > ").append(sdk::util::log->as_hex(a5)).append(" > ").append(sdk::util::log->as_hex(a6)).append(" > ").append(sdk::util::log->as_hex(a7)).append(" > ").append(sdk::util::log->as_hex(a8)), sdk::util::e_info, true);
+	if (sdk::player::player_->alive())
+	{
+		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
+		if (!s) return fn::o_adddamage(crap, target_ptr, a3, a4, a5, a6, a7, attacker_ptr);
+		auto k = *(int*)(s + core::offsets::actor::actor_proxy_key);
+		if (k == attacker_ptr && target_ptr != k) sys::damage->work(target_ptr);		
+	}
+	return fn::o_adddamage(crap, target_ptr, a3, a4, a5, a6, a7, attacker_ptr);
 }

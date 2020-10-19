@@ -27,6 +27,7 @@ static void __stdcall init_thread()
 	sys::protection = new sys::c_protection();
 	sys::legit_bot = new sys::c_legit_bot();
 	sys::scrollbot = new sys::c_scrollbot();
+	sys::damage = new sys::c_damage();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

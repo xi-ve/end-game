@@ -129,7 +129,7 @@ uint64_t sys::c_loot::hnear()
 	for (auto b = 0; b < this->loot_proxys.size(); b++)
 	{
 		auto a = this->loot_proxys[b];
-		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted) || GetTickCount64() > a.regtime + 30000)
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted))
 		{  
 			this->loot_proxys.erase(this->loot_proxys.begin() + b);
 			continue;
@@ -234,7 +234,9 @@ void sys::c_loot::work(uint64_t self)
 		if (ienable_filter->iv) if (!this->pick(ctx)) continue; 					
 		this->f_loot_click_slot(b, ctx.count);
 		did_loot_good_item = true;
-		if (last_actor == actid) continue;		
+		if (last_actor == actid) continue;
+		if (this->looted_log.size() > 100) this->looted_log.erase(this->looted_log.begin(), this->looted_log.begin()+50);
+		this->looted_log.push_back(ctx);
 		switch (ctx.rarity)
 		{
 		case 0:

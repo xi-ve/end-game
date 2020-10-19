@@ -78,6 +78,7 @@ void sys::c_config::vars()
 	this->proc("loot", "ienable", "1");
 	this->proc("packet", "ibypass_trial", "0");
 	this->proc("packet", "iteleport_gen2", "0");
+	this->proc("packet", "igather_instant", "0");
 	this->proc("debug", "ientity_update", "1");
 	this->proc("debug", "ientity_alt", "0");
 	this->proc("debug", "itrace_debug", "0");
@@ -125,5 +126,6 @@ void sys::c_config::vars()
 	this->proc("scroll_bot", "ienable", "0");
 	this->proc("scroll_bot", "ienable_do_all", "1");
 	this->proc("scroll_bot", "ienable_do_num", "0");
+
 }
 sys::c_config* sys::config;

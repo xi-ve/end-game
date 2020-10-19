@@ -279,15 +279,59 @@ bool sdk::menu::c_menu::setup()
 			}
 		},
 		{
-			{"stats"},
+			{"kill-stats"},
 			{
 				{"kill-stats-panel", 5, "", "", false, [this]() 
 					{
-						for (auto a : fn::kill_stats)
+						auto e = sys::damage->killed_mobs; std::reverse(e.begin(), e.end());
+						if (e.size())
 						{
-							if (a.first.empty()) continue;
-							ImGui::Text(std::string(a.first).append(" ").append(std::to_string(a.second)).c_str());
+							ImGui::BeginChild(1, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+							for (auto a : e)
+							{
+								ImGui::Text(std::string(a.name).append(" was killed ").append(std::to_string(a.count)).append("x times").c_str());
+							}
+							ImGui::EndChild();
 						}
+						else ImGui::TextColored(ImColor(255,0,0), "no killed mobs logged");
+					}
+				}
+			}			
+		},
+		{
+			{"damage-stats"},
+			{
+				{"damage-panel", 5, "", "", false, [this]()
+					{
+						if (GetTickCount64() >= sys::damage->timer)
+						{
+							sys::damage->timer = GetTickCount64() + 1000;
+							sys::damage->buffer_dps = sys::damage->total_dps;
+							sys::damage->buffer_hps = sys::damage->total_hps;
+							sys::damage->total_dps = 0;
+							sys::damage->total_hps = 0;
+						}
+						auto e = sys::damage->gevents(); std::reverse(e.begin(), e.end());
+						if (e.size())
+						{
+							ImGui::Text(std::string("total DPS:").append(std::to_string((int)sys::damage->buffer_dps)).c_str());
+							ImGui::Text(std::string("total HPS:").append(std::to_string((int)sys::damage->buffer_hps)).c_str());
+							if (sys::damage->buffer_hps != 0)
+							{
+								auto bcount = sys::pack_tp->packet_copy.buf.size() * sys::damage->buffer_hps;
+								auto string_hps = std::string("");
+								if (bcount > 1000) string_hps = std::string(std::to_string(bcount / 1000)).append(" kB/s");
+								else string_hps = std::string(std::to_string(bcount)).append(" B/s");
+								ImGui::Text(std::string("dmg traffic:").append(string_hps).c_str());
+							}
+							ImGui::BeginChild(2, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+							for (auto a : e)
+							{								
+								ImGui::Text(std::string(std::to_string((int)a.damage)).append(" damage done to ").append(a.name).c_str());
+							}
+							ImGui::EndChild();
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no damage events found");
 					}
 				}
 			}
@@ -556,7 +600,8 @@ bool sdk::menu::c_menu::setup()
 			{
 				{"allow-trial-chars", 0, "packet", "ibypass_trial", true},
 				{"cursor-tp-packet ", 0, "packet", "iteleport_gen2", false},
-				{"test-block", 0, "", "", false, (void*)&fn::block_test}
+				{"instant-gather", 0, "packet", "igather_instant", false}
+				//{"test-block", 0, "", "", false, (void*)&fn::block_test}
 			}
 		},
 		{
@@ -616,16 +661,7 @@ bool sdk::menu::c_menu::setup()
 						ImGui::Text(sdk::menu::m_packet->packet_body);
 						if (ImGui::Button("send"))
 						{
-							auto buf = sdk::menu::m_packet->convert_char_to_buff(sdk::menu::m_packet->packet_body);
-							auto tm = GetTickCount64() - 180000;
-							auto tx = GetTickCount64() + 180000;
-							auto time = 0;
-							for (auto a = 0; a < buf.buf.size(); a++)
-							{
-								auto ul = *(uint64_t*)(&buf.buf + a);
-								if (ul >= tm && ul <= tx) { time = a; break; }
-							}
-							if (time) buf.putLong(GetTickCount64(), time);
+							auto buf = sdk::menu::m_packet->convert_char_to_buff(sdk::menu::m_packet->packet_body);						
 							fn::send_packet(buf, sdk::menu::m_packet->packet_opcode, sdk::menu::m_packet->packet_size);
 						}
 					}
@@ -640,6 +676,7 @@ bool sdk::menu::c_menu::setup()
 						ImGui::Checkbox("packet-log##343", &this->packet_log_enabled);
 						auto a = fn::packet_log; if (a.empty()) { ImGui::TextColored(ImColor(255,0,0), "no packets logged"); return; }
 						std::reverse(a.begin(), a.end());
+						if (ImGui::Button("clear")) fn::packet_log.clear();
 						for (auto o = 0; o < a.size(); o++)
 						{
 							auto b = a[o];
@@ -739,6 +776,60 @@ bool sdk::menu::c_menu::setup()
 						{
 							ImGui::Text(std::string(a.second.name).append(": ").append(std::to_string(a.second.count)).append("x").c_str());
 						}
+					}
+				}
+			}
+		},
+		{
+			{"log"},
+			{
+				{"log-panel-shit", 5, "", "", false, [this]() 
+					{
+						auto v = sys::loot->looted_log; std::reverse(v.begin(), v.end());
+						if (v.size())
+						{
+							ImGui::BeginChild(1, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+							//
+							for (auto a : v)
+							{
+								switch (a.rarity)
+								{
+								case 0:
+								{
+									ImGui::TextColored(ImColor(128, 128, 128), std::string(a.name).append(" x").append(std::to_string(a.count)).c_str());
+									//this->loot_count_grey += ctx.count;
+									break;
+								}
+								case 1:
+								{
+									ImGui::TextColored(ImColor(50, 205, 50), std::string(a.name).append(" x").append(std::to_string(a.count)).c_str());
+									//this->loot_count_green += ctx.count;
+									break;
+								}
+								case 2:
+								{
+									ImGui::TextColored(ImColor(100, 149, 237), std::string(a.name).append(" x").append(std::to_string(a.count)).c_str());
+									//this->loot_count_blue += ctx.count;
+									break;
+								}
+								case 3:
+								{
+									ImGui::TextColored(ImColor(255, 255, 0), std::string(a.name).append(" x").append(std::to_string(a.count)).c_str());
+									//this->loot_count_yellow += ctx.count;
+									break;
+								}
+								case 4:
+								{
+									ImGui::TextColored(ImColor(255, 69, 0), std::string(a.name).append(" x").append(std::to_string(a.count)).c_str());
+									//this->loot_count_orange += ctx.count;
+									break;
+								}
+								}
+							}
+							//
+							ImGui::EndChild();
+						}
+						else ImGui::TextColored(ImColor(255,0,0), "no items looted by bot");
 					}
 				}
 			}
@@ -891,6 +982,8 @@ bool sdk::menu::c_menu::setup()
 							ImGui::Text(std::string("x:").append(std::to_string(self_pos.x)).c_str());
 							ImGui::Text(std::string("y:").append(std::to_string(self_pos.y)).c_str());
 							ImGui::Text(std::string("z:").append(std::to_string(self_pos.z)).c_str());
+
+							if (ImGui::Button("hk-dmg")) fn::hook((void*)0x140B25B00, &fn::f_adddamage, (void**)&fn::o_adddamage);
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
 					}

@@ -1,13 +1,25 @@
 #include <inc.h>
 bool sys::c_roar_bot::ssp(s_path_script s)
 {
-	if (this->force_store) return true;
+	if (this->force_store) 
+	{ 
+		sdk::util::log->add("going storage reason: force_store", sdk::util::e_critical, true);
+		return true; 
+	}
 	auto in_m = *(int*)(this->self + core::offsets::actor::actor_inv_max_weight) / 10000;
 	auto in_w = (*(int*)(this->self + core::offsets::actor::actor_inv_raw_weight) + *(int*)(this->self + core::offsets::actor::actor_inv_gear_weight)) / 10000;
-	if (in_w >= in_m) return true;
+	if (in_w >= in_m) 
+	{
+		sdk::util::log->add(std::string("going storage reason: in_w >= in_m > in_w:").append(std::to_string(in_w)).append(" in_m:").append(std::to_string(in_m)), sdk::util::e_critical, true);
+		return true;
+	}
 	//
 	auto in_l = *(int*)(this->self + core::offsets::actor::actor_inv_left);
-	if (in_l <= 2) return true;
+	if (in_l <= 2) 
+	{
+		sdk::util::log->add(std::string("going storage reason: in_l <= 2 > in_l:").append(std::to_string(in_l)), sdk::util::e_critical, true);
+		return true;
+	}
 	//
 	return false;
 }
@@ -102,7 +114,7 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 	for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 	{
 		auto a = sys::loot->loot_proxys[b];
-		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted) || GetTickCount64() > a.regtime + 30000)
+		if (*(BYTE*)(a.ptr + core::offsets::actor::actor_was_looted))
 		{
 			sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
 			continue;
@@ -111,7 +123,7 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 		auto rd = sdk::util::math->gdst_3d(ap, o);
 		if (rd <= l && rd <= ibot_lootrange->iv)
 		{
-			if (!sdk::player::player_->trace(selfpos, ap, this->self, 80, 34, false).success) continue;
+			if (!sdk::player::player_->trace(selfpos, ap, this->self, 200, 34, false).success) continue;
 			l = rd;
 			rr = a.ptr;
 			continue;

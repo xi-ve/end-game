@@ -40,6 +40,10 @@ namespace fn
 	typedef bool(__fastcall* t_focus_validator)(uint64_t, HWND);
 	extern t_focus_validator o_focus_validator;
 	extern bool __fastcall f_focus_validator(uint64_t a, HWND b);
+	//int __fastcall sub_140B25B00(__int64 a1, __int64 a2, __int64 a3, __int64 a4, int a5, __int64 a6, unsigned __int8 a7)
+	typedef int(__fastcall* t_adddamage)(__int64 a1, __int64 a2, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 a8);
+	extern t_adddamage o_adddamage;
+	extern int __fastcall f_adddamage(__int64 a1, __int64 a2, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 a8);
 	//
 	extern bool log_dobuffer;
 	extern bool block_test;

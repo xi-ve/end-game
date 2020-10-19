@@ -211,6 +211,7 @@
     <ClCompile Include="sys\backend.cpp" />
     <ClCompile Include="sys\cfg.cpp" />
     <ClCompile Include="sys\cursor_tp.cpp" />
+    <ClCompile Include="sys\damage.cpp" />
     <ClCompile Include="sys\key_q.cpp" />
     <ClCompile Include="sys\legit_bot.cpp" />
     <ClCompile Include="sys\loot.cpp" />
@@ -285,6 +286,7 @@
     <ClInclude Include="sys\backend.h" />
     <ClInclude Include="sys\cfg.h" />
     <ClInclude Include="sys\cursor_tp.h" />
+    <ClInclude Include="sys\damage.h" />
     <ClInclude Include="sys\key_q.h" />
     <ClInclude Include="sys\legit_bot.h" />
     <ClInclude Include="sys\loot.h" />
