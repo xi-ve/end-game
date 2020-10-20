@@ -366,6 +366,34 @@ void sys::c_visuals::player_esp()
 		sdk::render::render->RenderText(t.x, t.z + 40, 0xff00ff00, (char*)std::string("hp :").append(std::to_string((int)a.hp)).append("/").append(std::to_string((int)mhp)).c_str());
 	}
 }
+void sys::c_visuals::hit_popups()
+{
+
+	for (auto a : sys::damage->actors_last_dmg)
+	{
+		if (!a.second) continue;
+		auto exist = false; sdk::util::c_vector3 p;
+		for (auto b : sdk::player::player_->actors) if (b.key == a.first && b.rlt_dst <= 2000 && b.state == 0 && b.type == 1) { exist = true; p = b.pos; break; }
+		if (!p.valid()) continue;
+		sdk::util::c_vector3 s;
+		if (!sdk::util::math->w2s(p, s)) continue;
+		sdk::render::render->RenderText(s.x, s.z, D3DCOLOR_ARGB(255, 255, 0, 0), (char*)std::string(std::to_string(a.second)).c_str());
+	}
+
+	/*if (sys::damage->dmg_events.size())
+	{
+		auto b = sys::damage->dmg_events.back();
+		auto exist = false;
+		for (auto a : sdk::player::player_->actors) if (a.ptr == b.ptr && a.state == 0) { exist = true; break; }
+		if (!exist) return;
+		auto pos = sdk::player::player_->gpos(b.ptr);
+		pos.z += 150;
+		sdk::util::c_vector3 p;
+		if (!sdk::util::math->w2s(pos,p)) return;
+		if (b.efftype == 1) sdk::render::render->RenderText(p.x, p.z, 0xff00ffd0, (char*)std::string(std::to_string((int)b.damage)).append(" - CRIT").c_str());
+		else sdk::render::render->RenderText(p.x,p.z, 0xff00ffd0, (char*)std::string(std::to_string((int)b.damage)).c_str());
+	}*/
+}
 void sys::c_visuals::work()
 {
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
@@ -393,6 +421,7 @@ void sys::c_visuals::work()
 	if (ienable_player->iv) this->player_esp();
 	if (itrace_debug->iv) this->trace_debug();
 	if (this->debug_editor) this->editor_debug();
+	this->hit_popups();
 	//this->debug_mobs();
 	//this->trace_debug();
 }

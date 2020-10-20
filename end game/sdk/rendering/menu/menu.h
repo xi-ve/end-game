@@ -99,6 +99,16 @@ namespace sdk
 			bool toggle = false;
 			std::vector<s_imgui_treenode> tree = {};
 		};
+		struct s_notification
+		{
+			s_notification(std::string i)
+			{
+				str = i;
+				time_added = GetTickCount64();
+			}
+			ULONGLONG time_added = 0;
+			std::string str = "";
+		};
 		extern void test_func();
 		class c_menu
 		{
@@ -133,6 +143,8 @@ namespace sdk
 			//
 			void work_tabs();
 		public:
+			std::deque<s_notification> notifications = {};
+			void notify(const char* fmt, ...);
 			bool packet_log_enabled = false;
 			char mob_target[128] = "Raccoon"; char test_input_ptr[2048] = "Test"; bool using_test_menu = false;
 			void work();

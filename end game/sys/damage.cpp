@@ -1,5 +1,5 @@
 #include <inc.h>
-void sys::c_damage::work(int target)
+void sys::c_damage::work(int target, int add_dmg_type, int eff_type)
 {
 	uint64_t t = 0;
 	for (auto a : sdk::player::player_->actors)
@@ -9,13 +9,18 @@ void sys::c_damage::work(int target)
 	if (!t) return;/*lel?*/
 	if (GetTickCount64() >= this->timer)
 	{
+		if (this->actors_last_dmg.size() >= 54) this->actors_last_dmg.clear();
+		if (this->actors_hp.size() >= 54) this->actors_hp.clear();
 		this->timer = GetTickCount64() + 1000;
 		this->buffer_dps = this->total_dps;
 		this->buffer_hps = this->total_hps;
+		this->buffer_cps = this->total_cps;
 		this->total_dps = 0;
 		this->total_hps = 0;
+		this->total_cps = 0;
 	}
 	this->total_hps++;
+	if (eff_type == 1) this->total_cps++;
 	auto cur_hp = sdk::player::player_->ghp(t);
 	auto max_hp = sdk::player::player_->gmhp(t);
 	auto n = *(sdk::player::c_proxy_name*)(t);
@@ -35,18 +40,21 @@ void sys::c_damage::work(int target)
 			return;
 		}
 		this->actors_hp[target] = cur_hp;
+		this->actors_last_dmg[target] = dmg;
 		if (this->dmg_events.size() > 256) this->dmg_events.erase(this->dmg_events.begin(), this->dmg_events.begin() + 124);
-		this->dmg_events.emplace_back(t, dmg, a_str); 
+		this->dmg_events.emplace_back(t, dmg, a_str, add_dmg_type, eff_type); 
 		this->total_dps += dmg;
 		return;
 	}
 	auto dmg = this->actors_hp[target] - cur_hp;
+	this->actors_last_dmg[target] = dmg;
 	this->actors_hp[target] = cur_hp;
 	if (this->dmg_events.size() > 256) this->dmg_events.erase(this->dmg_events.begin(), this->dmg_events.begin() + 124);
 	if (dmg > 0)
 	{
 		this->total_dps += dmg;
-		this->dmg_events.emplace_back(t, dmg, a_str);
+		this->actors_last_dmg[target] = dmg;
+		this->dmg_events.emplace_back(t, dmg, a_str, add_dmg_type, eff_type);
 	}
 }
 std::vector<sys::s_damage_event> sys::c_damage::gevents()

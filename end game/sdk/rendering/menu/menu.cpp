@@ -32,11 +32,53 @@ void sdk::menu::c_menu::overlay(bool* acti)
 		window_flags |= ImGuiWindowFlags_NoMove;
 	}
 	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-	if (ImGui::Begin("info-overlay", acti, window_flags))
+	if (ImGui::Begin("notifications", acti, window_flags))
 	{
-		char buf[128];
-		sprintf(buf, "info-panel %c", "|/-\\"[(int)(ImGui::GetTime() / 0.25f) & 3]);
-		ImGui::Text(buf);
+
+		if (this->notifications.empty())
+		{
+			if (sys::damage->buffer_hps != 0)
+			{
+				if (GetTickCount64() >= sys::damage->timer && !this->menu_active)
+				{
+					sys::damage->timer = GetTickCount64() + 1000;
+					sys::damage->buffer_dps = sys::damage->total_dps;
+					sys::damage->buffer_hps = sys::damage->total_hps;
+					sys::damage->buffer_cps = sys::damage->total_cps;
+					sys::damage->total_dps = 0;
+					sys::damage->total_hps = 0;
+					sys::damage->total_cps = 0;
+				}
+				auto bcount = sys::pack_tp->packet_copy.buf.size() * sys::damage->buffer_hps;
+				auto string_hps = std::string("");
+				if (bcount > 1000) string_hps = std::string(std::to_string(bcount / 1000)).append(" kB/s");
+				else string_hps = std::string(std::to_string(bcount)).append(" B/s");
+				ImGui::Text(std::string("dmg net:").append(string_hps).c_str());
+			}
+			else ImGui::Text(std::string("dmg net: 0 kB/s").c_str());
+			if (fn::buffer_traffic_bytes != 0)
+			{
+				if (GetTickCount64() >= fn::traffic_timer)
+				{
+					fn::traffic_timer = GetTickCount64() + 1000;
+					fn::buffer_traffic_bytes = fn::traffic_bytes;
+					fn::traffic_bytes = 0;
+				}
+				auto string_hps = std::string("");
+				if (fn::buffer_traffic_bytes > 1000) string_hps = std::string(std::to_string(fn::buffer_traffic_bytes / 1000)).append(" kB/s");
+				else string_hps = std::string(std::to_string(fn::buffer_traffic_bytes)).append(" B/s");
+				ImGui::Text(std::string("all net:").append(string_hps).c_str());
+			}
+			else ImGui::Text(std::string("all net: 0 kB/s").c_str());
+		}
+		else
+		{
+			if (GetTickCount64() > this->notifications.front().time_added + 3500) this->notifications.pop_front();
+			if (this->notifications.size())
+			{
+				ImGui::Text(this->notifications.front().str.c_str());
+			}
+		}
 		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::MenuItem("move-overlay", NULL, corner == 1)) corner = !corner;			
@@ -308,14 +350,22 @@ bool sdk::menu::c_menu::setup()
 							sys::damage->timer = GetTickCount64() + 1000;
 							sys::damage->buffer_dps = sys::damage->total_dps;
 							sys::damage->buffer_hps = sys::damage->total_hps;
+							sys::damage->buffer_cps = sys::damage->total_cps;
 							sys::damage->total_dps = 0;
 							sys::damage->total_hps = 0;
+							sys::damage->total_cps = 0;
 						}
 						auto e = sys::damage->gevents(); std::reverse(e.begin(), e.end());
 						if (e.size())
 						{
 							ImGui::Text(std::string("total DPS:").append(std::to_string((int)sys::damage->buffer_dps)).c_str());
 							ImGui::Text(std::string("total HPS:").append(std::to_string((int)sys::damage->buffer_hps)).c_str());
+							ImGui::Text(std::string("total CPS:").append(std::to_string((int)sys::damage->buffer_cps)).c_str());
+							if (sys::damage->buffer_cps && sys::damage->buffer_hps)
+							{
+								float pct_crit = (float)((float)sys::damage->buffer_cps / (float)sys::damage->buffer_hps) * 100.f;
+								ImGui::Text(std::string("total CR%%:").append(std::to_string((int)pct_crit)).c_str());
+							}
 							if (sys::damage->buffer_hps != 0)
 							{
 								auto bcount = sys::pack_tp->packet_copy.buf.size() * sys::damage->buffer_hps;
@@ -324,9 +374,10 @@ bool sdk::menu::c_menu::setup()
 								else string_hps = std::string(std::to_string(bcount)).append(" B/s");
 								ImGui::Text(std::string("dmg traffic:").append(string_hps).c_str());
 							}
+							ImGui::Separator();
 							ImGui::BeginChild(2, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
 							for (auto a : e)
-							{								
+							{			
 								ImGui::Text(std::string(std::to_string((int)a.damage)).append(" damage done to ").append(a.name).c_str());
 							}
 							ImGui::EndChild();
@@ -987,7 +1038,27 @@ bool sdk::menu::c_menu::setup()
 					}
 				}
 			}
-		}		
+		},
+		{
+			{"spooky-scary-tests"},
+			{
+				{"test_panel_db", 5, "", "", false, []() 
+					{
+						if (ImGui::Button("test-popup"))
+						{
+							ImGui::SetNextWindowBgAlpha(0.f);
+							ImGui::OpenPopup("test_modal");
+						}
+						if (ImGui::BeginPopupModal("test_modal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+						{
+							ImGui::Text("test-popup");
+							if (ImGui::Button("exit")) ImGui::CloseCurrentPopup();
+							ImGui::EndPopup();
+						}
+					}
+				}
+			}
+		}
 		}
 	)) return false;
 	return true;
@@ -1097,6 +1168,16 @@ void sdk::menu::c_menu::work_tabs()
 			}
 		}
 	}
+}
+void sdk::menu::c_menu::notify(const char* fmt, ...)
+{
+	char buffer[4096];
+	va_list args;
+	va_start(args, fmt);
+	int rc = vsnprintf(buffer, sizeof(buffer), fmt, args);
+	va_end(args);
+	//
+	this->notifications.emplace_front(buffer);
 }
 void sdk::menu::c_menu::work()
 {

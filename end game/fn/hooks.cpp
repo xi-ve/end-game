@@ -11,6 +11,8 @@ fn::t_is_key_pressed fn::o_is_key_ressed;
 fn::t_get_active_window fn::o_get_active_window;
 fn::t_focus_validator fn::o_focus_validator;
 fn::t_adddamage fn::o_adddamage;
+int  fn::traffic_bytes = 0;
+int  fn::buffer_traffic_bytes = 0;
 bool fn::log_dobuffer = false;
 bool fn::block_test = false;
 //
@@ -19,6 +21,7 @@ sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL; sys::s_cf
 bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
 ULONGLONG fn::time_since_player_playable = 0;
+ULONGLONG fn::traffic_timer = 0;
 std::unordered_map<std::string, int> fn::kill_stats;
 std::vector<std::string> fn::lua_log;
 std::vector<s_packet_log> fn::packet_log;
@@ -69,6 +72,15 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 		delete str6_29647_packet17;
 		delete str13_46665_ibypass_trial25;
 		delete str14_46665_iteleport_gen226;
+	}
+
+	fn::traffic_bytes += size;
+
+	if (GetTickCount64() >= fn::traffic_timer)
+	{
+		fn::traffic_timer = GetTickCount64() + 1000;
+		fn::buffer_traffic_bytes = fn::traffic_bytes;
+		fn::traffic_bytes = 0;
 	}
 
 	if (ibypass_trial->iv)				if (b == 5642) return 0;
@@ -133,6 +145,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	{ 
 		sys::damage->actors_hp.clear();
 		sys::damage->dmg_events.clear();
+		sys::damage->actors_last_dmg.clear();
 		time_since_player_playable = GetTickCount64();
 		executing = false;
 		return v; 
@@ -279,7 +292,7 @@ int __fastcall fn::f_adddamage(__int64 crap, __int64 target_ptr, __int64 a3, __i
 		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
 		if (!s) return fn::o_adddamage(crap, target_ptr, a3, a4, a5, a6, a7, attacker_ptr);
 		auto k = *(int*)(s + core::offsets::actor::actor_proxy_key);
-		if (k == attacker_ptr && target_ptr != k) sys::damage->work(target_ptr);		
+		if (k == attacker_ptr && target_ptr != k) sys::damage->work(target_ptr, a5, a4);		
 	}
 	return fn::o_adddamage(crap, target_ptr, a3, a4, a5, a6, a7, attacker_ptr);
 }

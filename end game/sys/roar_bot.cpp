@@ -15,6 +15,7 @@ bool sys::c_roar_bot::ssp(s_path_script s)
 	}
 	//
 	auto in_l = *(int*)(this->self + core::offsets::actor::actor_inv_left);
+	if (in_l < 0) return false;
 	if (in_l <= 2) 
 	{
 		sdk::util::log->add(std::string("going storage reason: in_l <= 2 > in_l:").append(std::to_string(in_l)), sdk::util::e_critical, true);

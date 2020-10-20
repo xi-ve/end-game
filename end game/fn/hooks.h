@@ -45,6 +45,8 @@ namespace fn
 	extern t_adddamage o_adddamage;
 	extern int __fastcall f_adddamage(__int64 a1, __int64 a2, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 a8);
 	//
+	extern int  traffic_bytes;
+	extern int  buffer_traffic_bytes;
 	extern bool log_dobuffer;
 	extern bool block_test;
 	extern sys::s_cfg_v* ibypass_trial;
@@ -55,6 +57,7 @@ namespace fn
 	//
 	extern ULONGLONG execution_time;
 	extern ULONGLONG time_since_player_playable;
+	extern ULONGLONG traffic_timer;
 	//
 	extern std::unordered_map<std::string, int> kill_stats;
 	extern std::vector<std::string> lua_log;

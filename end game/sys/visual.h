@@ -23,6 +23,7 @@ namespace sys
 		void editor_debug();
 		void legit_path();
 		void player_esp();
+		void hit_popups();
 		int filter = 34;
 	public:
 		bool debug_editor = false, first_click = false, shown_modal = false, changed_pos = false;
