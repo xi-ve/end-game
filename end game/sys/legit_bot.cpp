@@ -335,7 +335,7 @@ void sys::c_legit_bot::syaw(float f)
 	if (!camera_base) return;
 	*(float*)(camera_base + 0x68) = f;
 }
-bool sys::c_legit_bot::ssp(s_path_script s)
+bool sys::c_legit_bot::ssp()
 {
 	if (this->force_store) return true;
 	auto in_m = *(int*)(this->self + core::offsets::actor::actor_inv_max_weight) / 10000;
@@ -919,7 +919,7 @@ void sys::c_legit_bot::work(uint64_t s)
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + 55;
 	else return;
 	if (!sdk::player::player_->ghp(s)) return;
-	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
+	if (this->gssize() && this->cur_route.empty() && this->ssp() && this->p_mode == 0)
 	{
 		this->repath(1, 1);
 		this->p_mode = 1;

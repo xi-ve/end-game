@@ -68,9 +68,6 @@ namespace sys
 	public:
 		int			max_range_from_mob = 800;
 		std::string get_main_boss();
-		bool combine_all_ancient_scrolls();
-		bool combine_all_forbidden_scrolls();
-		bool combine_all_ancient_scroll_scrolls();
 		bool set_scroll_type();
 		void set_scroll_type_by_pos(uint64_t self);
 		void work(uint64_t self, ULONGLONG tick);

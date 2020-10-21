@@ -51,7 +51,7 @@ namespace sys
 		int reversed = 0;
 		bool skill_locked = 0; bool npc_interacted = false;
 		//
-		bool ssp(s_path_script s);
+		bool ssp();
 		void repath(int a, int b);
 		bool pause(uint64_t s, float p);
 		bool find_node(sdk::util::c_vector3 t, sdk::util::c_vector3 f, float md);

@@ -38,8 +38,8 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
 	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;	
-	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	if (!fn::hook((void*)core::offsets::hk::add_damage, &fn::f_adddamage, (void**)&fn::o_adddamage)) return false;
+	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
 	return true;
 	CodeReplaceEnd();
@@ -83,25 +83,11 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 		fn::traffic_bytes = 0;
 	}
 
-	if (ibypass_trial->iv)				if (b == 5642) return 0;
+	if (ibypass_trial->iv)				if (b == 4956) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
 
-	/*if (b == 4995)
-	{
-		fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
-		auto br = sys::pet_boost->work((uint64_t)pack);
-		fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
-		return 0;
-	}*/
-
-	//sdk::util::log->add(std::string(__FUNCTION__) \
-	//	.append(" opcode: ").append(std::to_string(b)) \
-	//	.append(" size  : ").append(std::to_string(size)) \
-	//	//.append(" packet: ").append(buf.printHex()),
-	//	,sdk::util::e_info, true);
-	
 	return fn::o_packet_outbound(pack, size, enc, unk, unk2, xkey);
 }
 
@@ -126,7 +112,11 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 		auto str10_22761_scroll_bot22 = new sys::s_str_container(std::vector<int>{122, 106, 123, 102, 101, 101, 86, 107, 102, 125}); /*scroll_bot*/
 		auto str7_40216_ienable18 = new sys::s_str_container(std::vector<int>{96, 108, 103, 104, 107, 101, 108}); /*ienable*/
 		ienable = sys::config->gvar(str10_22761_scroll_bot22->get(), str7_40216_ienable18->get());
-		igather_instant = sys::config->gvar("packet", "igather_instant");
+		auto str6_10948_packet17 = new sys::s_str_container(std::vector<int>{121, 104, 106, 98, 108, 125}); /*packet*/
+		auto str15_23068_igather_instant27 = new sys::s_str_container(std::vector<int>{96, 110, 104, 125, 97, 108, 123, 86, 96, 103, 122, 125, 104, 103, 125}); /*igather_instant*/
+		igather_instant = sys::config->gvar(str6_10948_packet17->get(), str15_23068_igather_instant27->get());
+		delete str6_10948_packet17;
+		delete str15_23068_igather_instant27;
 		delete str10_22761_scroll_bot22;
 		delete str7_40216_ienable18;
 		delete str4_25872_loot15;
@@ -283,10 +273,8 @@ bool __fastcall fn::f_focus_validator(uint64_t a, HWND b)
 	fn::o_focus_validator(a, b);
 	return 1;
 }
-//function DamageOutputFunction_OnDamage(       attakeeKeyRaw, effectNumber, effectType, additionalDamageType, posFloat3, attackerActorKeyRaw, isNotRandom)
 int __fastcall fn::f_adddamage(__int64 crap, __int64 target_ptr, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 attacker_ptr)
 {
-	//sdk::util::log->add(std::string("> ").append(sdk::util::log->as_hex(a1)).append(" > ").append(sdk::util::log->as_hex(a2)).append(" > ").append(sdk::util::log->as_hex(a3)).append(" > ").append(sdk::util::log->as_hex(a4)).append(" > ").append(sdk::util::log->as_hex(a5)).append(" > ").append(sdk::util::log->as_hex(a6)).append(" > ").append(sdk::util::log->as_hex(a7)).append(" > ").append(sdk::util::log->as_hex(a8)), sdk::util::e_info, true);
 	if (sdk::player::player_->alive())
 	{
 		auto s = *(uint64_t*)(core::offsets::actor::actor_self);

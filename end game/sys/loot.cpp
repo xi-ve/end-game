@@ -98,11 +98,9 @@ void sys::c_loot::starget(int k)
 void sys::c_loot::spack(int k)
 {
 	ByteBuffer a;
-	a.putShort(5834);
+	a.putShort(3004);
 	a.putInt(k);
-	a.putEmptyBytes(4);
-	a.put(0xc8);
-	fn::send_packet(a, 5834, 11);
+	fn::send_packet(a, 3004, 6);
 }
 uint64_t sys::c_loot::gitem(int s)
 {

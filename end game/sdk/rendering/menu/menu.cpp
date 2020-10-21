@@ -405,7 +405,6 @@ bool sdk::menu::c_menu::setup()
 						{
 							if (ImGui::Button("disable-bot##lb")) { sys::legit_bot->dwork = false; sys::legit_bot->reset(); sys::legit_bot->load(); }
 						}
-						ImGui::Text(std::string("target:").append(sdk::util::log->as_hex(sys::legit_bot->target_actor.ptr)).c_str());
 						ImGui::SameLine();
 					}
 				},
