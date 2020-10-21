@@ -210,14 +210,29 @@ void sys::c_visuals::lineto_roar()
 }
 void sys::c_visuals::debug_mobs()
 {
-	auto sk = *(int*)(this->self + core::offsets::actor::actor_proxy_key); auto sv = sdk::util::c_vector3();
-	for (auto a : sdk::player::player_->actors)
+#define M_PI		3.14159265358979323846
+	auto from = sdk::player::player_->gpos(this->self);
+	auto r = std::vector<sdk::util::c_vector3>();
+	auto controller = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+	if (!controller) return;
+	auto c_base = *(uint64_t*)(controller + 0x10);
+	if (!c_base) return;
+	auto rot = *(float*)(c_base + 0x43C);
+	if (!rot) return;
+	auto xr = (std::sin(rot) * -1);
+	auto zr = (std::cos(rot) * -1);
+	auto start_x = from.x;
+	auto start_z = from.z;
+	auto radius = 200;
+	for (auto c = 0; c < 360; c += 1)
 	{
-		if (a.type != 1 || a.rlt_dst >= 2000) continue;
-		auto et = *(int*)(a.ptr + core::offsets::actor::actor_attack_target);
-		if (et != sk) continue;
-		if (!sdk::util::math->w2s(a.pos, sv)) continue;
-		sdk::render::render->RenderText(sv.x, sv.z, 0xff00ff00, (char*)std::string("aggro:").append(sdk::util::log->as_hex(a.ptr)).c_str());
+		auto angle = 11 - (c)*M_PI / 180;
+		auto x = start_x + radius * std::sin((rot)+angle);
+		auto z = start_z + radius * std::cos((rot)+angle);
+		auto v = sdk::util::c_vector3(x, from.y, z);
+		sdk::util::c_vector3 ff;
+		if (!sdk::util::math->w2s(v,ff)) continue;
+		sdk::render::render->RenderText(ff.x, ff.z, D3DCOLOR_ARGB(255, 0, 255, 0), (char*)std::string(std::to_string(c)).c_str());
 	}
 }
 void sys::c_visuals::editor_debug()

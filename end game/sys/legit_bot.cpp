@@ -335,6 +335,57 @@ void sys::c_legit_bot::syaw(float f)
 	if (!camera_base) return;
 	*(float*)(camera_base + 0x68) = f;
 }
+bool sys::c_legit_bot::stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
+{
+	if (!this->pos_saved.valid()) { this->pos_saved = s; this->timer_save = GetTickCount64(); }
+	else
+	{
+		auto dts = sdk::util::math->gdst_2d(this->pos_saved, s);
+		if (dts <= 140)
+		{
+			if (GetTickCount64() > this->timer_save + 3500 && !sys::key_q->thread_working)
+			{
+				sdk::util::log->a("looking for stuck directions");
+				auto circle = sys::visuals->gcircle_front(s, 200, 360, 1);
+				auto left = circle.at(180);
+				auto right = circle.at(0);
+				auto front = circle.at(80);
+				auto tr = sdk::player::player_->trace(s, left, this->self, 80);
+				if (!tr.success)
+				{
+					sdk::util::log->a("left side blocked!");
+					sys::key_q->add(new sys::s_key_input({ 0x44 }, 500));
+					this->pos_saved.clear(); this->timer_save = 0;
+					return true;
+				}
+				sdk::util::log->a("left free!");
+				tr = sdk::player::player_->trace(s, right, this->self, 80);
+				if (!tr.success)
+				{
+					sdk::util::log->a("right side blocked!");
+					sys::key_q->add(new sys::s_key_input({ 0x41 }, 500));
+					this->pos_saved.clear(); this->timer_save = 0;
+					return true;
+				}
+				sdk::util::log->a("right free!");
+				tr = sdk::player::player_->trace(s, front, this->self, 80);
+				if (!tr.success)
+				{
+					sdk::util::log->a("front side blocked!");
+					sys::key_q->add(new sys::s_key_input({ 0x53 }, 500));
+					this->pos_saved.clear(); this->timer_save = 0;
+					return true;
+				}
+			}
+		}
+		else
+		{
+			this->pos_saved.clear(); this->timer_save = 0;
+			this->pos_saved.clear();
+		}
+	}
+	return false;
+}
 bool sys::c_legit_bot::ssp()
 {
 	if (this->force_store) return true;
@@ -1000,6 +1051,9 @@ void sys::c_legit_bot::work(uint64_t s)
 		}
 	}
 
+	this->aim_pos(this->walk_node, spos);
+	if (this->stuck(this->walk_node, spos)) return;
+
 	if (this->blockage(spos)) return;
 	
 	auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
@@ -1008,7 +1062,6 @@ void sys::c_legit_bot::work(uint64_t s)
 		this->cur_route.pop_front();
 		this->walk_node.clear();
 		return;
-	}
-	this->aim_pos(this->walk_node, spos);
+	}	
 }
 sys::c_legit_bot* sys::legit_bot;
