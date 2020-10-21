@@ -58,6 +58,7 @@ void sys::c_loot::add_whitelist(int idx)
 	if (!whitelistv) whitelistv = sys::config->gvar("auto_loot", "string_whitelist_config");
 	for (auto obj : this->whitelist) if (obj == idx) { return; }
 	whitelistv->rval.append(std::string(std::to_string(idx).append(";")));
+	sdk::util::log->a("added item wiith id %i to whitelist", idx);
 	this->whitelist.push_back(idx);
 }
 void sys::c_loot::add_blacklist(int idx)
@@ -65,6 +66,7 @@ void sys::c_loot::add_blacklist(int idx)
 	if (!blacklistv) blacklistv = sys::config->gvar("auto_loot", "string_blacklist_config");
 	for (auto obj : this->blacklist) if (obj == idx) { return; }
 	blacklistv->rval.append(std::string(std::to_string(idx).append(";")));
+	sdk::util::log->a("added item wiith id %i to blacklist", idx);
 	this->blacklist.push_back(idx);
 }
 void sys::c_loot::reset_whitelist()
@@ -150,8 +152,16 @@ bool sys::c_loot::pick(s_looting_item ctx)
 	if (!blue) blue = sys::config->gvar("auto_loot", "ipick_blue");
 	if (!orange) orange = sys::config->gvar("auto_loot", "ipick_orange");
 	if (!yellow) yellow = sys::config->gvar("auto_loot", "ipick_yellow");
-	for (auto a : this->blacklist) if (a == ctx.id) return false;
-	for (auto a : this->whitelist) if (a == ctx.id) return true;
+	if (ienable_filter->iv == 0) return true;
+	for (auto a : this->blacklist) 
+	{
+		if (a == ctx.id)
+		{
+			//sdk::util::log->a("should not take %s -> %i", ctx.name.c_str(), ctx.id);
+			return false;
+		}
+	}
+	for (auto b : this->whitelist) if (b == ctx.id) return true;
 	switch (ctx.rarity)
 	{
 	case 0:
@@ -171,6 +181,7 @@ bool sys::c_loot::pick(s_looting_item ctx)
 	}
 	case 3:
 	{
+		//sdk::util::log->a("orange item -> %s -> %i", ctx.name.c_str(), ctx.id);
 		if (yellow->iv) return true;
 		break;
 	}
@@ -229,7 +240,7 @@ void sys::c_loot::work(uint64_t self)
 		auto o = this->gitem(b);
 		if (!o) continue;
 		auto ctx = this->gctx(o);
-		if (ienable_filter->iv) if (!this->pick(ctx)) continue; 					
+		if (!this->pick(ctx)) continue; 					
 		this->f_loot_click_slot(b, ctx.count);
 		did_loot_good_item = true;
 		if (last_actor == actid) continue;
@@ -239,6 +250,7 @@ void sys::c_loot::work(uint64_t self)
 		{
 		case 0:
 		{
+			if (strstr(ctx.name.c_str(), "Silver")) break;
 			this->loot_count_grey += ctx.count;
 			break;
 		}

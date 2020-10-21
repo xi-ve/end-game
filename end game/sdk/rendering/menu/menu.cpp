@@ -986,6 +986,7 @@ bool sdk::menu::c_menu::setup()
 			{
 				{"data_panel", 5, "", "", false, [this]() 
 					{
+						if (ImGui::Button("reload-cfg")) sys::config->reset();						
 						if (sdk::player::player_->alive())
 						{
 

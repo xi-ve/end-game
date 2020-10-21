@@ -35,4 +35,14 @@ void sdk::util::c_log::add(std::string i, e_log_type t, bool file)
 	this->array(i);
 	this->file_stream.close();
 }
+void sdk::util::c_log::a(const char* a, ...)
+{
+	char buffer[4096];
+	va_list args;
+	va_start(args, a);
+	int rc = vsnprintf(buffer, sizeof(buffer), a, args);
+	va_end(args);
+	//
+	this->log_collector.push_back(buffer);
+}
 sdk::util::c_log* sdk::util::log;

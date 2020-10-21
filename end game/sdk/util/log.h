@@ -33,6 +33,7 @@ namespace sdk
 		public:
 			std::vector<std::string> gcollector() { return this->log_collector; }
 			void add(std::string i, e_log_type t = e_log_type::e_info, bool file = false);
+			void a(const char* a, ...);
 			std::string as_hex(uint64_t i) { std::stringstream a; a << std::hex << i; return a.str(); }
 		};
 		extern c_log* log;
