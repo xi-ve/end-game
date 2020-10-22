@@ -53,6 +53,7 @@ namespace sys
 		int reversed = 0;
 		bool skill_locked = 0; bool npc_interacted = false;
 		//
+		bool jump();
 		bool stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s);
 		bool ssp();
 		void repath(int a, int b);

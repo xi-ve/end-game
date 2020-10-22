@@ -11,6 +11,8 @@ fn::t_is_key_pressed fn::o_is_key_ressed;
 fn::t_get_active_window fn::o_get_active_window;
 fn::t_focus_validator fn::o_focus_validator;
 fn::t_adddamage fn::o_adddamage;
+fn::t_damageregister fn::o_damageregister;
+fn::t_canjump fn::o_canjump;
 int  fn::traffic_bytes = 0;
 int  fn::buffer_traffic_bytes = 0;
 bool fn::log_dobuffer = false;
@@ -37,8 +39,10 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::proxy_delete, &fn::f_proxy_delete, (void**)&fn::o_proxy_delete)) return false;
 	if (!fn::hook((void*)core::offsets::hk::is_key_pressed, &fn::f_is_key_pressed, (void**)&fn::o_is_key_ressed)) return false;
 	if (!fn::hook((void*)core::offsets::hk::reset_input_class, &fn::f_reset_input_class, (void**)&fn::o_reset_input_class)) return false;
-	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;	
+	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;
 	if (!fn::hook((void*)core::offsets::hk::add_damage, &fn::f_adddamage, (void**)&fn::o_adddamage)) return false;
+	//if (!fn::hook((void*)0x140946740, &fn::f_damageregister, (void**)&fn::o_damageregister)) return false;
+	if (!fn::hook((void*)0x14162BD20, &fn::f_canjump, (void**)&fn::o_canjump)) return false;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
 	return true;
@@ -99,7 +103,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	auto v = fn::o_lua_to_string(a1);
 	sys::backend->work();
 	//
-	if (!iloot_enable || !ikey_ctp || !ilock_key) 
+	if (!iloot_enable || !ikey_ctp || !ilock_key)
 	{
 		auto str4_25872_loot15 = new sys::s_str_container(std::vector<int>{101, 102, 102, 125}); /*loot*/
 		auto str7_53940_ienable18 = new sys::s_str_container(std::vector<int>{96, 108, 103, 104, 107, 101, 108}); /*ienable*/
@@ -132,13 +136,13 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
 	if (!can_play)
-	{ 
+	{
 		sys::damage->actors_hp.clear();
 		sys::damage->dmg_events.clear();
 		sys::damage->actors_last_dmg.clear();
 		time_since_player_playable = GetTickCount64();
 		executing = false;
-		return v; 
+		return v;
 	}
 	sys::lua_q->work(); sys::key_q->work();
 	sdk::player::player_->update_actors(self_actor_proxy);
@@ -168,7 +172,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//
 	return v;
 }
-uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2) 
+uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 {
 	if (!arg1) return fn::o_lua_dobuffer(arg1, arg2);
 	sys::lua_q->sparam(arg1);
@@ -253,7 +257,7 @@ bool __fastcall fn::f_is_key_pressed(uint64_t a, int b, BYTE c)
 			if (g == b) return 1;
 		}
 	}
-	return fn::o_is_key_ressed(a,b,c);
+	return fn::o_is_key_ressed(a, b, c);
 }
 HWND __fastcall fn::f_get_focus()
 {
@@ -268,7 +272,7 @@ HWND fn::f_get_active_window()
 }
 
 bool __fastcall fn::f_focus_validator(uint64_t a, HWND b)
-{	
+{
 	*(HWND*)(a + 0xB50) = lib::d3d11->h;
 	fn::o_focus_validator(a, b);
 	return 1;
@@ -280,7 +284,43 @@ int __fastcall fn::f_adddamage(__int64 crap, __int64 target_ptr, __int64 a3, __i
 		auto s = *(uint64_t*)(core::offsets::actor::actor_self);
 		if (!s) return fn::o_adddamage(crap, target_ptr, a3, a4, a5, a6, a7, attacker_ptr);
 		auto k = *(int*)(s + core::offsets::actor::actor_proxy_key);
-		if (k == attacker_ptr && target_ptr != k) sys::damage->work(target_ptr, a5, a4);		
+		if (k == attacker_ptr && target_ptr != k) sys::damage->work(target_ptr, a5, a4);
 	}
 	return fn::o_adddamage(crap, target_ptr, a3, a4, a5, a6, a7, attacker_ptr);
+}
+//TODO: trace back further to creation, this is recv of server info
+uint64_t __fastcall fn::f_damageregister(uint64_t t, uint64_t a2, uint64_t pack)
+{
+	auto dmg = sys::config->gvar("debug", "ispoofdmg");
+
+	if (dmg != NULL && dmg->iv)
+	{
+		*(BYTE*)(pack + 107) = 1;
+		*(BYTE*)(pack + 109) = 1;
+	}
+
+	auto r = fn::o_damageregister(t, a2, pack);
+	/*ByteBuffer data;
+	for (auto c = 0; c < 0x70; c++) data.put(*(uint8_t*)((uint64_t)pack + c));
+	sdk::util::log->a("%s", sdk::menu::m_packet->get_packet_info(data).c_str());
+	sdk::util::log->a(" - - - ");*/
+
+	//sdk::util::log->a("%i %i %i %i", *(BYTE*)(pack + 3), *(BYTE*)(pack + 4), *(BYTE*)(pack + 5), *(BYTE*)(pack + 6));
+	/*ByteBuffer f;
+	for (auto c = 0; c < 0x70; c++) f.put(*(uint8_t*)((uint64_t)pack + c));
+	auto parts = sdk::menu::m_packet->split(f.printHex(), 27);
+	for (auto g : parts) sdk::util::log->a("%s", g.c_str());
+	sdk::util::log->a(" - - - ");*/
+	//
+	return r;
+}
+
+uint64_t __stdcall fn::f_canjump(uint64_t x410x8, uint64_t a2, uint64_t a3, uint64_t a4, float& pos1, float& a6, float& a7, uint64_t a8)
+{
+	//sdk::util::log->b("a1: %08x a2: %08x a3: %08x a4: %08x a5: %f a6: %f a7: %f a8: %08x", x410x8, a2, a3, a4, pos1, a6, a7, a8);
+	auto r = fn::o_canjump(x410x8, a2, a3, a4, pos1, a6, a7, a8);
+	//
+	//sdk::util::log->b("ret:%i", r);
+	//
+	return r;
 }

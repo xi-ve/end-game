@@ -68,7 +68,7 @@ void __stdcall sys::key_worker(void* a)
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		for (auto p : sys::v_keys_i) if (p < 9000) *((uint64_t*)((key_p + 0x840) + (p * 4))) = 0;
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		sys::key_q->rm();
 		sys::key_q->stopped_time = GetTickCount64() + 1250;
 		sys::key_q->thread_working = false;

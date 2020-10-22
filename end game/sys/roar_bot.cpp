@@ -153,7 +153,9 @@ bool sys::c_roar_bot::has_aggro()
 }
 bool sys::c_roar_bot::stance()
 {
+	//BT_ACTION_CHANGE
 	auto a = sdk::player::player_->ganim(this->self);
+	if (strstr(a.c_str(), "BT_ACTION_CHANGE")) return true;
 	if (strstr(a.c_str(), "BT_skill_AggroShout_Ing_UP")) return true;//autoskip
 	if (strstr(a.c_str(), "BT_WAIT")) return true;//autoskip
 	if (GetTickCount64() > this->sct) this->sct = GetTickCount64() + 5000;

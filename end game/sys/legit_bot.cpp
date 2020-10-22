@@ -335,6 +335,22 @@ void sys::c_legit_bot::syaw(float f)
 	if (!camera_base) return;
 	*(float*)(camera_base + 0x68) = f;
 }
+bool sys::c_legit_bot::jump()
+{
+	auto s_ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+	auto s_8 = *(uint64_t*)(s_ctrl + 0x8);
+	float va6[3] = { 192.f, 255.f, 50.f };
+	float va7[3] = { 144.f, 193.f, 50.f };
+	float va8[3] = { 60.f , 145.f, 50.f };
+	auto canJump = fn::o_canjump(s_8, 0, s_ctrl + 0x234, s_ctrl + 0x240, *(float*)va6, *(float*)va7, *(float*)va8, 0);
+	if (canJump > 0 && canJump < 4) 
+	{ 
+		this->walk_node.clear(); this->att_target = 0;
+		sys::key_q->add(new sys::s_key_input({ VK_SPACE }, 75));
+		return true; 
+	}
+	else return false;
+}
 bool sys::c_legit_bot::stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 {
 	if (!this->pos_saved.valid()) { this->pos_saved = s; this->timer_save = GetTickCount64(); }
@@ -345,34 +361,38 @@ bool sys::c_legit_bot::stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 		{
 			if (GetTickCount64() > this->timer_save + 3500 && !sys::key_q->thread_working)
 			{
-				sdk::util::log->a("looking for stuck directions");
+				//sdk::util::log->a("looking for stuck directions");
 				auto circle = sys::visuals->gcircle_front(s, 200, 360, 1);
 				auto left = circle.at(180);
 				auto right = circle.at(0);
 				auto front = circle.at(80);
 				auto tr = sdk::player::player_->trace(s, left, this->self, 80);
+				if (this->jump()) 
+				{
+					this->pos_saved.clear(); this->timer_save = 0;
+					return true;
+				}
 				if (!tr.success)
 				{
-					sdk::util::log->a("left side blocked!");
+					//sdk::util::log->a("left side blocked!");
 					sys::key_q->add(new sys::s_key_input({ 0x44 }, 500));
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
 				}
-				sdk::util::log->a("left free!");
+				//sdk::util::log->a("left free!");
 				tr = sdk::player::player_->trace(s, right, this->self, 80);
 				if (!tr.success)
 				{
-					sdk::util::log->a("right side blocked!");
+					//sdk::util::log->a("right side blocked!");
 					sys::key_q->add(new sys::s_key_input({ 0x41 }, 500));
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
 				}
-				sdk::util::log->a("right free!");
+				//sdk::util::log->a("right free!");
 				tr = sdk::player::player_->trace(s, front, this->self, 80);
 				if (!tr.success)
 				{
-					sdk::util::log->a("front side blocked!");
-					sys::key_q->add(new sys::s_key_input({ 0x53 }, 500));
+					//sdk::util::log->a("front side blocked!");					
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
 				}
@@ -1052,6 +1072,7 @@ void sys::c_legit_bot::work(uint64_t s)
 	}
 
 	this->aim_pos(this->walk_node, spos);
+
 	if (this->stuck(this->walk_node, spos)) return;
 
 	if (this->blockage(spos)) return;

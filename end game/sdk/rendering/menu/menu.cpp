@@ -1033,6 +1033,16 @@ bool sdk::menu::c_menu::setup()
 							ImGui::Text(std::string("x:").append(std::to_string(self_pos.x)).c_str());
 							ImGui::Text(std::string("y:").append(std::to_string(self_pos.y)).c_str());
 							ImGui::Text(std::string("z:").append(std::to_string(self_pos.z)).c_str());
+
+							//
+							auto s_ctrl = *(uint64_t*)(self + core::offsets::actor::actor_char_ctrl);
+							auto s_8 = *(uint64_t*)(s_ctrl + 0x8);
+							float va6[3] = { 192.f, 255.f, 50.f };
+							float va7[3] = { 144.f, 193.f, 50.f };
+							float va8[3] = { 60.f , 145.f, 50.f };
+							auto canJump = fn::o_canjump(s_8, 0, s_ctrl + 0x234, s_ctrl + 0x240, *(float*)va6, *(float*)va7, *(float*)va8, 0);
+							if (canJump > 0 && canJump < 4) ImGui::TextColored(ImColor(0, 255, 0), std::string("climb-state:").append(std::to_string(canJump)).c_str());
+							else ImGui::TextColored(ImColor(255, 0, 0), "can not climb");
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
 					}
@@ -1042,6 +1052,7 @@ bool sdk::menu::c_menu::setup()
 		{
 			{"spooky-scary-tests"},
 			{
+				{"spoof-dmg", 0 , "debug", "ispoofdmg", false},
 				{"test_panel_db", 5, "", "", false, []() 
 					{
 						if (ImGui::Button("test-popup"))

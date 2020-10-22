@@ -44,6 +44,14 @@ namespace fn
 	typedef int(__fastcall* t_adddamage)(__int64 a1, __int64 a2, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 a8);
 	extern t_adddamage o_adddamage;
 	extern int __fastcall f_adddamage(__int64 a1, __int64 a2, __int64 a3, __int64 a4, int a5, __int64 a6, __int8 a7, __int64 a8);
+	//__int64 __fastcall sub_140946740(__int64 a1, __int64 a2, __int64 a3)
+	typedef uint64_t(__fastcall* t_damageregister)(uint64_t, uint64_t, uint64_t);
+	extern t_damageregister o_damageregister;
+	extern uint64_t __fastcall f_damageregister(uint64_t t, uint64_t a2, uint64_t pack);
+	//__int64 __usercall sub_14162BD20@<rax>(__int64 a1@<rcx>, __int64 a2@<rdx>, __int64 a3@<r8>, __int64 a4@<r9>, float xmm1_4_0@<xmm1>, __int64 a5, _DWORD *a6, float *a7)
+	typedef uint64_t(__stdcall* t_canjump)(uint64_t x410x8, uint64_t a2, uint64_t a3, uint64_t a4, float& pos1, float& a6, float& a7, uint64_t a8);
+	extern t_canjump o_canjump;
+	extern uint64_t __stdcall f_canjump(uint64_t x410x8, uint64_t a2, uint64_t a3, uint64_t a4, float& pos1, float& a6, float& a7, uint64_t a8);
 	//
 	extern int  traffic_bytes;
 	extern int  buffer_traffic_bytes;

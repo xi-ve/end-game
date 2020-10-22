@@ -11,16 +11,16 @@ VMStart
 -------
 Virtualizing Macros:
 
--> Processing Macro at 0x000000018001E16A: OK
--> Processing Macro at 0x000000018013350B: OK
+-> Processing Macro at 0x000000018001E34A: OK
+-> Processing Macro at 0x0000000180133BAB: OK
 
 
 ClearStart
 ----------
 -> Processing Macro at 0x0000000180002E08: OK
 -> Processing Macro at 0x0000000180003927: OK
--> Processing Macro at 0x000000018001DA5E: OK
--> Processing Macro at 0x000000018001F57E: OK
+-> Processing Macro at 0x000000018001DC3E: OK
+-> Processing Macro at 0x000000018001F75E: OK
 
 
 Macros Processed

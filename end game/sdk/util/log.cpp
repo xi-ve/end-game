@@ -45,4 +45,17 @@ void sdk::util::c_log::a(const char* a, ...)
 	//
 	this->log_collector.push_back(buffer);
 }
+void sdk::util::c_log::b(const char* a, ...)
+{
+	char buffer[4096];
+	va_list args;
+	va_start(args, a);
+	int rc = vsnprintf(buffer, sizeof(buffer), a, args);
+	va_end(args);
+	//
+	this->file_stream.open("end_game_log.txt", std::ios_base::app);
+	this->log_collector.push_back(buffer);
+	this->file(buffer);
+	this->file_stream.close();
+}
 sdk::util::c_log* sdk::util::log;
