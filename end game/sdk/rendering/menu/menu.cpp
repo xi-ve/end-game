@@ -1055,6 +1055,15 @@ bool sdk::menu::c_menu::setup()
 				{"spoof-dmg", 0 , "debug", "ispoofdmg", false},
 				{"test_panel_db", 5, "", "", false, []() 
 					{
+						if (ImGui::Button("get-buttons")) sdk::dialog::dialog->gbuttons();
+						if (sdk::dialog::dialog->buttons_map.size())
+						{
+							for (auto a : sdk::dialog::dialog->buttons_map)
+							{
+								if (ImGui::Button(std::string(a.second).c_str())) sys::lua_q->add(std::string("HandleEventLUp_DialogMain_All_FuncButton(").append(std::to_string(a.first)).append(")"));
+								ImGui::Text(std::string(std::to_string(a.first)).append(" -> ").append(a.second).c_str());
+							}
+						}
 						if (ImGui::Button("test-popup"))
 						{
 							ImGui::SetNextWindowBgAlpha(0.f);

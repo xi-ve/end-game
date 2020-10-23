@@ -28,6 +28,7 @@ static void __stdcall init_thread()
 	sys::legit_bot = new sys::c_legit_bot();
 	sys::scrollbot = new sys::c_scrollbot();
 	sys::damage = new sys::c_damage();
+	sdk::dialog::dialog = new sdk::dialog::c_dialog();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

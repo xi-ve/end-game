@@ -40,6 +40,8 @@ uint64_t core::offsets::cl::ascii_table = 0x143D5AFD8;
 uint64_t core::offsets::cl::loot_base = 0x143DB0CE0;
 //F2 0F 10 35 ? ? ? ? F2 0F 11 74 24 ? 44 8B 3D ? ? ? ? 
 uint64_t core::offsets::cl::cursor_world = 0x143DAFF18;
+//48 8D 0D ? ? ? ? C7 80 ? ? ? ? ? ? ? ? E8 ? ? ? ? 
+uint64_t core::offsets::cl::dialog_base = 0x143DB4F60;
 
 
 //48 8B C4 56 57 41 56 48 81 EC ? ? ? ? 48 C7 80 ? ? ? ? ? ? ? ? 48 89 58 10 48 89 68 18 0F 29 70 D8 
@@ -64,7 +66,10 @@ uint64_t core::offsets::fn::loot_item_count = 0x140A99D90;
 uint64_t core::offsets::fn::inv_get_item = 0x140A96E30;
 //40 53 48 83 EC 50 48 C7 44 24 ? ? ? ? ? 48 8B D9 48 8D 51 20 33 C0 66 3B 02 73 0C 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 90 ? ? ? ? 
 uint64_t core::offsets::fn::buff_get_name = 0x140307380;
-
+//40 57 48 83 EC 50 48 C7 44 24 ? ? ? ? ? 48 89 5C 24 ? 48 89 74 24 ? 48 8B D9 C7 44 24 ? ? ? ? ? 65 48 8B 04 25 ? ? ? ? B9 ? ? ? ? 48 8B 10 8B 04 11 39 05 ? ? ? ? 0F 8F ? ? ? ? 
+uint64_t core::offsets::fn::dialog_gettext = 0x140679F30;
+//4C 8B 41 70 48 B8 ? ? ? ? ? ? ? ? 48 8B 49 78 4C 63 CA 49 2B C8 48 F7 E9 48 C1 FA 05 
+uint64_t core::offsets::fn::dialog_getbutton = 0x14067A8B0;
 
 //FromClient_SelfPlayerExpChanged
 uint64_t core::offsets::actor::actor_self = 0x143DAFED0;

@@ -30,6 +30,7 @@ namespace core
 			extern uint64_t ascii_table;
 			extern uint64_t loot_base;
 			extern uint64_t cursor_world;
+			extern uint64_t dialog_base;
 		}
 		namespace fn
 		{
@@ -45,6 +46,8 @@ namespace core
 			extern uint64_t loot_deadactor;
 			extern uint64_t inv_get_item;
 			extern uint64_t buff_get_name;
+			extern uint64_t dialog_gettext;
+			extern uint64_t dialog_getbutton;
 		}
 		namespace actor
 		{

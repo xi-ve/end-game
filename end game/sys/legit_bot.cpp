@@ -338,7 +338,9 @@ void sys::c_legit_bot::syaw(float f)
 bool sys::c_legit_bot::jump()
 {
 	auto s_ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+	if (!s_ctrl) return false;
 	auto s_8 = *(uint64_t*)(s_ctrl + 0x8);
+	if (!s_8) return false;
 	float va6[3] = { 192.f, 255.f, 50.f };
 	float va7[3] = { 144.f, 193.f, 50.f };
 	float va8[3] = { 60.f , 145.f, 50.f };
@@ -361,7 +363,6 @@ bool sys::c_legit_bot::stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 		{
 			if (GetTickCount64() > this->timer_save + 3500 && !sys::key_q->thread_working)
 			{
-				//sdk::util::log->a("looking for stuck directions");
 				auto circle = sys::visuals->gcircle_front(s, 200, 360, 1);
 				auto left = circle.at(180);
 				auto right = circle.at(0);
@@ -374,25 +375,20 @@ bool sys::c_legit_bot::stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 				}
 				if (!tr.success)
 				{
-					//sdk::util::log->a("left side blocked!");
 					sys::key_q->add(new sys::s_key_input({ 0x44 }, 500));
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
 				}
-				//sdk::util::log->a("left free!");
 				tr = sdk::player::player_->trace(s, right, this->self, 80);
 				if (!tr.success)
 				{
-					//sdk::util::log->a("right side blocked!");
 					sys::key_q->add(new sys::s_key_input({ 0x41 }, 500));
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
 				}
-				//sdk::util::log->a("right free!");
 				tr = sdk::player::player_->trace(s, front, this->self, 80);
 				if (!tr.success)
 				{
-					//sdk::util::log->a("front side blocked!");					
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
 				}
@@ -473,12 +469,16 @@ bool sys::c_legit_bot::find_node(sdk::util::c_vector3 t, sdk::util::c_vector3 f,
 {
 	this->walk_node.clear();
 	auto n = sys::visuals->gcircle_front(f, md, 200, 5);
+	//auto n2 = sys::visuals->gcircle_front(f, 60, 200, 5);
 	this->scan_nodes = n;
 	sdk::util::c_vector3 g; float ldst = 9999.f;
-	for (auto b : n)
+	for (auto w = 0; w < n.size(); w++)
 	{
+		auto b = n[w];
 		auto tr = sdk::player::player_->trace(f, b, this->self, 80);
 		if (!tr.success) continue;
+		/*tr = sdk::player::player_->trace(f, n2.at(w), this->self, 80);
+		if (!tr.success) continue;*/
 		auto dst = sdk::util::math->gdst_2d(t, b);
 		if (dst < ldst)
 		{
