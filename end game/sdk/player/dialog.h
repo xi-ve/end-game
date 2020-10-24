@@ -18,7 +18,9 @@ namespace sdk
 			t_getdialog getdialog = (t_getdialog)core::offsets::fn::dialog_getbutton;
 		public:
 			std::unordered_map<int, std::string> buttons_map = {};
+			std::unordered_map<std::string, bool> panels_map = {};
 			bool gbuttons();
+			bool gpanels();
 		};
 		extern c_dialog* dialog;
 	}

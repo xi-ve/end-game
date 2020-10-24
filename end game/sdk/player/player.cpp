@@ -275,6 +275,29 @@ std::string sdk::player::c_player::ganim(uint64_t p)
 	//
 	return r;
 }
+std::string sdk::player::c_player::gstring(uint64_t start, int size)
+{
+	std::string s = "";
+	for (auto c = start; c < start + size; c++)
+	{
+		char read = *(char*)(c);
+		if (read == '\0' || read == '?') break;
+		s.push_back(read);
+	}
+	if (s.size() < 6)
+	{
+		s.clear();
+		auto start_asptr = *(uint64_t*)(start);
+		if (!start_asptr) return "";
+		for (auto c = start_asptr; c < start_asptr + size; c++)
+		{
+			char read = *(char*)(c);
+			if (read == '\0' || read == '?') break;
+			s.push_back(read);
+		}
+	}
+	return s;
+}
 int sdk::player::c_player::gsp(uint64_t a)
 {
 	auto _x1d30 = *(uint64_t*)(a + 0x1d40); if (!_x1d30) return 0; _x1d30 = *(uint32_t*)(_x1d30);

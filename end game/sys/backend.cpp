@@ -143,7 +143,6 @@ std::string sys::c_backend::get_val(std::string name)
 }
 void __stdcall sys::backend_worker()
 {
-	VMStart();
 	auto d = sys::backend->gather();
 	if (!d.size()) ExitProcess(0);
 	std::stringstream v;
@@ -165,7 +164,7 @@ void __stdcall sys::backend_worker()
 	}
 	sys::backend->thread_working = false;
 	delete web_c;
-	VMEnd();
+
 }
 void sys::c_backend::work()
 {

@@ -42,6 +42,8 @@ uint64_t core::offsets::cl::loot_base = 0x143DB0CE0;
 uint64_t core::offsets::cl::cursor_world = 0x143DAFF18;
 //48 8D 0D ? ? ? ? C7 80 ? ? ? ? ? ? ? ? E8 ? ? ? ? 
 uint64_t core::offsets::cl::dialog_base = 0x143DB4F60;
+//
+uint64_t core::offsets::cl::ui_manager = 0x143D633D8;
 
 
 //48 8B C4 56 57 41 56 48 81 EC ? ? ? ? 48 C7 80 ? ? ? ? ? ? ? ? 48 89 58 10 48 89 68 18 0F 29 70 D8 

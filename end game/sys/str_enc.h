@@ -13,8 +13,15 @@ namespace sys
 			if (!decr.size() && raw_str.size()) for (auto obj : raw_str) decr.push_back((char)(obj ^= 9));
 			return decr;
 		}
+		std::wstring     getw()
+		{
+			if (!decr.size() && raw_str.size()) for (auto obj : raw_str) decr.push_back((char)(obj ^= 9));
+			if (!w_decr.size()) w_decr = std::wstring(decr.begin(), decr.end());
+			return w_decr;
+		}
 		std::vector<int>	   raw_str;
 		std::string            decr;
+		std::wstring		   w_decr;
 	};
 
 	class c_strenc

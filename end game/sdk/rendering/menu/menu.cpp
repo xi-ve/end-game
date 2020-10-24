@@ -1061,8 +1061,24 @@ bool sdk::menu::c_menu::setup()
 							for (auto a : sdk::dialog::dialog->buttons_map)
 							{
 								if (ImGui::Button(std::string(a.second).c_str())) sys::lua_q->add(std::string("HandleEventLUp_DialogMain_All_FuncButton(").append(std::to_string(a.first)).append(")"));
-								ImGui::Text(std::string(std::to_string(a.first)).append(" -> ").append(a.second).c_str());
 							}
+						}
+
+						if (sdk::player::player_->alive())
+						{
+							if (ImGui::Button("get panels")) sdk::dialog::dialog->gpanels();
+							if (sdk::dialog::dialog->panels_map.size())
+							{
+								ImGui::BeginChild(3, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+								//
+								for (auto a : sdk::dialog::dialog->panels_map)
+								{
+									ImGui::TextColored(ImColor(0,255,0), std::string(std::to_string(a.second)).append(" -> ").append(a.first).c_str());
+								}
+								//
+								ImGui::EndChild();
+							}
+							else ImGui::TextColored(ImColor(255,0,0), "no panels found");
 						}
 						if (ImGui::Button("test-popup"))
 						{

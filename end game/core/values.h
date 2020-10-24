@@ -31,6 +31,7 @@ namespace core
 			extern uint64_t loot_base;
 			extern uint64_t cursor_world;
 			extern uint64_t dialog_base;
+			extern uint64_t ui_manager;
 		}
 		namespace fn
 		{
