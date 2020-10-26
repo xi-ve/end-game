@@ -11,8 +11,7 @@ namespace sys
 		sys::s_cfg_v* ibot_storage_roar = NULL; sys::s_cfg_v* istop_on_player = NULL; sys::s_cfg_v* iexit_on_player = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
 		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
-		//
-		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
+		std::string last_interaction_name = "";
 		//
 		ULONGLONG execution = 0;
 		uint64_t self = 0;
@@ -41,6 +40,7 @@ namespace sys
 		void gpoint();
 		//
 	public:
+		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
 		int loot_act_k = 0;
 		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};
 		//
@@ -69,6 +69,11 @@ namespace sys
 		int gpsize() { return (int)this->grind.size(); }
 		int gssize() { return (int)this->store.size(); }
 		int assize() { return (int)this->allowed_sell_items.size(); }
+		s_path_script gcur() 
+		{
+			if (this->cur_route.size()) return this->cur_route.front();
+			else return {};
+		}
 		void sgpos(sdk::util::c_vector3 to_replace, sdk::util::c_vector3 new_pos);
 		//
 		std::vector<std::string> gnpcs();

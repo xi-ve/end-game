@@ -113,6 +113,7 @@ namespace sdk
 		class c_menu
 		{
 		private:
+			std::vector<int> owo = { 44266, 44221 };
 			sys::s_cfg_v* iteleport_gen2 = NULL; sys::s_cfg_v* ibypass_trial = NULL; sys::s_cfg_v* iloot_enable = NULL;
 			sys::s_cfg_v* iloot_enable_filter = NULL; sys::s_cfg_v* grey = NULL; sys::s_cfg_v* green = NULL;
 			sys::s_cfg_v* blue = NULL; sys::s_cfg_v* orange = NULL; sys::s_cfg_v* yellow = NULL; 

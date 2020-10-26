@@ -348,7 +348,8 @@ void sys::c_roar_bot::record()
 }
 void sys::c_roar_bot::load()
 {
-	this->reset(); this->grind.clear(); this->store.clear(); 
+	sdk::dialog::dialog->sell_reset();
+	this->reset(); this->grind.clear(); this->store.clear();
 	auto parse_position = [&](std::string l) -> sdk::util::c_vector3
 	{
 		auto line = l;
@@ -548,7 +549,6 @@ void sys::c_roar_bot::work(uint64_t s)
 	auto cur_point = this->cur_route.front();
 	if (this->p_mode == 1)
 	{
-		if (this->sp_delay > GetTickCount64()) return; else sp_delay = 0;
 		if (this->reversed)//path to
 		{
 			if (cur_point.special_event)
@@ -556,8 +556,6 @@ void sys::c_roar_bot::work(uint64_t s)
 				if (cur_point.npc_name != "NONE")//npc
 				{
 					if (this->has_aggro()) return;
-					sp_delay = GetTickCount64() + 6400;
-					sdk::util::log->add(cur_point.npc_name, sdk::util::e_info, true);
 
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
 					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
@@ -569,113 +567,46 @@ void sys::c_roar_bot::work(uint64_t s)
 
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 					this->cur_route.pop_front();
+
+					auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
+					if (!ctrl) return;
+					auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
+					if (!scene) return;
+					auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
+					*(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
+
+					this->items_left_sell = this->allowed_sell_items;
+					this->last_interaction_name = cur_point.npc_name;
+
 					return;
 				}
 				else if (cur_point.script != "NONE")//scr
 				{
-					if (this->npc_interacted)
-					{
-						if (!sdk::player::player_->npcs.size())
-						{
-							sdk::util::log->add("no npc near, after interaction - stopping bot (???)", sdk::util::e_critical, true);
-							this->dwork = false;
-							return;
-						}
-						std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
-						for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
-						for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
-						auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
-						if (cinteract != npc_wanted_ptr)
-						{
-							//aborted sp due to something (?)
-							sp_delay = GetTickCount64() + 8000;
-							this->npc_interacted = false;
-							//allow for roar and repath for only scripts
-							this->cur_route.clear();
-							this->cur_route = this->store;
-							while (true)
-							{
-								if (this->cur_route.front().special_event) break;
-								this->cur_route.pop_front();
-							}
-							this->i_sell_state = 0;
-							this->items_left_sell = this->allowed_sell_items;
-							sdk::util::log->add("sp interaction was aborted (?)");
-							return;
-						}
-					}
-					this->npc_interacted = true;
-					sp_delay = GetTickCount64() + 2000;
 					if (cur_point.script == "sell_routine()")
 					{
-						auto ctrl = *(uint64_t*)(this->self + core::offsets::actor::actor_char_ctrl);
-						if (!ctrl) return;
-						auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
-						if (!scene) return;
-						auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
-						if (speed >= 8000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
+						if (sdk::dialog::dialog->completed_sales)
+						{
+							sdk::dialog::dialog->sell_reset();
+							sdk::dialog::dialog->thread_running = false;
+							sdk::dialog::dialog->completed_sales = false;
+							this->items_left_sell.clear();
+							this->cur_route.clear();
+							return;
+						}
+						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
 
-						if (this->i_sell_state == 3 && !this->items_left_sell.empty())
+						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
 						{
-							for (auto a : sdk::player::player_->inventory_items)
-							{
-								if (a.item_index == this->items_left_sell.back())
-								{
-									this->i_sell_state = 0; //wasnt sold
-									sdk::util::log->add("failed last sell", sdk::util::e_info, true);
-									return;
-								}
-							}
-							this->items_left_sell.pop_back();
-							this->i_sell_state = 0;
-							sdk::util::log->add("next item", sdk::util::e_info, true);
+							sdk::dialog::dialog->completed_sales = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							stru->items = this->items_left_sell;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
 						}
-						if (this->i_sell_state == 3 && this->items_left_sell.empty())//end state
-						{
-							this->items_left_sell = this->allowed_sell_items;
 
-							sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
-							this->cur_route.pop_front();
-							sdk::util::log->add("items sold", sdk::util::e_info, true);
-
-							return;
-						}						
-						auto t = this->items_left_sell.back();
-						switch (this->i_sell_state)
-						{
-						case 0:
-						{
-							for (auto a : sdk::player::player_->inventory_items)
-							{
-								if (a.item_index == t)
-								{
-									auto _t = std::string("HandleEventRUp_Inventory_All_SlotRClick(").append(std::to_string(a.item_slot)).append(")");
-									sys::lua_q->add(_t);
-									this->i_sell_state++;
-									return;
-								}
-							}
-							sdk::util::log->add(std::string("item not found: ").append(std::to_string(t)), sdk::util::e_info, true);
-							this->i_sell_state = 3;
-							return;
-						}
-						case 1:
-						{
-							sys::lua_q->add("HandleEventLUp_NumberPad_All_AllButton_Click(0)");
-							this->i_sell_state++;
-							return;
-						}
-						case 2:
-						{
-							sys::lua_q->add("HandleEventLUp_NumberPad_All_ConfirmButton_Click()");
-							this->i_sell_state++;
-							return;
-						}
-						}
+						return;
 					}
-					sdk::util::log->add(cur_point.script, sdk::util::e_info, true);
-					sys::lua_q->add(cur_point.script);
-					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 					this->cur_route.pop_front();
 					return;
 				}

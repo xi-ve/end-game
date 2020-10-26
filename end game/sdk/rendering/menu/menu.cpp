@@ -248,16 +248,7 @@ bool sdk::menu::c_menu::setup()
 						}
 						if (si == 2 && sys::roar_bot->recording_s)
 						{
-							sys::roar_bot->glua_actions = true;
-							if (!sys::roar_bot->last_lua_actions.empty())
-							{
-								ImGui::PushItemWidth(125);
-								ImGui::Combo2("##script", &is_scr, sys::roar_bot->last_lua_actions); ImGui::SameLine();
-								if (ImGui::Button("test-scr")) sys::lua_q->add(sys::roar_bot->last_lua_actions[is_scr]);
-								if (ImGui::Button("add-scr")) { sys::roar_bot->sscr(sys::roar_bot->last_lua_actions[is_scr]); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
-								if (ImGui::Button("add-store/sell")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); }
-							}
-							if (ImGui::Button("done-store")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+							if (ImGui::Button("set-sell-event")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 						}
 					}
 				},
@@ -1043,6 +1034,17 @@ bool sdk::menu::c_menu::setup()
 							auto canJump = fn::o_canjump(s_8, 0, s_ctrl + 0x234, s_ctrl + 0x240, *(float*)va6, *(float*)va7, *(float*)va8, 0);
 							if (canJump > 0 && canJump < 4) ImGui::TextColored(ImColor(0, 255, 0), std::string("climb-state:").append(std::to_string(canJump)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "can not climb");
+
+							//
+							auto rbp = sys::roar_bot->gcur();
+							if (rbp.pos.valid())
+							{
+								ImGui::Text(std::string("sell_state:").append(std::to_string(sdk::dialog::dialog->sell_state)).c_str());
+								ImGui::Text(std::string("special:").append(std::to_string(rbp.special_event)).c_str());
+								ImGui::Text(std::string("npc:").append(rbp.npc_name).c_str());
+								ImGui::Text(std::string("scr:").append(rbp.script).c_str());
+
+							}
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
 					}
@@ -1053,7 +1055,7 @@ bool sdk::menu::c_menu::setup()
 			{"spooky-scary-tests"},
 			{
 				{"spoof-dmg", 0 , "debug", "ispoofdmg", false},
-				{"test_panel_db", 5, "", "", false, []() 
+				{"test_panel_db", 5, "", "", false, [this]() 
 					{
 						if (ImGui::Button("get-buttons")) sdk::dialog::dialog->gbuttons();
 						if (sdk::dialog::dialog->buttons_map.size())
@@ -1065,21 +1067,82 @@ bool sdk::menu::c_menu::setup()
 						}
 
 						if (sdk::player::player_->alive())
-						{
-							if (ImGui::Button("get panels")) sdk::dialog::dialog->gpanels();
+						{							
+							/*
+							rework plan:
+
+							> use npc name as interaction
+							  > validate interaction success by checking panel "Panel_Npc_Dialog_All" existance
+							> use button name for interaction
+							  > in bot look for button name and click by index
+							  > validate button press by looking for next panel (map for interactions&panels ex. shop button & shop panel) 
+							> validate each interaction such as messagebox (yes/no) in sales
+							> validate use of numberpad for multiple items (sell/store)
+
+							> rework scripting system to require buttons instead of lua
+							  > probably force english client lang (? info-map ?)
+							  > check to use icons for identification instead (?) (map> icon name&panel name)
+							> always validate each step of the interaction (to npc, from npc) open,close
+							> find native func for "HandleEventLUp_DialogMain_All_FuncButton(ID)" (fuck lua)
+							*/
+							sdk::dialog::dialog->gpanels();
 							if (sdk::dialog::dialog->panels_map.size())
 							{
 								ImGui::BeginChild(3, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
 								//
-								for (auto a : sdk::dialog::dialog->panels_map)
+								for (auto b : sdk::dialog::dialog->panels_map)
 								{
-									ImGui::TextColored(ImColor(0,255,0), std::string(std::to_string(a.second)).append(" -> ").append(a.first).c_str());
+									if (ImGui::TreeNode(std::string(b.first).c_str()))
+									{
+										//
+										if (ImGui::Button("get-children")) sdk::dialog::dialog->gchildren(b.first);										
+										//
+										ImGui::TreePop();
+									}
 								}
+								/*for (auto a : sdk::dialog::dialog->panels_map)
+								{
+									ImGui::TextColored(ImColor(0,255,0), std::string(a.first).c_str());
+								}*/
 								//
 								ImGui::EndChild();
 							}
 							else ImGui::TextColored(ImColor(255,0,0), "no panels found");
+							if (sdk::dialog::dialog->children_by_panel.size())
+							{
+								ImGui::BeginChild(4, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+								//
+								for (auto c : sdk::dialog::dialog->children_by_panel)
+								{
+									ImGui::Text(std::string(c.second).append(" > ").append(c.first).c_str());
+								}
+								ImGui::EndChild();
+							}
+							else ImGui::TextColored(ImColor(255,0,0), "no children found");
 						}
+						if (ImGui::Button("find-shop-button"))
+						{
+							auto lua = sdk::dialog::dialog->find_button("Shop", "Panel_Npc_Dialog_All");
+							if (lua.size())
+							{
+								sdk::util::log->a("found: %s", lua.c_str());
+								sys::lua_q->add(lua);
+							}
+							else sdk::util::log->a("not found");
+						}
+						if (ImGui::Button("run test sell thread"))
+						{
+							if (!sdk::dialog::dialog->thread_running)
+							{
+								sdk::dialog::dialog->thread_running = true;
+								auto stru = new sdk::dialog::s_thread_p();
+								stru->npc = "Lonely Palieva";
+								stru->items = { 44266 };
+								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
+							}
+						}
+						if (ImGui::Button("reset sale")) sdk::dialog::dialog->sell_reset();
+
 						if (ImGui::Button("test-popup"))
 						{
 							ImGui::SetNextWindowBgAlpha(0.f);

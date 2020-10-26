@@ -416,7 +416,7 @@ bool sys::c_legit_bot::ssp()
 }
 void sys::c_legit_bot::repath(int a, int b)
 {
-	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "NONE", "NONE", c.pause); }
+	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "NONE", "NONE", 0); }
 	if (a == 1)
 	{
 		this->cur_route.clear();
@@ -846,7 +846,7 @@ void sys::c_legit_bot::load()
 	auto parse_storage = [&](std::string l) -> s_path_script
 	{
 		auto line = l;
-		s_path_script res;
+		s_path_script res; res.special_event = 0;
 		//"(sp){" << obj.pos.x << "}{" << obj.pos.y << "}{" << obj.pos.z << "}{" << obj.npc_name << "}{" << obj.script << "}"
 		while (line.size() > 0)
 		{
