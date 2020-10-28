@@ -1,8 +1,4 @@
 #include <inc.h>
-void sys::c_loot::mloot()
-{
-	if (this->act_id_cur != 0) this->spack(this->act_id_cur);
-}
 bool sys::c_loot::read_whitelist()
 {
 	if (!whitelistv) whitelistv = sys::config->gvar("auto_loot", "string_whitelist_config");
@@ -93,16 +89,28 @@ std::vector<std::string> sys::c_loot::gbl()
 	for (auto a : this->blacklist) r.push_back(std::to_string(a));
 	return r;
 }
-void sys::c_loot::starget(int k)
-{
-	this->act_id_cur = k;
-}
 void sys::c_loot::spack(int k)
 {
 	ByteBuffer a;
 	a.putShort(3004);
 	a.putInt(k);
 	fn::send_packet(a, 3004, 6);
+}
+void sys::c_loot::spick(int k, int sk, int s, int c)
+{
+	ByteBuffer a;
+	a.putShort(3348);
+	a.put(c);
+	a.putEmptyBytes(7);
+	a.put(1);
+	a.putEmptyBytes(2);
+	a.put(s);
+	a.put(1);
+	a.putInt(k);
+	a.putEmptyBytes(5);
+	a.putInt(sk);
+	a.putEmptyBytes(3);
+	fn::send_packet(a, 3348, 31);
 }
 uint64_t sys::c_loot::gitem(int s)
 {
@@ -214,26 +222,15 @@ bool sys::c_loot::lhas(int s)
 void sys::c_loot::work(uint64_t self)
 {
 	this->self = self;
-	if (GetTickCount64() > last_tick) last_tick = GetTickCount64() + 25;
-	else return;
 	if (!ienable) ienable = sys::config->gvar("auto_loot", "ienable");
 	if (!ienable->iv) return;
 	auto n = this->hnear();						   if (!n) return;
 	auto actid = *(int*)(n + core::offsets::actor::actor_proxy_key);
-	if (this->act_id_cur == 0)
-	{
-		this->spack(actid);
-		this->act_id_cur = actid;
-		this->pack_time = GetTickCount64();
-		return;
-	}
-	if (!this->lhas(this->act_id_cur))
-	{
-		this->act_id_cur = 0;
-		return;
-	}
-	auto cur_loot_window_k = *(int*)(core::offsets::cl::loot_base); if (cur_loot_window_k != this->act_id_cur) return;
-	auto i = this->f_loot_get_item_count();		   if (!i) { this->act_id_cur = 0; return; }
+	auto sk = *(int*)(self + core::offsets::actor::actor_proxy_key);	
+	if (!this->lhas(actid)) return;
+	//Panel_Window_Looting_All
+	auto cur_loot_window_k = *(int*)(core::offsets::cl::loot_base); if (cur_loot_window_k != actid) { this->spack(actid); return; }
+	auto i = this->f_loot_get_item_count();		   if (!i) { return; }
 	if (!ienable_filter) ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
 	auto did_loot_good_item = false;
 	for (auto b = 0; b < i; b++)
@@ -242,7 +239,7 @@ void sys::c_loot::work(uint64_t self)
 		if (!o) continue;
 		auto ctx = this->gctx(o);
 		if (!this->pick(ctx)) continue; 					
-		this->f_loot_click_slot(b, ctx.count);
+		this->spick(actid, sk, b, ctx.count);
 		did_loot_good_item = true;
 		if (last_actor == actid) continue;
 		if (this->looted_log.size() > 100) this->looted_log.erase(this->looted_log.begin(), this->looted_log.begin()+50);
@@ -292,10 +289,9 @@ void sys::c_loot::work(uint64_t self)
 			{
 				auto c = sys::loot->loot_proxys[f]; if (!c.ptr) continue;
 				auto k = *(int*)(c.ptr + core::offsets::actor::actor_proxy_key);
-				if (k == this->act_id_cur) { sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f); break; }
+				if (k == actid) { sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + f); break; }
 			}
 		}
 	}
-	this->act_id_cur = 0;
 }
 sys::c_loot* sys::loot;

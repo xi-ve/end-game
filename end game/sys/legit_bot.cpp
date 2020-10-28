@@ -547,7 +547,6 @@ bool sys::c_legit_bot::loot_near(sdk::util::c_vector3 o)
 		auto lpos = sdk::player::player_->gpos(rr);
 		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, lpos.y / 100, (int)lpos.z / 100));
 		this->loot_act_k = *(int*)(rr + core::offsets::actor::actor_proxy_key);
-		sys::loot->act_id_cur = 0;
 	}
 
 	return false;

@@ -22,10 +22,40 @@ namespace sdk
 			t_gettext	gettext = (t_gettext)core::offsets::fn::dialog_gettext;
 			t_getdialog getdialog = (t_getdialog)core::offsets::fn::dialog_getbutton;
 		public:
-			bool thread_running = false, completed_sales = false;
+			bool thread_running = false, completed_sales = false, completed_repair = false; 
 			ULONGLONG last_execution = 0, last_click_time = 0; bool	needs_numberpad = 0; int item_id = 0; bool did_click = false; bool did_select_max = false; bool did_select_confirm = false;
+			bool did_click_repair = false; bool did_click_confirm = false; bool did_enter_repair = false; bool did_enter_menu = false; int exit_stage = 0; bool did_finish_reapir = false;
 
 			int			sell_state = 0;
+			std::unordered_map<std::string, std::unordered_map<int,int>>  icon_idents =
+			{
+				{ "Shop", //figure this out
+					std::unordered_map<int,int>
+					{
+						{0x6C, 0x3da07a45},
+						{0x70 ,0x3b000000},
+						{0x74 ,0x3e1ca81f},
+						{0x78 ,0x3b000000},
+						{0x80 ,0x3da40000},
+						{0x84 ,0x3e1ca81f},
+						{0x88 ,0x3da40000},
+						{0x8C ,0x0000}
+					} 
+				},
+				{ "Repair",	
+					std::unordered_map<int,int>
+					{
+						{0x6C ,0x3eebf0b7},
+						{0x70 ,0x3e780000},
+						{0x74 ,0x3f09131b},
+						{0x78 ,0x3e780000},
+						{0x80 ,0x3ea40000},
+						{0x84 ,0x3f09131b},
+						{0x88 ,0x3ea40000},
+						{0x8C ,0x0000}
+					}
+				}
+			};
 			std::unordered_map<std::string, std::string>	core_dialogs =
 			{
 				{"NPC_Interaction",	"Panel_Npc_Dialog_All"},
@@ -63,6 +93,7 @@ namespace sdk
 			bool gchildren(std::string panel); 
 			//
 			std::string find_button(std::string display_name, std::string panel);
+			int			find_button_ex(std::string display_name, std::string panel);
 			bool		find_panel(std::string panel);
 			//
 			void		sell_reset()
@@ -76,7 +107,7 @@ namespace sdk
 			bool		sell_test(int id);
 		};
 		extern c_dialog* dialog;
-		extern void __stdcall do_sell(void* p);
-
+		extern void __stdcall do_sell	(void* p);
+		extern void __stdcall repair_eq	(void* a);
 	}
 }

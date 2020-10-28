@@ -133,9 +133,8 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 	if (rr)
 	{
 		auto lpos = sdk::player::player_->gpos(rr);
-		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, lpos.y / 100, (int)lpos.z / 100));
+		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, (lpos.y / 100) + 0.8f, (int)lpos.z / 100));
 		this->loot_act_k = *(int*)(rr+core::offsets::actor::actor_proxy_key);
-		sys::loot->act_id_cur = 0;
 	}
 
 	return false;
@@ -339,7 +338,7 @@ void sys::c_roar_bot::record()
 		return;
 	}
 	auto d = sdk::util::math->gdst_3d(p, lp);
-	if (d >= 300)
+	if (d >= this->recording_step_size)
 	{
 		lp = p;
 		if (this->recording_g) this->gpoint();
@@ -590,7 +589,7 @@ void sys::c_roar_bot::work(uint64_t s)
 							sdk::dialog::dialog->thread_running = false;
 							sdk::dialog::dialog->completed_sales = false;
 							this->items_left_sell.clear();
-							this->cur_route.clear();
+							this->cur_route.pop_front();
 							return;
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
@@ -605,6 +604,27 @@ void sys::c_roar_bot::work(uint64_t s)
 							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
 						}
 
+						return;
+					}
+					else if (cur_point.script == "repair_routine()")
+					{
+						if (sdk::dialog::dialog->completed_repair)
+						{
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = false;
+							this->cur_route.pop_front();
+							return;
+						}
+						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
+
+						if (!sdk::dialog::dialog->completed_repair && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::repair_eq, (PVOID)stru, 0, 0);
+						}
 						return;
 					}
 					this->cur_route.pop_front();
@@ -644,7 +664,7 @@ void sys::c_roar_bot::work(uint64_t s)
 		if (!looting) return;
 	}
 	//
-	sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+	sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, (cur_point.pos.y / 100) + 0.8f, cur_point.pos.z / 100));
 	this->cur_route.pop_front();
 }
 void sys::c_roar_bot::snpc(std::string a)

@@ -77,8 +77,9 @@ HRESULT __stdcall PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UIN
 		pSwapChain->GetDevice(__uuidof(g_pd3dDevice), reinterpret_cast<void**>(&g_pd3dDevice));
 		g_pd3dDevice->GetImmediateContext(&g_pd3dContext);		
 		ImGui::CreateContext();
-		ImGui_ImplWin32_Init(g_hWnd);
+		auto b = ImGui_ImplWin32_Init(g_hWnd);
 		auto r = ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dContext);
+		sdk::util::log->b("W32 %i DX11 %i", b, r);
 		sdk::render::render->InitializeRenderClass(g_pd3dDevice, g_pd3dContext, 16, (char*)"Consolas", 0);
 		oWndProc = (WNDPROC)SetWindowLongPtr(g_hWnd, GWLP_WNDPROC, (__int3264)(LONG_PTR)WndProc);
 		ClearEnd();

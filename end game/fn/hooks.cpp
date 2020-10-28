@@ -43,7 +43,7 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::add_damage, &fn::f_adddamage, (void**)&fn::o_adddamage)) return false;
 	//if (!fn::hook((void*)0x140946740, &fn::f_damageregister, (void**)&fn::o_damageregister)) return false;
 	//if (!fn::hook((void*)0x14162BD20, &fn::f_canjump, (void**)&fn::o_canjump)) return false;
-	fn::o_canjump = (fn::t_canjump)0x14162BD20;
+	fn::o_canjump = (fn::t_canjump)core::offsets::fn::canjump;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
 	return true;

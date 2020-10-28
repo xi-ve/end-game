@@ -57,6 +57,13 @@ namespace sdk
 					(int)a.z == (int)z) return true;
 				return false;
 			}
+			bool cmpf(c_vector3 a)
+			{
+				if (a.x == x &&
+					a.y == y &&
+					a.z == z) return true;
+				return false;
+			}
 			bool valid()
 			{
 				if (isnan(x) || isnan(y) || isnan(z)) return false;

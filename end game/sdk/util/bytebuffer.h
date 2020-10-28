@@ -25,10 +25,6 @@
 // If defined, utility functions within the class are enabled
 #define BB_UTILITY
 
-// The byte type from previous versions of ByteBuffer is now obsolete
-// This macro is to ensure compatibility, however, it will be removed in future versions
-#define byte uint8_t
-
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>

@@ -45,18 +45,18 @@ namespace sys
 		std::vector<int>			whitelist;
 		uint64_t					self = NULL, last_ent = NULL;
 		void						spack(int k);
+		void						spick(int k, int sk, int s, int c);
 		uint64_t					gitem(int s);
 		s_looting_item				gctx(uint64_t p);
 		uint64_t					hnear();
 		bool						pick(s_looting_item ctx);
 		bool						lhas(int s);
 	public:
-		int act_id_cur = 0; ULONGLONG pack_time = 0;
+		ULONGLONG pack_time = 0;
 		int loot_count_grey = 0, loot_count_blue = 0, loot_count_green = 0, loot_count_orange = 0, loot_count_yellow = 0;
 		std::unordered_map<int, s_looting_item> looted_items = {}; int last_actor = 0; int last_item = 0;
 		std::vector<s_looting_item> looted_log = {};
 		std::vector<s_actor_data> loot_proxys;
-		void	 mloot();
 		bool	 read_whitelist();
 		bool	 read_blacklist();
 		void     add_whitelist(int idx);
@@ -65,7 +65,6 @@ namespace sys
 		void     reset_blacklist();
 		std::vector<std::string> gwl();
 		std::vector<std::string> gbl();
-		void starget(int k);
 		void work(uint64_t self);
 	};
 	extern c_loot* loot;

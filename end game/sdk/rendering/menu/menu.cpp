@@ -220,6 +220,7 @@ bool sdk::menu::c_menu::setup()
 				},
 				{"recording_stuff", 5, "", "", false, [this]()
 					{
+						ImGui::SliderInt("step-size", &sys::roar_bot->recording_step_size, 50, 300);
 						if (!sys::roar_bot->recording_s) ImGui::Checkbox("record-grind", &sys::roar_bot->recording_g);
 						if (!sys::roar_bot->recording_s && !sys::roar_bot->recording_g) ImGui::SameLine();
 						if (!sys::roar_bot->recording_g) ImGui::Checkbox("record-store", &sys::roar_bot->recording_s);
@@ -248,7 +249,9 @@ bool sdk::menu::c_menu::setup()
 						}
 						if (si == 2 && sys::roar_bot->recording_s)
 						{
-							if (ImGui::Button("set-sell-event")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->last_lua_actions.clear(); si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+							if (ImGui::Button("set-sell-event")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+							if (ImGui::Button("set-repair-event")) { sys::roar_bot->sscr("repair_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+							if (ImGui::Button("done")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 						}
 					}
 				},
@@ -980,7 +983,6 @@ bool sdk::menu::c_menu::setup()
 						if (ImGui::Button("reload-cfg")) sys::config->reset();						
 						if (sdk::player::player_->alive())
 						{
-
 							auto self = *(uint64_t*)(core::offsets::actor::actor_self);
 							auto self_pos = sdk::player::player_->gpos(self);
 							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
@@ -1122,13 +1124,11 @@ bool sdk::menu::c_menu::setup()
 						}
 						if (ImGui::Button("find-shop-button"))
 						{
-							auto lua = sdk::dialog::dialog->find_button("Shop", "Panel_Npc_Dialog_All");
-							if (lua.size())
-							{
-								sdk::util::log->a("found: %s", lua.c_str());
-								sys::lua_q->add(lua);
-							}
-							else sdk::util::log->a("not found");
+							auto id_button = sdk::dialog::dialog->find_button_ex("Shop", "Panel_Npc_Dialog_All");
+						}
+						if (ImGui::Button("find-repair-button"))
+						{
+							auto id_button = sdk::dialog::dialog->find_button_ex("Repair", "Panel_Npc_Dialog_All");
 						}
 						if (ImGui::Button("run test sell thread"))
 						{
@@ -1139,6 +1139,16 @@ bool sdk::menu::c_menu::setup()
 								stru->npc = "Lonely Palieva";
 								stru->items = { 44266 };
 								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
+							}
+						}
+						if (ImGui::Button("run test repair thread"))
+						{
+							if (!sdk::dialog::dialog->thread_running)
+							{
+								sdk::dialog::dialog->thread_running = true;
+								auto stru = new sdk::dialog::s_thread_p();
+								stru->npc = "Tranan Underfoe";
+								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::repair_eq, (PVOID)stru, 0, 0);
 							}
 						}
 						if (ImGui::Button("reset sale")) sdk::dialog::dialog->sell_reset();

@@ -41,7 +41,7 @@ namespace sys
 		//
 	public:
 		t_npc_interaction f_npc_interaction = (t_npc_interaction)(core::offsets::fn::start_npc_interaction);
-		int loot_act_k = 0;
+		int loot_act_k = 0; int recording_step_size = 50;
 		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};
 		//
 		void gppoint(float t);

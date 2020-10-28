@@ -72,6 +72,8 @@ uint64_t core::offsets::fn::buff_get_name = 0x140307380;
 uint64_t core::offsets::fn::dialog_gettext = 0x140679F30;
 //4C 8B 41 70 48 B8 ? ? ? ? ? ? ? ? 48 8B 49 78 4C 63 CA 49 2B C8 48 F7 E9 48 C1 FA 05 
 uint64_t core::offsets::fn::dialog_getbutton = 0x14067A8B0;
+//
+uint64_t core::offsets::fn::canjump = 0x14162BD20;
 
 //FromClient_SelfPlayerExpChanged
 uint64_t core::offsets::actor::actor_self = 0x143DAFED0;
