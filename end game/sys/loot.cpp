@@ -92,25 +92,29 @@ std::vector<std::string> sys::c_loot::gbl()
 void sys::c_loot::spack(int k)
 {
 	ByteBuffer a;
-	a.putShort(3004);
+	a.putShort(5827);
+	a.putEmptyBytes(1);
 	a.putInt(k);
-	fn::send_packet(a, 3004, 6);
+	a.putEmptyBytes(2);
+	fn::send_packet(a, 5827, 9);
 }
 void sys::c_loot::spick(int k, int sk, int s, int c)
 {
+	//opc   target key  0  cnt                        s        self key    null
+	//33 0d 02 cc 35 03 00 58 00 00 00 00 00 00 00 00 01 01 01 00 ac 71 00 00 
+	//33 0d 06 7c 1e 04 00 02 00 00 00 00 00 00 00 00 01 01 01 00 b4 11 00 00 
 	ByteBuffer a;
-	a.putShort(3348);
+	a.putShort(3379);
+	a.putInt(k);
+	a.putEmptyBytes(1);
 	a.put(c);
-	a.putEmptyBytes(7);
-	a.put(1);
-	a.putEmptyBytes(2);
+	a.putEmptyBytes(8);
 	a.put(s);
 	a.put(1);
-	a.putInt(k);
-	a.putEmptyBytes(5);
+	a.put(1);
 	a.putInt(sk);
-	a.putEmptyBytes(3);
-	fn::send_packet(a, 3348, 31);
+	a.putEmptyBytes(1);
+	fn::send_packet(a, 3379, 24);
 }
 uint64_t sys::c_loot::gitem(int s)
 {

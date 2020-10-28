@@ -186,7 +186,7 @@ int sdk::dialog::c_dialog::find_button_ex(std::string display_name, std::string 
 				vt[0x88] == _x88 &&
 				vt[0x8C] == _x8C)
 			{
-				//sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
+				sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
 				auto idx = std::string(); idx.push_back(child_name.back());
 				return std::stoi(idx);
 			}
