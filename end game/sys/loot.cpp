@@ -107,8 +107,8 @@ void sys::c_loot::spick(int k, int sk, int s, int c)
 	a.putShort(3379);
 	a.putInt(k);
 	a.putEmptyBytes(1);
-	a.put(c);
-	a.putEmptyBytes(8);
+	a.putShort(c);
+	a.putEmptyBytes(7);
 	a.put(s);
 	a.put(1);
 	a.put(1);

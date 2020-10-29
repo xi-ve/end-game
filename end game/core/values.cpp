@@ -9,7 +9,7 @@ uint64_t core::offsets::hk::lua_do_buffer = 0x1415CB890;
 //48 8B C4 56 57 41 56 48 83 EC 70 48 C7 40 ? ? ? ? ? 48 89 58 08 48 89 68 18 45 8B F0 48 8B FA 48 8B E9 8B 52 38 E8 ? ? ? ? 8B 57 38 48 8B CD E8 ? ? ? ? 48 85 C0 0F 85 ? ? ? ? 
 uint64_t core::offsets::hk::proxy_deadbody = 0x1407F77C0;//ref v7 = sub_xxxx(0x488...  /1160
 //89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 C7 44 24 ? ? ? ? ? 
-uint64_t core::offsets::hk::proxy_delete = 0x1407E11D0;
+uint64_t core::offsets::hk::proxy_delete = 0x1407E0AF0;
 //48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 8B F2 41 0F B6 F8 
 uint64_t core::offsets::hk::is_key_pressed = 0x14194B490;
 //40 53 48 83 EC 20 48 8B D9 33 D2 48 83 C1 40 
@@ -27,7 +27,7 @@ uint64_t core::offsets::patch::walk_mouse = 0x14070DF61 + 0x18;
 //48 8B C4 48 89 48 08 55 48 8D 68 A1 48 81 EC ? ? ? ? 48 C7 45 ? ? ? ? ? 48 89 58 10 48 89 70 18 48 89 78 20 0F 29 70 E8 
 uint64_t core::offsets::patch::window_focus_validity = 0x1402EB510;
 //48 8D 0D ? ? ? ? E8 ? ? ? ? 84 C0 75 13 45 33 C0 48 8B CF 41 8D 50 28 
-uint64_t core::offsets::patch::window_base = 0x143DA7D00;
+uint64_t core::offsets::patch::window_base = 0x143DAD100;
 
 
 //48 8B 35 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 48 8B 76 18

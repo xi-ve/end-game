@@ -39,14 +39,13 @@ std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle_front(sdk::util::c_vec
 }
 void sys::c_visuals::monster_proxy_debug()
 {
-	auto a = sys::loot->loot_proxys;
+	auto a = sdk::player::player_->actors;
 	if (a.size() <= 1) return;
 	auto sv = sdk::util::c_vector3();
 	if (!sdk::util::math->w2s(sdk::player::player_->gpos(this->self), sv)) return;
 	for (auto b : a)
 	{
 		if (b.ptr == NULL) continue;
-		if (*(BYTE*)(b.ptr + core::offsets::actor::actor_was_looted)) continue;
 		auto bpos = sdk::player::player_->gpos(b.ptr);
 		auto v = sdk::util::c_vector3();
 		if (!sdk::util::math->w2s(bpos, v)) continue;

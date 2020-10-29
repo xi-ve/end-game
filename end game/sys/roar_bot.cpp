@@ -133,7 +133,7 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 	if (rr)
 	{
 		auto lpos = sdk::player::player_->gpos(rr);
-		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, (lpos.y / 100) + 0.8f, (int)lpos.z / 100));
+		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, (int)lpos.y / 100, (int)lpos.z / 100));
 		this->loot_act_k = *(int*)(rr+core::offsets::actor::actor_proxy_key);
 	}
 
@@ -590,6 +590,8 @@ void sys::c_roar_bot::work(uint64_t s)
 							sdk::dialog::dialog->completed_sales = false;
 							this->items_left_sell.clear();
 							this->cur_route.pop_front();
+							this->npc_interacted = true;
+							this->execution = GetTickCount64() + 3500;
 							return;
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
@@ -612,7 +614,9 @@ void sys::c_roar_bot::work(uint64_t s)
 						{
 							sdk::dialog::dialog->completed_repair = false;
 							sdk::dialog::dialog->thread_running = false;
+							this->npc_interacted = false;
 							this->cur_route.pop_front();
+							this->execution = GetTickCount64() + 3500;
 							return;
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
@@ -627,7 +631,6 @@ void sys::c_roar_bot::work(uint64_t s)
 						}
 						return;
 					}
-					this->cur_route.pop_front();
 					return;
 				}
 			}
@@ -664,7 +667,7 @@ void sys::c_roar_bot::work(uint64_t s)
 		if (!looting) return;
 	}
 	//
-	sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, (cur_point.pos.y / 100) + 0.8f, cur_point.pos.z / 100));
+	sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 	this->cur_route.pop_front();
 }
 void sys::c_roar_bot::snpc(std::string a)
