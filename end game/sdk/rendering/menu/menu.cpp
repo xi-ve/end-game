@@ -251,6 +251,7 @@ bool sdk::menu::c_menu::setup()
 						{
 							if (ImGui::Button("set-sell-event")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 							if (ImGui::Button("set-repair-event")) { sys::roar_bot->sscr("repair_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+							if (ImGui::Button("set-storage-event")) { sys::roar_bot->sscr("store_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 							if (ImGui::Button("done")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
 						}
 					}
@@ -1130,6 +1131,10 @@ bool sdk::menu::c_menu::setup()
 						{
 							auto id_button = sdk::dialog::dialog->find_button_ex("Repair", "Panel_Npc_Dialog_All");
 						}
+						if (ImGui::Button("find-store-button"))
+						{
+							auto id_button = sdk::dialog::dialog->find_button_ex("Store", "Panel_Npc_Dialog_All");
+						}
 						if (ImGui::Button("run test sell thread"))
 						{
 							if (!sdk::dialog::dialog->thread_running)
@@ -1139,6 +1144,17 @@ bool sdk::menu::c_menu::setup()
 								stru->npc = "Lonely Palieva";
 								stru->items = { 44266 };
 								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
+							}
+						}
+						if (ImGui::Button("run test store thread"))
+						{
+							if (!sdk::dialog::dialog->thread_running)
+							{
+								sdk::dialog::dialog->thread_running = true;
+								auto stru = new sdk::dialog::s_thread_p();
+								stru->npc = "Ernill";
+								stru->items = { 54031, 9776 };
+								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
 							}
 						}
 						if (ImGui::Button("run test repair thread"))

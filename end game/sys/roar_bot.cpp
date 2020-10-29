@@ -168,6 +168,7 @@ bool sys::c_roar_bot::stance()
 }
 void sys::c_roar_bot::skill()
 {
+	if (this->cur_route.empty()) return;
 	if ((this->npc_interacted && this->p_mode == 1)
 		|| (!this->ibot_storage_roar->iv && this->p_mode == 1))
 	{
@@ -179,6 +180,7 @@ void sys::c_roar_bot::skill()
 		if (cv >= 800000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
 		return;
 	}
+	if (this->cur_route.front().script != "NONE") return;
 	if (this->skill_delay > GetTickCount64()) return;
 	auto an = sdk::player::player_->ganim(this->self);
 	if (!an.size()) return;
@@ -591,7 +593,7 @@ void sys::c_roar_bot::work(uint64_t s)
 							this->items_left_sell.clear();
 							this->cur_route.pop_front();
 							this->npc_interacted = true;
-							this->execution = GetTickCount64() + 3500;
+							this->execution = GetTickCount64() + 1000;
 							return;
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
@@ -608,6 +610,33 @@ void sys::c_roar_bot::work(uint64_t s)
 
 						return;
 					}
+					else if (cur_point.script == "store_routine()")
+					{
+						if (sdk::dialog::dialog->completed_sales)
+						{
+							sdk::dialog::dialog->sell_reset();
+							sdk::dialog::dialog->thread_running = false;
+							sdk::dialog::dialog->completed_sales = false;
+							this->items_left_sell.clear();
+							this->cur_route.pop_front();
+							this->npc_interacted = true;
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
+
+						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_sales = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							stru->items = this->items_left_sell;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
+						}
+
+						return;
+					}
 					else if (cur_point.script == "repair_routine()")
 					{
 						if (sdk::dialog::dialog->completed_repair)
@@ -616,7 +645,7 @@ void sys::c_roar_bot::work(uint64_t s)
 							sdk::dialog::dialog->thread_running = false;
 							this->npc_interacted = false;
 							this->cur_route.pop_front();
-							this->execution = GetTickCount64() + 3500;
+							this->execution = GetTickCount64() + 1000;
 							return;
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;

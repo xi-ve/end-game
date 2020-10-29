@@ -29,7 +29,7 @@ namespace sdk
 			int			sell_state = 0;
 			std::unordered_map<std::string, std::unordered_map<int,int>>  icon_idents =
 			{
-				{ "Shop", //figure this out
+				{ "Shop",
 					std::unordered_map<int,int>
 					{
 						{0x6C, 0x3da07a45},
@@ -51,6 +51,19 @@ namespace sdk
 						{0x78 ,0x3e780000},
 						{0x80 ,0x3ea40000},
 						{0x84 ,0x3f09131b},
+						{0x88 ,0x3ea40000},
+						{0x8C ,0x0000}
+					}
+				},
+				{ "Store",
+					std::unordered_map<int,int>
+					{
+						{0x6C ,0x3f098d60},
+						{0x70 ,0x3e780000},
+						{0x74 ,0x3f1ca81f},
+						{0x78 ,0x3e780000},
+						{0x80 ,0x3ea40000},
+						{0x84 ,0x3f1ca81f},
 						{0x88 ,0x3ea40000},
 						{0x8C ,0x0000}
 					}
@@ -108,6 +121,7 @@ namespace sdk
 		};
 		extern c_dialog* dialog;
 		extern void __stdcall do_sell	(void* p);
+		extern void __stdcall do_store	(void* p);
 		extern void __stdcall repair_eq	(void* a);
 	}
 }

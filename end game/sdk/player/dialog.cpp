@@ -166,16 +166,16 @@ int sdk::dialog::c_dialog::find_button_ex(std::string display_name, std::string 
 			auto _x88 = *(int*)(child + 0x88);
 			auto _x8C = *(int*)(child + 0x8C);
 
-			//sdk::util::log->b("%s", child_name.c_str());
-			//sdk::util::log->b("0x%04x", _x6C);
-			//sdk::util::log->b("0x%04x", _x70);
-			//sdk::util::log->b("0x%04x", _x74);
-			//sdk::util::log->b("0x%04x", _x78);
-			//sdk::util::log->b("0x%04x", _x80);
-			//sdk::util::log->b("0x%04x", _x84);
-			//sdk::util::log->b("0x%04x", _x88);
-			//sdk::util::log->b("0x%04x", _x8C);
-			//sdk::util::log->b(" --- ");
+			/*sdk::util::log->b("%s", child_name.c_str());
+			sdk::util::log->b("0x%04x", _x6C);
+			sdk::util::log->b("0x%04x", _x70);
+			sdk::util::log->b("0x%04x", _x74);
+			sdk::util::log->b("0x%04x", _x78);
+			sdk::util::log->b("0x%04x", _x80);
+			sdk::util::log->b("0x%04x", _x84);
+			sdk::util::log->b("0x%04x", _x88);
+			sdk::util::log->b("0x%04x", _x8C);
+			sdk::util::log->b(" --- ");*/
 
 			if (vt[0x6C] == _x6C &&
 				vt[0x70] == _x70 &&
@@ -186,7 +186,7 @@ int sdk::dialog::c_dialog::find_button_ex(std::string display_name, std::string 
 				vt[0x88] == _x88 &&
 				vt[0x8C] == _x8C)
 			{
-				sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
+				//sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
 				auto idx = std::string(); idx.push_back(child_name.back());
 				return std::stoi(idx);
 			}
@@ -267,7 +267,7 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 							break;
 						}
 						else sdk::dialog::dialog->exit_stage++;
-						sdk::util::log->b("exit repair complete");
+						//sdk::util::log->b("exit repair complete");
 						continue;
 						break;
 					}
@@ -280,7 +280,7 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 							break;
 						}
 						else sdk::dialog::dialog->exit_stage++;
-						sdk::util::log->b("exit complete");
+						//sdk::util::log->b("exit complete");
 						continue;
 						break;
 					}
@@ -289,7 +289,7 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 
 					if (sdk::dialog::dialog->exit_stage >= 2)
 					{
-						sdk::util::log->b("done repair");
+						//sdk::util::log->b("done repair");
 						sdk::dialog::dialog->did_click = false;
 						sdk::dialog::dialog->did_click_confirm = false;
 						sdk::dialog::dialog->did_click_repair = false;
@@ -319,7 +319,7 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 		{
 			if (!sdk::dialog::dialog->last_click_time)
 			{
-				sdk::util::log->b("clicked messageBox");
+				//sdk::util::log->b("clicked messageBox");
 				sys::lua_q->add("messageBox_YesButtonUp()");
 				sdk::dialog::dialog->last_click_time = GetTickCount64();
 				sdk::dialog::dialog->did_click_confirm = true;
@@ -332,6 +332,154 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 				sdk::dialog::dialog->did_finish_reapir = false;
 				sdk::dialog::dialog->did_click_confirm = false;
 				continue;
+			}
+		}
+	}
+}
+void __stdcall sdk::dialog::do_store(void* a)
+{
+	auto data = (sdk::dialog::s_thread_p*)(a);
+	sdk::dialog::dialog->thread_running = true;
+	while (1)
+	{
+		if (sdk::dialog::dialog->last_execution + 100 > GetTickCount64()) continue;
+		sdk::dialog::dialog->last_execution = GetTickCount64();
+		if (!data->items.empty())
+		{
+			auto interacting = sdk::dialog::dialog->find_panel("Panel_Npc_Dialog_All");
+			if (!interacting)
+			{
+				for (auto a : sdk::player::player_->npcs) if (strstr(a.name.c_str(), data->npc.c_str())) sys::roar_bot->f_npc_interaction(a.ptr);
+				//sdk::util::log->b("interacted with %s", npc.c_str());
+				continue;
+			}
+			auto shop_panel = sdk::dialog::dialog->find_panel("Panel_Window_Warehouse");
+			if (!shop_panel)
+			{
+				auto btn = sdk::dialog::dialog->find_button_ex("Store", "Panel_Npc_Dialog_All");
+				if (btn == -1) return;
+				auto str = std::string("HandleEventLUp_DialogMain_All_FuncButton(").append(std::to_string(btn)).append(")");
+				sys::lua_q->add(str);
+				//sdk::util::log->b("shop button > %s", str.c_str());
+				continue;
+			}
+		}
+		if (data->items.empty())//to exit dialog
+		{
+			auto interacting = sdk::dialog::dialog->find_panel("Panel_Npc_Dialog_All");
+			if (interacting)
+			{
+				if (sdk::dialog::dialog->last_click_time != 0)
+				{
+					if (GetTickCount64() > sdk::dialog::dialog->last_click_time + 150)//max timeout to try again if failed
+					{
+						sdk::dialog::dialog->last_click_time = 0;
+						sys::lua_q->add("HandleEventLUp_DialogMain_All_ExitClick()");
+						continue;
+					}
+				}
+				else
+				{
+					sys::lua_q->add("HandleEventLUp_DialogMain_All_ExitClick()");
+					sdk::dialog::dialog->last_click_time = GetTickCount64();
+					continue;
+				}
+			}
+			else
+			{
+				sdk::dialog::dialog->completed_sales = true;
+				sdk::dialog::dialog->needs_numberpad = false;
+				sdk::dialog::dialog->last_click_time = 0;
+				sdk::dialog::dialog->did_click = false;
+				sdk::dialog::dialog->did_select_confirm = false;
+				sdk::dialog::dialog->did_select_max = false;
+				sdk::dialog::dialog->thread_running = false;
+				delete a;
+				ExitThread(0);
+				return;
+			}
+			continue;
+		}
+		auto i = data->items.back();
+		if (i != -1)
+		{
+			if (sdk::dialog::dialog->last_click_time != 0)
+			{
+				if (GetTickCount64() > sdk::dialog::dialog->last_click_time + 150)//max timeout to try again if failed
+				{
+					sdk::dialog::dialog->last_click_time = 0;
+					goto do_it;
+				}
+			}
+			else
+			{
+			do_it:
+				auto has_item = false; int slot = -1;
+				for (auto a : sdk::player::player_->inventory_items)
+				{
+					if (a.item_index == i)
+					{
+						has_item = true;
+						slot = a.item_slot;
+						if (a.count > 1) sdk::dialog::dialog->needs_numberpad = true;
+						else sdk::dialog::dialog->needs_numberpad = false;
+						break;
+					}
+				}
+				if (has_item)
+				{
+					if (!sdk::dialog::dialog->did_click)
+					{
+						sdk::dialog::dialog->last_click_time = GetTickCount64();
+						auto s = std::string("HandleEventRUp_Inventory_All_SlotRClick(").append(std::to_string(slot)).append(")");
+						sys::lua_q->add(s);
+						sdk::dialog::dialog->did_click = true;
+						continue;
+					}
+					else if (GetTickCount64() > sdk::dialog::dialog->last_click_time + 150)
+					{
+						if (sdk::dialog::dialog->needs_numberpad)
+						{
+							if (!sdk::dialog::dialog->did_select_max)
+							{
+								auto r = sdk::dialog::dialog->find_panel(sdk::dialog::dialog->core_dialogs["NumberPad"]);
+								if (r)
+								{
+									sys::lua_q->add("HandleEventLUp_NumberPad_All_AllButton_Click(0)");
+									sdk::dialog::dialog->did_select_max = true;
+									sdk::dialog::dialog->last_click_time = GetTickCount64();
+									continue;
+								}
+							}
+							if (!sdk::dialog::dialog->did_select_confirm)
+							{
+								auto r = sdk::dialog::dialog->find_panel(sdk::dialog::dialog->core_dialogs["NumberPad"]);
+								if (r)
+								{
+									sys::lua_q->add("HandleEventLUp_NumberPad_All_ConfirmButton_Click()");
+									sdk::dialog::dialog->did_select_confirm = true;
+									sdk::dialog::dialog->last_click_time = GetTickCount64();
+									continue;
+								}
+							}
+							else
+							{
+								sdk::dialog::dialog->did_select_confirm = false;
+								sdk::dialog::dialog->did_select_max = false;
+								continue;
+							}
+						}
+					}
+				}
+				else
+				{
+					sdk::dialog::dialog->needs_numberpad = false;
+					sdk::dialog::dialog->last_click_time = 0;
+					sdk::dialog::dialog->did_click = false;
+					sdk::dialog::dialog->did_select_confirm = false;
+					sdk::dialog::dialog->did_select_max = false;
+					data->items.pop_back();
+				}
 			}
 		}
 	}
