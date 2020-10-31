@@ -164,8 +164,10 @@ bool sys::c_loot::pick(s_looting_item ctx)
 	if (!blue) blue = sys::config->gvar("auto_loot", "ipick_blue");
 	if (!orange) orange = sys::config->gvar("auto_loot", "ipick_orange");
 	if (!yellow) yellow = sys::config->gvar("auto_loot", "ipick_yellow");
+	if (!idont_pick_event) idont_pick_event = sys::config->gvar("auto_loot", "idont_pick_event");
 	if (ienable_filter->iv == 0) return true;
 	if (ctx.name == "Silver") return true;
+	if (idont_pick_event->iv && strstr(ctx.name.c_str(), "Event")) return false;
 	for (auto a : this->blacklist) 
 	{
 		if (a == ctx.id)

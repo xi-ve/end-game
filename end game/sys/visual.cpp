@@ -198,6 +198,26 @@ void sys::c_visuals::store_path()
 		}
 	}
 }
+void sys::c_visuals::store_path_legit()
+{
+	if (!istore_path_legit) istore_path_legit = sys::config->gvar("visuals", "ienable_legit_store_path");
+	if (!sys::legit_bot->gssize()) return;
+	bool b_last_pause = false; std::vector<sdk::util::c_vector3> last, last2; sdk::util::c_vector3 rp;
+	auto spos = sdk::player::player_->gpos(this->self);
+	for (auto b : sys::legit_bot->g_s())
+	{
+		auto ds = sdk::util::math->gdst_3d(b.pos, spos);
+		if (ds >= 5000) { last.clear(); continue; }
+		sdk::util::c_vector3 l;
+		if (!sdk::util::math->w2s(b.pos, l)) { last.clear(); continue; }
+		if (!last.size()) last.push_back(l);
+		else
+		{
+			sdk::render::render->DrawLine(l.x, l.z, last.back().x, last.back().z, 0xff00ff00);
+			last.clear(); last.push_back(l); rp = b.pos;
+		}
+	}
+}
 void sys::c_visuals::lineto_roar()
 {
 	if (sys::roar_bot->g_p().empty()) return;
@@ -404,10 +424,12 @@ void sys::c_visuals::work()
 	if (!ienable_legit_path) ienable_legit_path = sys::config->gvar("visuals", "ienable_legit_path");
 	if (!ienable_player) ienable_player = sys::config->gvar("visuals", "ienable_player");
 	if (!itrace_debug) itrace_debug = sys::config->gvar("debug", "itrace_debug");
+	if (!istore_path_legit) istore_path_legit = sys::config->gvar("visuals", "ienable_legit_store_path");
 	if (ienable_debug->iv) this->monster_proxy_debug();
 	if (ienable_portal->iv) this->portal();
 	if (iroar_visual->iv) this->roar_path();
 	if (istore_path->iv) this->store_path();
+	if (istore_path_legit->iv) this->store_path_legit();
 	if (ivis_linestart->iv) this->lineto_roar();
 	if (ialive_byname->iv) this->alive_proxy_debug();
 	if (ienable_legit_path->iv) this->legit_path();

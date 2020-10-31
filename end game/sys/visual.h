@@ -9,6 +9,7 @@ namespace sys
 		sys::s_cfg_v* ienable_portal = NULL; sys::s_cfg_v* ienable_debug = NULL; sys::s_cfg_v* istore_path = NULL;
 		sys::s_cfg_v* ivis_linestart = NULL; sys::s_cfg_v* ialive_byname = NULL; sys::s_cfg_v* ienable_legit_path_pauses = NULL;
 		sys::s_cfg_v* ienable_legit_path = NULL; sys::s_cfg_v* ienable_player = NULL; sys::s_cfg_v* itrace_debug = NULL;
+		sys::s_cfg_v* istore_path_legit = NULL;
 		uint64_t self = NULL;
 		std::string esp_mob_t = "Raccoon";
 		std::vector<sdk::player::s_trace> t_map;
@@ -18,6 +19,7 @@ namespace sys
 		void trace_debug();
 		void roar_path();
 		void store_path();
+		void store_path_legit();
 		void lineto_roar();
 		void debug_mobs();
 		void editor_debug();

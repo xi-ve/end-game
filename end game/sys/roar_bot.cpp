@@ -135,6 +135,26 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 		auto lpos = sdk::player::player_->gpos(rr);
 		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, (int)lpos.y / 100, (int)lpos.z / 100));
 		this->loot_act_k = *(int*)(rr+core::offsets::actor::actor_proxy_key);
+		if (rr != this->last_loot_actor)//test this ok
+		{
+			this->last_loot_actor = rr;
+			this->last_loot_time = GetTickCount64()+5000;
+		}
+		else
+		{
+			if (GetTickCount64() > this->last_loot_time)
+			{
+				for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
+				{
+					auto a = sys::loot->loot_proxys[b];
+					if (a.ptr != this->last_loot_actor) continue;					
+					sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
+					break;					
+				}
+				this->last_loot_actor = 0;
+				this->last_loot_time = 0;
+			}
+		}
 	}
 
 	return false;
@@ -558,6 +578,7 @@ void sys::c_roar_bot::work(uint64_t s)
 				{
 					if (this->has_aggro()) return;
 
+					sdk::dialog::dialog->sell_reset();
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
 					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
 					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }

@@ -7,6 +7,7 @@ namespace sys
 	private:
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
+		uint64_t last_loot_actor = 0; ULONGLONG last_loot_time = 0;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
 		sys::s_cfg_v* ibot_storage_roar = NULL; sys::s_cfg_v* istop_on_player = NULL; sys::s_cfg_v* iexit_on_player = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
@@ -46,6 +47,7 @@ namespace sys
 		//
 		void gppoint(float t);
 		void spoint();
+		void rpoint();
 		void sepoint();
 		void sitem(int i);
 		int  gmode() { return this->p_mode; }
@@ -55,7 +57,7 @@ namespace sys
 		//
 		sdk::util::c_vector3 lp = {};
 		std::string pathname = "";
-		bool recording_g = 0, recording_s = 0, store_can_path = 0;
+		bool recording_g = 0, recording_s = 0, recording_r = 0, store_can_path = 0;
 		void record();
 		void load();
 		void save();

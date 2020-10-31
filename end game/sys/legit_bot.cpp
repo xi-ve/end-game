@@ -345,11 +345,11 @@ bool sys::c_legit_bot::jump()
 	float va7[3] = { 144.f, 193.f, 50.f };
 	float va8[3] = { 60.f , 145.f, 50.f };
 	auto canJump = fn::o_canjump(s_8, 0, s_ctrl + 0x234, s_ctrl + 0x240, *(float*)va6, *(float*)va7, *(float*)va8, 0);
-	if (canJump > 0 && canJump < 4) 
-	{ 
+	if (canJump > 0 && canJump < 4)
+	{
 		this->walk_node.clear(); this->att_target = 0;
 		sys::key_q->add(new sys::s_key_input({ VK_SPACE }, 75));
-		return true; 
+		return true;
 	}
 	else return false;
 }
@@ -368,7 +368,7 @@ bool sys::c_legit_bot::stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s)
 				auto right = circle.at(0);
 				auto front = circle.at(80);
 				auto tr = sdk::player::player_->trace(s, left, this->self, 80);
-				if (this->jump()) 
+				if (this->jump())
 				{
 					this->pos_saved.clear(); this->timer_save = 0;
 					return true;
@@ -414,6 +414,11 @@ bool sys::c_legit_bot::ssp()
 	//
 	return false;
 }
+bool sys::c_legit_bot::srp()
+{
+	if (this->force_repair) return true;
+	return false;
+}
 void sys::c_legit_bot::repath(int a, int b)
 {
 	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "NONE", "NONE", 0); }
@@ -424,6 +429,17 @@ void sys::c_legit_bot::repath(int a, int b)
 		else
 		{
 			this->cur_route = this->store;
+			std::reverse(this->cur_route.begin(), this->cur_route.end());
+		}
+		this->reversed = b;
+	}
+	if (a == 2)
+	{
+		this->cur_route.clear();
+		if (b) this->cur_route = this->repair;
+		else
+		{
+			this->cur_route = this->repair;
 			std::reverse(this->cur_route.begin(), this->cur_route.end());
 		}
 		this->reversed = b;
@@ -652,7 +668,7 @@ bool sys::c_legit_bot::snear()
 }
 void sys::c_legit_bot::reset()
 {
-	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear(); this->items_left_sell.clear();
+	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear(); this->items_left_sell.clear(); this->repair.clear();
 	this->p_mode = 0;
 	this->reversed = 0;
 	this->s_npc = "NONE";
@@ -697,6 +713,16 @@ void sys::c_legit_bot::spoint()
 	sdk::util::log->add("spoint add", sdk::util::e_info, true);
 	this->store.emplace_back(p, "NONE", "NONE", false);
 }
+void sys::c_legit_bot::rpoint()
+{
+	auto p = sdk::player::player_->gpos(this->self);
+	std::ofstream f(this->pathname, std::ios::app);
+	if (!f.is_open()) return;
+	f << "(rp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "NONE" << "}{" << "NONE" << "}" << "\n";
+	f.close();
+	sdk::util::log->add("rpoint add", sdk::util::e_info, true);
+	this->repair.emplace_back(p, "NONE", "NONE", false);
+}
 void sys::c_legit_bot::sepoint()
 {
 	auto p = sdk::player::player_->gpos(this->self);
@@ -707,6 +733,17 @@ void sys::c_legit_bot::sepoint()
 	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
 	this->store.emplace_back(p, this->s_npc, this->s_scr, true);
 	sdk::util::log->add("sepoint add", sdk::util::e_info, true);
+}
+void sys::c_legit_bot::srpoint()
+{
+	auto p = sdk::player::player_->gpos(this->self);
+	std::ofstream f(this->pathname, std::ios::app);
+	if (!f.is_open()) return;
+	f << "(rp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
+	f.close();
+	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
+	this->repair.emplace_back(p, this->s_npc, this->s_scr, true);
+	sdk::util::log->add("srpoint add", sdk::util::e_info, true);
 }
 void sys::c_legit_bot::sitem(int i)
 {
@@ -791,12 +828,14 @@ void sys::c_legit_bot::record()
 	this->self = *(uint64_t*)(core::offsets::actor::actor_self);
 	auto p = sdk::player::player_->gpos(this->self);
 	if (!this->store_can_path && this->recording_s) return;
+	if (!this->store_can_path && this->recording_r) return;
 	if (!lp.valid())
 	{
-		this->grind.clear(); this->allowed_sell_items.clear(); this->store.clear();
+		this->grind.clear(); this->allowed_sell_items.clear(); this->store.clear(); this->repair.clear();
 		lp = p;
 		if (this->recording_g) this->grind.push_back(p);
 		if (this->recording_s) this->store.emplace_back(p, "NONE", "NONE", false);
+		if (this->recording_r) this->store.emplace_back(p, "NONE", "NONE", false);
 		return;
 	}
 	auto d = sdk::util::math->gdst_3d(p, lp);
@@ -805,11 +844,12 @@ void sys::c_legit_bot::record()
 		lp = p;
 		if (this->recording_g) this->gpoint();
 		if (this->recording_s) this->spoint();
+		if (this->recording_r) this->rpoint();
 	}
 }
 void sys::c_legit_bot::load()
 {
-	this->reset(); this->grind.clear(); this->store.clear();
+	this->reset(); this->grind.clear(); this->store.clear(); this->repair.clear();
 	auto parse_position = [&](std::string l) -> sdk::util::c_vector3
 	{
 		auto line = l;
@@ -916,7 +956,6 @@ void sys::c_legit_bot::load()
 
 		return std::stoi(line);
 	};
-	this->grind.clear();
 	std::ifstream v(this->pathname); std::string s;
 	if (!v.is_open()) return;
 	while (std::getline(v, s))
@@ -928,6 +967,13 @@ void sys::c_legit_bot::load()
 			if (res.script != "NONE") { res.special_event = 1; res.pause = 1.2f; }
 			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }
 			if (res.pos.valid() && res.script.size() > 0) { this->store.push_back(res); continue; }
+		}
+		if (strstr(s.c_str(), "(rp)"))
+		{
+			auto res = parse_storage(s);
+			if (res.script != "NONE") { res.special_event = 1; res.pause = 1.2f; }
+			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }
+			if (res.pos.valid() && res.script.size() > 0) { this->repair.push_back(res); continue; }
 		}
 		if (strstr(s.c_str(), "[gp]"))
 		{
@@ -962,28 +1008,27 @@ void sys::c_legit_bot::save()
 		else p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << 0.1f << ")\n";
 	}
 	for (auto a : this->store) p << "(sp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
+	for (auto a : this->repair) p << "(rp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
 	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
 	sdk::util::log->add("resaved path");
 }
 bool sys::c_legit_bot::nav_to(sdk::util::c_vector3 spos, float dstf)
 {
 	if (!this->walk_node.valid()) return false;
-
 	this->aim_pos(this->walk_node, spos);
 	return true;
-
 }
 void sys::c_legit_bot::set_walk()
 {
 	auto& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
 	if (!input_adr) return;
 	if (this->walk_node.valid()) *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
-	else *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;	
+	else *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
 }
 void sys::c_legit_bot::work(uint64_t s)
 {
 	this->self = s;
-	if (this->recording_g || this->recording_s) { this->record(); return; }
+	if (this->recording_g || this->recording_s || this->recording_r) { this->record(); return; }
 	if (!this->dwork) return;
 	if (!this->execution) this->execution = GetTickCount64() + 55;
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + 55;
@@ -995,6 +1040,13 @@ void sys::c_legit_bot::work(uint64_t s)
 		this->p_mode = 1;
 		this->force_store = false;
 		sdk::util::log->add("should SP NOW", sdk::util::e_info, true);
+	}
+	if (this->repair.size() && this->cur_route.empty() && this->srp() && this->p_mode == 0)
+	{
+		this->repath(2, 1);
+		this->p_mode = 2;
+		this->force_repair = false;
+		sdk::util::log->b("should RP NOW");
 	}
 	if (!this->cur_route.size() && this->p_mode == 0) this->repath(0, 0);
 	if (!this->cur_route.size() && this->p_mode == 1 && this->reversed)
@@ -1008,12 +1060,318 @@ void sys::c_legit_bot::work(uint64_t s)
 		}
 		sdk::util::log->add("repathed SP conform", sdk::util::e_info, true);
 	}
+	if (!this->cur_route.size() && this->p_mode == 2 && this->reversed)
+	{
+		//remove events
+		this->repath(2, 0);
+		for (auto a = 0; a < this->cur_route.size(); a++)
+		{
+			auto obj = this->cur_route[a];
+			if (obj.special_event) this->cur_route.erase(this->cur_route.begin() + a);
+		}
+		sdk::util::log->add("repathed RP conform", sdk::util::e_info, true);
+	}
 	//
 	this->autopot();
 	sys::key_q->bypass();
 	//
 	auto spos = sdk::player::player_->gpos(s);
 	auto cur_point = this->cur_route.front();
+
+	if (this->p_mode == 1)
+	{
+		if (this->reversed)//path to
+		{
+			if (cur_point.special_event)
+			{
+				if (cur_point.npc_name != "NONE")//npc
+				{
+					this->walk_node.clear();
+					this->set_walk();
+					sdk::dialog::dialog->sell_reset();
+
+					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
+					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+
+					this->f_npc_interaction(npc_wanted_ptr);
+					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
+					if (!cinteract || cinteract != npc_wanted_ptr) return;
+
+					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+					this->cur_route.pop_front();
+
+					this->items_left_sell = this->allowed_sell_items;
+					this->last_interaction_name = cur_point.npc_name;
+
+					return;
+				}
+				else if (cur_point.script != "NONE")//scr
+				{
+					if (cur_point.script == "sell_routine()")
+					{
+						if (sdk::dialog::dialog->completed_sales)
+						{
+							sdk::dialog::dialog->sell_reset();
+							sdk::dialog::dialog->thread_running = false;
+							sdk::dialog::dialog->completed_sales = false;
+							this->items_left_sell.clear();
+							this->cur_route.pop_front();
+							this->npc_interacted = true;
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_sales = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							stru->items = this->items_left_sell;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
+						}
+
+						return;
+					}
+					else if (cur_point.script == "store_routine()")
+					{
+						if (sdk::dialog::dialog->completed_sales)
+						{
+							sdk::dialog::dialog->sell_reset();
+							sdk::dialog::dialog->thread_running = false;
+							sdk::dialog::dialog->completed_sales = false;
+							this->items_left_sell.clear();
+							this->cur_route.pop_front();
+							this->npc_interacted = true;
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_sales = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							stru->items = this->allowed_sell_items;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
+						}
+
+						return;
+					}
+					else if (cur_point.script == "repair_routine()")
+					{
+						if (sdk::dialog::dialog->completed_repair)
+						{
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = false;
+							this->npc_interacted = false;
+							this->cur_route.pop_front();
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!sdk::dialog::dialog->completed_repair && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::repair_eq, (PVOID)stru, 0, 0);
+						}
+						return;
+					}
+					return;
+				}
+			}
+			else
+			{
+				if (this->find_node(cur_point.pos, spos, 150)) this->set_walk();
+				this->aim_pos(this->walk_node, spos);
+				auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
+				if (dtn <= 75)
+				{
+					this->cur_route.pop_front();
+					this->walk_node.clear();
+				}
+				return;
+			}
+		}
+		else//path back
+		{
+			this->npc_interacted = false;
+			/*sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+			this->cur_route.pop_front();*/
+
+			if (this->stuck(this->walk_node, spos)) return; 
+			if (this->find_node(cur_point.pos, spos, 150)) this->set_walk();
+			this->aim_pos(this->walk_node, spos);
+			auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
+			if (dtn <= 75)
+			{
+				this->cur_route.pop_front();
+				this->walk_node.clear();
+			}
+
+			if (this->cur_route.empty())
+			{
+				this->set_walk();
+				this->p_mode = 0;
+				this->repath(0, 0);
+				sdk::util::log->add("completed SP", sdk::util::e_info, true);
+				this->npc_interacted = false;
+			}
+		}
+		return;
+	}
+	if (this->p_mode == 2)
+	{
+		if (this->reversed)//path to
+		{
+			if (cur_point.special_event)
+			{
+				if (cur_point.npc_name != "NONE")//npc
+				{
+					this->walk_node.clear();
+					this->set_walk();
+					sdk::dialog::dialog->sell_reset();
+
+					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
+					for (auto b : this->repair) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+
+					this->f_npc_interaction(npc_wanted_ptr);
+					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
+					if (!cinteract || cinteract != npc_wanted_ptr) return;
+
+					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+					this->cur_route.pop_front();
+
+					this->items_left_sell = this->allowed_sell_items;
+					this->last_interaction_name = cur_point.npc_name;
+
+					return;
+				}
+				else if (cur_point.script != "NONE")//scr
+				{
+					if (cur_point.script == "sell_routine()")
+					{
+						if (sdk::dialog::dialog->completed_sales)
+						{
+							sdk::dialog::dialog->sell_reset();
+							sdk::dialog::dialog->thread_running = false;
+							sdk::dialog::dialog->completed_sales = false;
+							this->items_left_sell.clear();
+							this->cur_route.pop_front();
+							this->npc_interacted = true;
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
+
+						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_sales = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							stru->items = this->items_left_sell;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
+						}
+
+						return;
+					}
+					else if (cur_point.script == "store_routine()")
+					{
+						if (sdk::dialog::dialog->completed_sales)
+						{
+							sdk::dialog::dialog->sell_reset();
+							sdk::dialog::dialog->thread_running = false;
+							sdk::dialog::dialog->completed_sales = false;
+							this->items_left_sell.clear();
+							this->cur_route.pop_front();
+							this->npc_interacted = true;
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
+
+						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_sales = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							stru->items = this->items_left_sell;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
+						}
+
+						return;
+					}
+					else if (cur_point.script == "repair_routine()")
+					{
+						if (sdk::dialog::dialog->completed_repair)
+						{
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = false;
+							this->npc_interacted = false;
+							this->cur_route.pop_front();
+							this->execution = GetTickCount64() + 1000;
+							return;
+						}
+						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
+
+						if (!sdk::dialog::dialog->completed_repair && !sdk::dialog::dialog->thread_running)
+						{
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = true;
+							auto stru = new sdk::dialog::s_thread_p();
+							stru->npc = this->last_interaction_name;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::repair_eq, (PVOID)stru, 0, 0);
+						}
+						return;
+					}
+					return;
+				}
+			}
+			else
+			{
+				if (this->stuck(this->walk_node, spos)) return;
+				if (this->find_node(cur_point.pos, spos, 150)) this->set_walk();
+				this->aim_pos(this->walk_node, spos);
+				auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
+				if (dtn <= 75)
+				{
+					this->cur_route.pop_front();
+					this->walk_node.clear();
+				}
+				return;
+			}
+		}
+		else//path back
+		{
+			this->npc_interacted = false;
+			/*sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
+			this->cur_route.pop_front();*/
+
+			if (this->find_node(cur_point.pos, spos, 150)) this->set_walk();
+			this->aim_pos(this->walk_node, spos);
+			auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
+			if (dtn <= 75)
+			{
+				this->cur_route.pop_front();
+				this->walk_node.clear();
+			}
+
+			if (this->cur_route.empty())
+			{
+				this->set_walk();
+				this->p_mode = 0;
+				this->repath(0, 0);
+				sdk::util::log->add("completed SP", sdk::util::e_info, true);
+				this->npc_interacted = false;
+			}
+		}
+		return;
+	}
 
 	if (cur_point.pos.pause < 1.1f) this->find_node(cur_point.pos, spos, 150);
 	if (!sys::key_q->thread_working) this->set_walk();
@@ -1075,13 +1433,13 @@ void sys::c_legit_bot::work(uint64_t s)
 	if (this->stuck(this->walk_node, spos)) return;
 
 	if (this->blockage(spos)) return;
-	
+
 	auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
 	if (dtn <= 75)
 	{
 		this->cur_route.pop_front();
 		this->walk_node.clear();
 		return;
-	}	
+	}
 }
 sys::c_legit_bot* sys::legit_bot;

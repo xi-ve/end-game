@@ -44,18 +44,20 @@ namespace sys
 		std::vector<int> allowed_sell_items = {};
 		std::deque<sdk::util::c_vector3> grind = {};
 		std::deque<s_path_script>		 store = {};
+		std::deque<s_path_script>		 repair = {};
 		//
 		std::string s_scr = "NONE", s_npc = "NONE";
 		//
 		sdk::util::c_vector3 pos_saved = {}; ULONGLONG timer_save = 0;
 		//
-		int p_mode = 0;//0,grind 1,store
+		int p_mode = 0;//0,grind 1,store,2 repair
 		int reversed = 0;
-		bool skill_locked = 0; bool npc_interacted = false;
+		bool skill_locked = 0; bool npc_interacted = false; std::string last_interaction_name = "";
 		//
 		bool jump();
 		bool stuck(sdk::util::c_vector3 p, sdk::util::c_vector3 s);
 		bool ssp();
+		bool srp();
 		void repath(int a, int b);
 		bool pause(uint64_t s, float p);
 		bool find_node(sdk::util::c_vector3 t, sdk::util::c_vector3 f, float md);
@@ -81,14 +83,16 @@ namespace sys
 
 		std::deque<s_skill*> skills;
 		int loot_act_k = 0;
-		bool dwork = false; bool glua_actions = false; bool force_store = false; std::vector<std::string> last_lua_actions = {};
+		bool dwork = false; bool glua_actions = false; bool force_store = false; bool force_repair = false; std::vector<std::string> last_lua_actions = {};
 		//
 		void aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s);
 		bool blockage(sdk::util::c_vector3 s);
 		//
 		void gppoint(float t);
 		void spoint();
+		void rpoint();
 		void sepoint();
+		void srpoint();
 		void sitem(int i);
 		int  gmode() { return this->p_mode; }
 		std::vector<std::string> gitm();
@@ -103,7 +107,7 @@ namespace sys
 		//
 		sdk::util::c_vector3 lp = {};
 		std::string pathname = "", combo_name = "def.combo";
-		bool recording_g = 0, recording_s = 0, store_can_path = 0;
+		bool recording_g = 0, recording_s = 0, recording_r = 0, store_can_path = 0, repair_can_path = 0;
 		void record();
 		void load();
 		void save();

@@ -186,7 +186,7 @@ int sdk::dialog::c_dialog::find_button_ex(std::string display_name, std::string 
 				vt[0x88] == _x88 &&
 				vt[0x8C] == _x8C)
 			{
-				//sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
+				sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
 				auto idx = std::string(); idx.push_back(child_name.back());
 				return std::stoi(idx);
 			}
@@ -350,7 +350,7 @@ void __stdcall sdk::dialog::do_store(void* a)
 			if (!interacting)
 			{
 				for (auto a : sdk::player::player_->npcs) if (strstr(a.name.c_str(), data->npc.c_str())) sys::roar_bot->f_npc_interaction(a.ptr);
-				//sdk::util::log->b("interacted with %s", npc.c_str());
+				sdk::util::log->b("interacted with %s", data->npc.c_str());
 				continue;
 			}
 			auto shop_panel = sdk::dialog::dialog->find_panel("Panel_Window_Warehouse");
@@ -360,7 +360,7 @@ void __stdcall sdk::dialog::do_store(void* a)
 				if (btn == -1) return;
 				auto str = std::string("HandleEventLUp_DialogMain_All_FuncButton(").append(std::to_string(btn)).append(")");
 				sys::lua_q->add(str);
-				//sdk::util::log->b("shop button > %s", str.c_str());
+				sdk::util::log->b("store button > %s", str.c_str());
 				continue;
 			}
 		}

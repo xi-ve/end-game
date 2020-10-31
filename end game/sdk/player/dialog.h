@@ -116,6 +116,13 @@ namespace sdk
 				this->did_select_max = false;
 				this->needs_numberpad = false;
 				this->sell_state = 0; 
+				this->completed_repair = false;
+				this->did_click_repair = 0;
+				this->did_enter_repair = 0;
+				this->did_enter_menu = 0;
+				this->did_click_confirm = 0;
+				this->exit_stage = 0;
+				this->did_finish_reapir = 0;
 			};
 			bool		sell_test(int id);
 		};

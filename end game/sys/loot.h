@@ -39,7 +39,7 @@ namespace sys
 		t_loot_get_item_count f_loot_get_item_count = (t_loot_get_item_count)core::offsets::fn::loot_item_count;
 		sys::s_cfg_v* whitelistv = NULL; sys::s_cfg_v* blacklistv = NULL; sys::s_cfg_v* grey = NULL;
 		sys::s_cfg_v* green = NULL; sys::s_cfg_v* blue = NULL;
-		sys::s_cfg_v* orange = NULL; sys::s_cfg_v* yellow = NULL; sys::s_cfg_v* ienable = NULL;
+		sys::s_cfg_v* orange = NULL; sys::s_cfg_v* yellow = NULL; sys::s_cfg_v* ienable = NULL; sys::s_cfg_v* idont_pick_event = NULL;
 		sys::s_cfg_v* ienable_filter = NULL;
 		std::vector<int>			blacklist;
 		std::vector<int>			whitelist;

@@ -403,7 +403,8 @@ bool sdk::menu::c_menu::setup()
 						ImGui::SameLine();
 					}
 				},
-				{"store-test", 0, "", "", false, (void*)&sys::legit_bot->force_store}
+				{"store-test ", 0, "", "", true, (void*)&sys::legit_bot->force_store},
+				{"repair-test", 0, "", "", false, (void*)&sys::legit_bot->force_repair}
 			}
 		},
 		{
@@ -453,11 +454,11 @@ bool sdk::menu::c_menu::setup()
 						else ImGui::TextColored(ImColor(255, 0, 0), "no items found");
 					}
 				},
-				{"recording_stuff", 5, "", "", false, [this]()
+				{"recording_stuff##lb", 5, "", "", false, [this]()
 					{
-						if (!sys::legit_bot->recording_s) ImGui::Checkbox("record-grind", &sys::legit_bot->recording_g);
-						if (!sys::legit_bot->recording_s && !sys::legit_bot->recording_g) ImGui::SameLine();
-						if (!sys::legit_bot->recording_g) ImGui::Checkbox("record-store", &sys::legit_bot->recording_s);
+						if (!sys::legit_bot->recording_s && !sys::legit_bot->recording_r) ImGui::Checkbox("record-grind", &sys::legit_bot->recording_g);
+						if (!sys::legit_bot->recording_g && !sys::legit_bot->recording_r) ImGui::Checkbox("record-store", &sys::legit_bot->recording_s);
+						if (!sys::legit_bot->recording_g && !sys::legit_bot->recording_s) ImGui::Checkbox("record-repair", &sys::legit_bot->recording_r);
 						if (sys::legit_bot->recording_g)
 						{
 							ImGui::PushItemWidth(125);
@@ -477,22 +478,41 @@ bool sdk::menu::c_menu::setup()
 							{
 								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
-								if (ImGui::Button("set-npc")) { sys::legit_bot->glua_actions = true; sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("NONE"); sys::legit_bot->sepoint(); sys::legit_bot->snpc("NONE"); si++; }
+								if (ImGui::Button("set-npc")) { sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("NONE"); sys::legit_bot->sepoint(); sys::legit_bot->snpc("NONE"); si++; }
 							}
 							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
 						}
 						if (si == 2 && sys::legit_bot->recording_s)
 						{
-							sys::legit_bot->glua_actions = true;
-							if (!sys::legit_bot->last_lua_actions.empty())
+							if (ImGui::Button("set-sell-event")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("set-repair-event")) { sys::legit_bot->sscr("repair_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("set-storage-event")) { sys::legit_bot->sscr("store_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("done")) { si = 0; sys::legit_bot->glua_actions = false; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_s = false; sys::legit_bot->load(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+						}
+						//
+						if (si == 0 && sys::legit_bot->recording_r)
+						{
+							sys::legit_bot->store_can_path = true;
+							if (ImGui::Button("done-repair-path")) si++;
+						}
+						if (si == 1 && sys::legit_bot->recording_r)
+						{
+							sys::legit_bot->store_can_path = false;
+							auto npcs = sys::legit_bot->gnpcs();
+							if (npcs.size())
 							{
 								ImGui::PushItemWidth(125);
-								ImGui::Combo2("##script", &is_scr, sys::legit_bot->last_lua_actions); ImGui::SameLine();
-								if (ImGui::Button("test-scr")) sys::lua_q->add(sys::legit_bot->last_lua_actions[is_scr]);
-								if (ImGui::Button("add-scr")) { sys::legit_bot->sscr(sys::legit_bot->last_lua_actions[is_scr]); sys::legit_bot->sepoint(); sys::legit_bot->last_lua_actions.clear(); }
-								if (ImGui::Button("add-store/sell")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->last_lua_actions.clear(); }
+								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
+								if (ImGui::Button("set-npc")) { sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("NONE"); sys::legit_bot->srpoint(); sys::legit_bot->snpc("NONE"); si++; }
 							}
-							if (ImGui::Button("done-store")) { si = 0; sys::legit_bot->glua_actions = false; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_s = false; sys::legit_bot->load(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
+						}
+						if (si == 2 && sys::legit_bot->recording_r)
+						{
+							if (ImGui::Button("set-sell-event")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("set-repair-event")) { sys::legit_bot->sscr("repair_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("set-storage-event")) { sys::legit_bot->sscr("store_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("done")) { si = 0; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_r = false; sys::legit_bot->load(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
 						}
 					}
 				}
@@ -760,7 +780,8 @@ bool sdk::menu::c_menu::setup()
 				{"allow-green", 0, "auto_loot", "ipick_green", false},
 				{"allow-blue  ", 0, "auto_loot", "ipick_blue", true},
 				{"allow-orange", 0, "auto_loot", "ipick_orange", false},
-				{"allow-yellow", 0, "auto_loot", "ipick_yellow", false}
+				{"allow-yellow", 0, "auto_loot", "ipick_yellow", true},
+				{"allow-event-items",0 , "auto_loot", "idont_pick_event", false}
 			}			
 		},
 		{
@@ -1071,23 +1092,6 @@ bool sdk::menu::c_menu::setup()
 
 						if (sdk::player::player_->alive())
 						{							
-							/*
-							rework plan:
-
-							> use npc name as interaction
-							  > validate interaction success by checking panel "Panel_Npc_Dialog_All" existance
-							> use button name for interaction
-							  > in bot look for button name and click by index
-							  > validate button press by looking for next panel (map for interactions&panels ex. shop button & shop panel) 
-							> validate each interaction such as messagebox (yes/no) in sales
-							> validate use of numberpad for multiple items (sell/store)
-
-							> rework scripting system to require buttons instead of lua
-							  > probably force english client lang (? info-map ?)
-							  > check to use icons for identification instead (?) (map> icon name&panel name)
-							> always validate each step of the interaction (to npc, from npc) open,close
-							> find native func for "HandleEventLUp_DialogMain_All_FuncButton(ID)" (fuck lua)
-							*/
 							sdk::dialog::dialog->gpanels();
 							if (sdk::dialog::dialog->panels_map.size())
 							{
@@ -1152,8 +1156,8 @@ bool sdk::menu::c_menu::setup()
 							{
 								sdk::dialog::dialog->thread_running = true;
 								auto stru = new sdk::dialog::s_thread_p();
-								stru->npc = "Ernill";
-								stru->items = { 54031, 9776 };
+								stru->npc = "Deve";
+								stru->items = { 44436, 5963, 4409, 7922, 44221 };
 								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
 							}
 						}
