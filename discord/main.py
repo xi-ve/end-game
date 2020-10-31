@@ -40,12 +40,21 @@ async def sub(ctx):
 
 @bot.command()
 async def ban(ctx,user: discord.Member,reason):
-    if ctx.channel != 755780806475120661:
+    if ctx.channel.id != 755780806475120661:
         return 
     query = "UPDATE `login` SET l_banned = %s WHERE l_discord = %s;"
     cursor.execute(query, [reason,user.id, ])
     await ctx.send("done....")
     await bot.get_channel(755541623437393971).send(f'<@{ctx.author.id}> ({ctx.author.id}) banned <@{user.id}> ({user.id}) for following reason {reason}')
+
+@bot.command()
+async def reset_hwid(ctx,user: discord.Member):
+    if ctx.channel.id != 755780806475120661:
+        return 
+    query = "UPDATE `login` SET l_hwid = NULL WHERE l_discord = %s;"
+    cursor.execute(query, [user.id, ])
+    await ctx.send("done....")
+    await bot.get_channel(755541623437393971).send(f'<@{ctx.author.id}> ({ctx.author.id}) reset hwid for <@{user.id}> ({user.id})')
 
 
 @bot.command()
@@ -57,7 +66,7 @@ async def get_soft(ctx):
         await ctx.send(s[0])
 @bot.command()
 async def add(ctx,user: discord.Member,software,time,time_type):
-    if ctx.channel != 755780806475120661:
+    if ctx.channel.id != 755780806475120661:
         return 
     if time_type != "days" and time_type != "hours":
         await ctx.send("$add <@user> <soft> <time> <days|hours>")
@@ -67,6 +76,11 @@ async def add(ctx,user: discord.Member,software,time,time_type):
     soft_count = cursor.fetchone()[0]
     if soft_count == 0:
         await ctx.send("$add <@user> <soft> <time> <days|hours>")
+        return
+    try:
+        await user.send(":ok_hand:")
+    except:
+        await ctx.send("user has his dm's closed")
         return
     role = discord.utils.get(ctx.guild.roles, name="member+")
     await user.add_roles(role)
@@ -85,23 +99,44 @@ async def add(ctx,user: discord.Member,software,time,time_type):
         query = 'SELECT exp.e_id,exp.e_exp FROM exp,login,soft WHERE exp.l_id = login.l_id AND exp.s_id = soft.s_id AND login.l_discord = %s AND soft.s_name = %s'
         cursor.execute(query, [user.id,software, ])
         user_date = cursor.fetchone()
-        exp_index = user_date[0]
-        user_date = user_date[1]
-        date_1 = datetime.datetime.now()
-        if user_date > date_1:
-            date_1 = user_date
-        if time_type == "days":
-            end_date = date_1 + datetime.timedelta(days=int(time))
+        if user_date is None:
+            date_1 = datetime.datetime.now()
+            if time_type == "days":
+                end_date = date_1 + datetime.timedelta(days=int(time))
+            else:
+                end_date = date_1 + datetime.timedelta(hours=int(time))
+            query = 'SELECT s_id FROM soft WHERE s_name = %s'
+            cursor.execute(query, [software, ])
+            soft_index = cursor.fetchone()[0]
+            
+            query = 'SELECT l_id FROM login WHERE l_discord = %s'
+            cursor.execute(query, [user.id, ])
+            user_index = cursor.fetchone()[0]
+            query = "INSERT INTO `exp` (`e_id`, `l_id`, `s_id`, `e_exp`) VALUES (NULL, %s, %s, %s);"
+            cursor.execute(query, [user_index,soft_index,end_date.strftime('%Y-%m-%d %H:%M:%S'), ])
+            embed = discord.Embed(color=0x00afb0)
+            embed.add_field(name=f"You got a subscription for {software}!", value="Just start the loader again and you will see it!", inline=False)
+            embed.set_footer(text=f"Duration: {time} {time_type} Expires: " + end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            await user.send(embed=embed)    
+            await bot.get_channel(755541623437393971).send(f'<@{user.id}> ({user.id}) extended their {software} subscription. expires at: '+ end_date.strftime('%Y-%m-%d %H:%M:%S'))
         else:
-            end_date = date_1 + datetime.timedelta(hours=int(time))
+            exp_index = user_date[0]
+            user_date = user_date[1]
+            date_1 = datetime.datetime.now()
+            if user_date > date_1:
+                date_1 = user_date
+            if time_type == "days":
+                end_date = date_1 + datetime.timedelta(days=int(time))
+            else:
+                end_date = date_1 + datetime.timedelta(hours=int(time))
 
-        query = "UPDATE `exp` SET e_exp = %s WHERE e_id = %s;"
-        cursor.execute(query, [end_date.strftime('%Y-%m-%d %H:%M:%S'),exp_index, ])
-        embed = discord.Embed(color=0x00afb0)
-        embed.add_field(name="You got a subscription!", value="We increased the time of the account linked to your discord.", inline=False)
-        embed.set_footer(text=f"Duration: {time} {time_type} Expires: " + end_date.strftime('%Y-%m-%d %H:%M:%S'))
-        await user.send(embed=embed)    
-        await bot.get_channel(755541623437393971).send(f'<@{user.id}> ({user.id}) extended their {software} subscription. expires at: '+ end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            query = "UPDATE `exp` SET e_exp = %s WHERE e_id = %s;"
+            cursor.execute(query, [end_date.strftime('%Y-%m-%d %H:%M:%S'),exp_index, ])
+            embed = discord.Embed(color=0x00afb0)
+            embed.add_field(name=f"You got a subscription for {software}!", value="We increased the time of the account linked to your discord.", inline=False)
+            embed.set_footer(text=f"Duration: {time} {time_type} Expires: " + end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            await user.send(embed=embed)    
+            await bot.get_channel(755541623437393971).send(f'<@{user.id}> ({user.id}) extended their {software} subscription. expires at: '+ end_date.strftime('%Y-%m-%d %H:%M:%S'))
     return
 
 @bot.event
