@@ -1,0 +1,18 @@
+[script]
+name=CharacterInfoTags
+type=script
+description=Patches actor infotags to include wanted informations.
+
+[files]
+file=Data/Settings.lua
+file=MainWindow.lua
+file=app.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/json/script.def
+file=../libs/table/script.def
+
+[categories]
+category=Hack
+category=Retail

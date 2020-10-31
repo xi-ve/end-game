@@ -1,0 +1,15 @@
+[script]
+name=Lua Console with MagLib
+type=script
+description=A simple Console for developers with MagLib loaded and configured.
+
+[files]
+file=Gui/MainWindow.lua
+file=Main.lua
+
+[dependencies]
+file=../MagLib/BDO.def
+
+[categories]
+category=Development
+category=Retail

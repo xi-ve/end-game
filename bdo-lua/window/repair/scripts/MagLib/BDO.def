@@ -1,0 +1,10 @@
+[script]
+name=MagLib
+type=lib
+
+[files]
+file=Init.lua
+
+[dependencies]
+file=Base/base.def
+file=BDO/BDO.def

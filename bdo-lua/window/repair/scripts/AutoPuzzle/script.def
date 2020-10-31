@@ -1,0 +1,19 @@
+[script]
+name=AutoPuzzle
+type=script
+description=Automatically combines combineable items in your inventory
+
+[files]
+file=Data/Settings.lua
+file=MainWindow.lua
+file=AutoPuzzle.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/bdo/script.def
+file=../libs/table/script.def
+file=../libs/json/script.def
+
+[categories]
+category=Utility
+category=Retail

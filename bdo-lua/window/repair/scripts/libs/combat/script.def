@@ -1,0 +1,11 @@
+[script]
+name=[Infinity] Combat
+type=lib
+
+[files]
+file=skill/SkillAction.lua
+file=skill/QuickslotSkillAction.lua
+file=helpers/SkillHelper.lua
+file=helpers/TargetHelper.lua
+
+[dependencies]

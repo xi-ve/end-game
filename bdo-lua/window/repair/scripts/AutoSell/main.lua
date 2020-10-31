@@ -1,0 +1,7 @@
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnScriptStart",AutoSell.Start)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnScriptStop",AutoSell.Stop)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPulse",AutoSell.OnPulse)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnGUIDraw",AutoSell.OnGuiDraw)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnRenderD2D",AutoSell.OnRenderD2D)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnAutoLoginAutoLoad", AutoSell.OnAutoLoginAutoLoad)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPacketReceive", AutoSell.OnPacketReceive)

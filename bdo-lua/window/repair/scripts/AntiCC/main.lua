@@ -1,0 +1,1 @@
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnSelfActionChanged", AntiCC.OnSelfActionChanged)

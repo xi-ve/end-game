@@ -1,0 +1,20 @@
+[script]
+name=WorkerFeed
+type=script
+description=Periodically gives food to your workers
+
+[files]
+file=Data/Settings.lua
+file=MainWindow.lua
+file=WorkerFeed.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/bdo/script.def
+
+[categories]
+category=Utility
+category=Empire
+category=Retail

@@ -1,0 +1,16 @@
+[script]
+name=[Infinity] Navigation
+type=lib
+
+[files]
+file=Data/Settings.lua
+file=States/MoveState.lua
+file=Recorder.lua
+file=Navigator.lua
+file=NavigatorUtils.lua
+
+[dependencies]
+file=../table/script.def
+file=../json/script.def
+file=../rendering/script.def
+file=../bdo/script.def

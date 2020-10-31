@@ -1,0 +1,8 @@
+[script]
+name=[Infinity] Table
+type=lib
+
+[files]
+file=Table.lua
+
+[dependencies]

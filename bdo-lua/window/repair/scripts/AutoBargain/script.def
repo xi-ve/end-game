@@ -1,0 +1,22 @@
+[script]
+name=AutoBargain
+type=script  
+description=Automatically play the bargain minigame at a trader NPC.
+
+[files]
+file=AutoBargain.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/rendering/script.def
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+file=../libs/combat/script.def
+
+[categories]
+category=Lifeskill
+category=Trading
+category=Utility
+category=Retail

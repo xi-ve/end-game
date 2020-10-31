@@ -1,0 +1,23 @@
+[script]
+name=AutoStorage
+type=script
+description=Automatically transfers items from your inventory to the closest storage over maids.
+
+[files]
+file=Data/Settings.lua
+file=Data/ProfileSettings.lua
+file=MainWindow.lua
+file=AutoStorage.lua
+file=Main.lua
+
+[dependencies]
+file=../MagLib/Base/uionly.def
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+file=../libs/table/script.def
+file=../libs/json/script.def
+
+[categories]
+category=Utility
+category=Storage
+category=Retail

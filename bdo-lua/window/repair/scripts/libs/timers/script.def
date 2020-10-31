@@ -1,0 +1,9 @@
+[script]
+name=[Infinity] Timer
+type=lib
+
+[files]
+file=TimedList.lua
+file=Timer.lua
+
+[dependencies]

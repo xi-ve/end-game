@@ -1,0 +1,71 @@
+PaGlobal_TradeBiddingGame_All = {
+  _ui = {
+    _btn_Close = nil,
+    _stc_MainBg = nil,
+    _stc_ImageBg = nil,
+    _txt_ProcessMsg = nil,
+    _txt_RetryCount = nil,
+    _stc_ScalePoll = nil,
+    _stc_ScaleArm = nil,
+    _stc_ScalePlate_Left = nil,
+    _stc_ScalePlate_Right = nil,
+    _txt_ResultMsg = nil,
+    _btn_LowDice = nil,
+    _txt_LowDiceTitle = nil,
+    _txt_LowDiceDesc = nil,
+    _btn_HighDice = nil,
+    _txt_HighDiceTitle = nil,
+    _txt_HighDiceDesc = nil,
+    _stc_DescBg = nil,
+    _txt_Desc = nil,
+    _btn_SellAll = nil,
+    _btn_Retry = nil,
+    _stc_KeyGuide_Console = nil,
+    _stc_KeyGuide_A = nil,
+    _stc_KeyGuide_B = nil,
+    _stc_KeyGuide_X = nil,
+    _stc_effectControl = nil
+  },
+  _enTradeGameResult = {
+    _Less = 0,
+    _More = 1,
+    _Correct = 2,
+    _NoTryCount = 3,
+    _None
+  },
+  _enTradeGameState = {_Play = 1, _Finish = 2},
+  _enTradeGameSwitchType = {_Small = 0, _Large = 1},
+  _FIXED_DEGREE = 30,
+  _isLowDiceClicked = false,
+  _currentDiceValue = 0,
+  _minGoalValue = 0,
+  _maxGoalValue = 0,
+  _tryCount = 0,
+  _prevDiceResult = 0,
+  _updownValue = -1,
+  _isRotateSwitch = false,
+  _tradeGameSuccess = false,
+  _COLOR_SUCCESS = 4292341556,
+  _COLOR_GLOW_SUCCESS = 4285333248,
+  _COLOR_FAILED = 4294920521,
+  _COLOR_GLOW_FAILED = 4294901760,
+  _halfSizeX = 0,
+  _leftStartPosX = 0,
+  _leftStartPosY = 0,
+  _rightStartPosX = 0,
+  _rightStartPosY = 0,
+  _centerPosX = 0,
+  _centerPosY = 0,
+  _startRadian = 0,
+  _elapsedAngle = 0,
+  _deltaTimeElapsed = 0,
+  _applyRotateValue = 0,
+  _initialize = false,
+  _isConsole = false
+}
+runLua("UI_Data/Script/Window/TradeMarket/Panel_Dialog_Trade_BiddingGame_All_1.lua")
+runLua("UI_Data/Script/Window/TradeMarket/Panel_Dialog_Trade_BiddingGame_All_2.lua")
+registerEvent("FromClient_luaLoadComplete", "FromClient_BiddingGameAll_init")
+function FromClient_BiddingGameAll_init()
+  PaGlobal_TradeBiddingGame_All:initialize()
+end

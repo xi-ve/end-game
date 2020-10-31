@@ -1,0 +1,22 @@
+[script]
+name=ItemTransfer
+type=script
+description=Allows transfering stackable items from a cities storage to your inventory far over the weight limit using a mount.
+obsolete=true
+
+[files]
+file=MainWindow.lua
+file=ItemTransfer.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/rendering/script.def
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+
+[categories]
+category=Utility
+category=Storage
+category=Retail

@@ -1,0 +1,14 @@
+[script]
+name=FPS Limiter
+type=script
+description=Allows you to limit your games FPS and free up CPU ressources.
+
+[files]
+file=FPSLimiter.lua
+
+[dependencies]
+file=../MagLib/base.def
+
+[categories]
+category=Performance
+category=Retail

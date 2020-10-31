@@ -1,0 +1,16 @@
+[script]
+name=AutoItemDelete_Modded
+type=script
+
+[files]
+file=Data/Settings.lua
+file=Data/ProfileSettings.lua
+file=MainWindow.lua
+file=AutoItemDelete.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/bdo/script.def
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/net/script.def

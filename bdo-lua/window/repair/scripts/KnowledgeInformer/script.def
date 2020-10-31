@@ -1,0 +1,24 @@
+[script]
+name=KnowledgeInformer
+type=script
+obsolete=true
+description=Gives information about obtainable knowledge and allows pathing to it.
+
+[files]
+file=Data/Settings.lua
+file=Data/cardTable.lua
+file=MainWindow.lua
+file=KnowledgeInformer.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/rendering/script.def
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+
+[categories]
+category=Utility
+category=Retail
+category=obsolete

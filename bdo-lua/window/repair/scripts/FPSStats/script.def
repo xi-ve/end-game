@@ -1,0 +1,13 @@
+[script]
+name=FPS Stats
+type=script
+description=A simple script tracking your average FPS
+
+[files]
+file=FPSStats.lua
+
+[dependencies]
+
+[categories]
+category=Statistics
+category=Retail

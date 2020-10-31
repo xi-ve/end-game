@@ -1,0 +1,26 @@
+[script]
+name=TentBuddy
+type=script
+description= On the fly repairing, as well as buff and potion buying from the P2W tent
+
+[files]
+file=States/InstallTentState.lua
+file=States/RepairState.lua
+file=States/BuyBuffsState.lua
+file=States/BuyItemsState.lua
+file=States/CollectTentState.lua
+file=Modules/TriggerModule.lua
+file=TentBuddy.lua
+file=UI/Tabs/Home.lua
+file=UI/Tabs/Shop.lua
+file=UI/Tabs/VillaBuffs.lua
+file=UI/UI.lua
+
+[dependencies]
+file=../MagLib/BDO.def
+
+[categories]
+category=Quality of Life
+category=Inventory
+category=Grinding
+category=Lifeskill

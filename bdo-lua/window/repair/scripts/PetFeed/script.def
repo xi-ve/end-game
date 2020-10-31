@@ -1,0 +1,19 @@
+[script]
+name=PetFeed
+type=script
+description=Periodically feeds your active pets.
+
+[files]
+file=Data/Settings.lua
+file=MainWindow.lua
+file=PetFeed.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/bdo/script.def
+
+[categories]
+category=Utility
+category=Retail

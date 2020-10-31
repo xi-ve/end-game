@@ -1,0 +1,8 @@
+[script]
+name=[Infinity] Json
+type=lib
+
+[files]
+file=Json.lua
+
+[dependencies]

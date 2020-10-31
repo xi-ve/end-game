@@ -1,0 +1,8 @@
+[script]
+name=MagLib
+type=lib
+
+[files]
+
+[dependencies]
+file=Base/base.def

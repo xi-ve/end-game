@@ -1,0 +1,21 @@
+[script]
+name=LootTracker
+type=script
+description=Tracks your loot over sessions and game restarts and gives you a nice statistic.
+
+[files]
+file=LootSession.lua
+file=MainWindow.lua
+file=LootTracker.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/rendering/script.def
+
+[categories]
+category=Statistics
+category=Retail

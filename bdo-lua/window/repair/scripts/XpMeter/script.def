@@ -1,0 +1,17 @@
+[script]
+name=XP Meter
+type=script
+description=Keeps track of XP gained and tells you how long until the next level up.
+
+[files]
+file=main.lua
+
+[dependencies]
+file=../libs/timers/script.def
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/bdo/script.def
+
+[categories]
+category=Statistics
+category=Retail

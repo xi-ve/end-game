@@ -1,0 +1,22 @@
+[script]
+name=PetBoost
+type=script
+description=Activates an exploit that allows your pets to loot as good or better than T4 pets!
+obsolete=true
+
+[files]
+file=MainWindow.lua
+file=PetBoost.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+file=../libs/table/script.def
+file=../libs/json/script.def
+
+[categories]
+category=Utility
+category=Hack
+category=Retail
+category=obsolete

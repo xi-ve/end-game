@@ -1,0 +1,16 @@
+[script]
+name=MarketStorageInitializer
+type=script
+description=Initializes market and storage on loading into the world and upon region changing. Allows scripts to work that interact with the marketplace or storage without opening/loading it first.
+
+[files]
+file=Main.lua
+
+[dependencies]
+file=../MagLib/BDO.def
+
+[categories]
+category=Utility
+category=Marketplace
+category=Storage
+category=Retail

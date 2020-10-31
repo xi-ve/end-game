@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{53C2C6FB-3CE5-48F9-BAC2-8F8686B397CF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Generator_ActionScripts</RootNamespace>
+    <AssemblyName>Generator_ActionScripts</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionCharts\ActionBranch.cs" />
+    <Compile Include="ActionCharts\ActionChart.cs" />
+    <Compile Include="ActionCharts\ActionChartData.cs" />
+    <Compile Include="ActionCharts\ActionChartFuncT.cs" />
+    <Compile Include="ActionCharts\ActionChartPackagePCRaw.cs" />
+    <Compile Include="ActionCharts\ActionChartSubFuncT.cs" />
+    <Compile Include="ActionCharts\ActionChart_0.cs" />
+    <Compile Include="ActionCharts\ActionPackage.cs" />
+    <Compile Include="ActionCharts\ActionPackageT.cs" />
+    <Compile Include="ActionCharts\ActionScript.cs" />
+    <Compile Include="ActionCharts\AIConstant.cs" />
+    <Compile Include="ActionCharts\AiFunction.cs" />
+    <Compile Include="ActionCharts\Animation.cs" />
+    <Compile Include="ActionCharts\BoneData.cs" />
+    <Compile Include="ActionCharts\BoneInfo.cs" />
+    <Compile Include="ActionCharts\DefaultLoopAnimation.cs" />
+    <Compile Include="ActionCharts\EffectSwitch.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEventBase.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ActionTimer.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ActiveSkill.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AdditionalDamageType.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AdditiveAnimation.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AnimationSpeed.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AtackForClient.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Attack.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackArrow.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackArrowSimple.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackArrowSkill.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackBounds.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackCatch.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackSkill.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackSkillSimple.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_AttackThrow.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Banquet.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_BaseMeshOff.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Blur.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_BoneScale.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_BounceBack.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_BuildingUpgrade.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_BuildTent.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_BulletAttack.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CallLuaEvent.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CameraDirShake.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CameraMotion.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CameraPulse.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CameraRotate.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CameraShake.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Campfire.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CancelCasting.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CannonAngle.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ChangeSpeedToTarget.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CharacterEffect.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CharacterParticle.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ChromaticBlur.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Collect.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ColorBalance.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ColorByPass.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CommandRepair.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ControlApStack.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_CreateDecal.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_DecreaseAmmo.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Delay.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Effect.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectGround.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectSwitch.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectSwitchAllOff.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectSwitchChain.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectSwitchChange.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectSwitchTarget.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EffectSwitchTargetAllOff.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_EndSitDownIk.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_FaceMorphWeight.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_FacialAnimation.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_FacialAnimationWeight.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_FindTarget.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Fishing.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_FishingFloatIK.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_FlashBang.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_GenerateWave.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Glitter.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_GrassShake.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Greet.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_HeadLineMessage.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_HideCharacter.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Jump.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_KeepAimOff.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_KeepAimOn.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Lighten.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_LookAt.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Manufacture.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_MeshOff.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_MeshOn.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ModelAnimation.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_MovePos.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Observer.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_OperateCommonGauge.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_OrderToHorse.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_OrderToRideVehicle.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_OrderToSummon.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_PickItemDropList.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_PointBlur.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_PoseFemale.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_PredictCannonAtkPos.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Product.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_PushBack.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Ragdollize.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ReadBook.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ReloadAmmo.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_RepairItem.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ReqGuildTeamBattle.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ResetCameraFov.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ResetCameraPos.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ResetGuard.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ResetTargetList.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ResetUpper.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ReTargetPosition.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_RetryActionMove.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_RetryActionMoveReady.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_RevealCharacter.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_RiderIK.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_RollRateDice.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Rotate.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SetBerserk.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SetCameraFov.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SetCameraPos.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SetFindedTarget.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SetHitPartAvoid.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SetHitPartHp.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_ShowBubbleBox.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SlowMotion.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Sound.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundBase.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundBodyfall.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundCommon.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundExternal.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundFootstep.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundImpact.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundJumpLand.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundJumpUp.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundKill.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundMovement.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundMovementStop.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundPassingGrass.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundWeaponIn.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundWeaponOut.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundWeaponReady.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SoundWeaponSwing.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Speed.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_StartCameraWave.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_StartCasting.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_StartSitDownIk.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Steal.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_StopCameraWave.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SummonCharacter.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SummonCharacters.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_SwordTrail.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_TakeDownCannon.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_TakeDownTent.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Texture.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Thunder.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_TowerAim.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_UsePetSkill.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Variable.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_VaryHitPartHp.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_VaryStat.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_VaryVehicleStat.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Voice.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_WeaponBoneFlag.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_WeaponIn.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_WeaponMeshOff.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_WeaponMeshOn.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_WeaponOut.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_WeaponType.cs" />
+    <Compile Include="ActionCharts\FrameEvents\FrameEvent_Weather.cs" />
+    <Compile Include="ActionCharts\FrameHeader.cs" />
+    <Compile Include="ActionCharts\HitPart.cs" />
+    <Compile Include="ActionCharts\HitPartData.cs" />
+    <Compile Include="ActionCharts\HitPartInfo.cs" />
+    <Compile Include="ActionCharts\MeshInfo.cs" />
+    <Compile Include="ActionCharts\PackageMap.cs" />
+    <Compile Include="ActionCharts\Physics.cs" />
+    <Compile Include="ActionCharts\SubMeshInfo.cs" />
+    <Compile Include="ActionCharts\VariableMap.cs" />
+    <Compile Include="ActionCharts\VehicleRidingInfo.cs" />
+    <Compile Include="AddressGeneration\ByteSequence_FunctionObject.cs" />
+    <Compile Include="Enums\eActionChart_FrameEvent.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\BinaryReaderExtension.cs" />
+    <Compile Include="Utils\BinaryWriterExtension.cs" />
+    <Compile Include="Utils\BitUtils.cs" />
+    <Compile Include="Utils\CryptogramBDCRC.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
+    <Compile Include="Utils\FrameEvent_Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,116 @@
+Callback name: Infinity.OnGUIDraw				
+0 args
+
+	- called from within d3d render thread
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnGUIDraw",	function() Template.OnGuiDraw()	end)
+
+	Infinity.OnRenderD2D
+	0 args
+
+	- called from within d3d render thread
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnRenderD2D",	function() Template.OnRenderD2D()	end)
+
+
+Infinity.OnPulse
+0 args
+
+	- called from within main thread
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPulse",	function() Template.OnPulse()	end)
+
+
+Infinity.OnPacketReceive
+1 args		(ByteBuffer buffer)
+
+	- called from within main thread
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPacketReceive",	PacketSniffer.OnPacketReceive)
+
+
+Infinity.OnPacketSend
+1 args		(ByteBuffer buffer)
+
+	- called from within main thread
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPacketSend",	PacketSniffer.OnPacketSend)
+
+
+Infinity.OnSetCharacterSpeeds
+3 args		(int actorKey, int speedIndex, int speedValue)
+
+	- called from within main thread when game changes speeds on a character
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnSetCharacterSpeeds", Speedhack.OnSetCharacterSpeeds)
+
+
+Infinity.OnSelfActionChanged
+1 args		(string actionName)
+
+	- called from within main thread when game changes action of localPlayer
+	- is not fired if localPlayer is not readyToPlay
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnSelfActionChanged", Template.OnSelfActionChanged)
+
+
+Infinity.OnLuaLoadComplete
+0 args
+
+	- called from within main thread when game finishes the load of lua scripts
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnLuaLoadComplete",	function() Template.OnLuaLoadComplete()	end)
+
+
+Infinity.OnUIInteraction_KeyDown
+	2 args		(UIElement uiElement, int keyCode)
+
+	- called from within main thread when game changes the last interacted UIElement
+
+	Example:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnUIInteraction_KeyDown", Inspector.OnUIInteraction_KeyDown)
+
+
+RegisterGlobalHook
+
+	- creates custom callbacks which could be linked to global lua func calls from bdo
+
+	Examples:
+	Infinity.Scripting.CurrentScript:RegisterGlobalHook("EventActorCreated_NameTag", Template.OnActorCreate)
+	Infinity.Scripting.CurrentScript:RegisterGlobalHook("RadarMap_DestoryOtherActor", Template.OnActorDelete)
+	Infinity.Scripting.CurrentScript:RegisterGlobalHook("Inventory_AddItem", Template.OnInventoryAddItem)
+	Infinity.Scripting.CurrentScript:RegisterGlobalHook("Inventory_updateSlotData", Template.OnInventoryUpdateSlotData)
+	Infinity.Scripting.CurrentScript:RegisterGlobalHook("StableMarket_UpdateSlotData", Template.OnHorseMarketUpdateSlotData)
+	Infinity.Scripting.CurrentScript:RegisterGlobalHook("Panel_Looting_Update", Template.OnPanelLootingUpdate)	
+
+
+Infinity.OnBDOEventFired
+1 arg 		(string firedEvent)
+
+	- called from within main thread when game fires a Lua Event
+
+	Examples:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnBDOEventFired", Template.OnBDOEventFired) 
+
+
+Infinity.OnTCPSocketReceive
+2 arg 		(string socketConnectionName, ByteBuffer dataBuffer)
+
+	- called whenever an active SocketConnection received Data
+
+	Examples:
+	Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnTCPSocketReceive", Template.OnTCPSocketReceive) 

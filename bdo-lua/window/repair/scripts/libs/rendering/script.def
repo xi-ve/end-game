@@ -1,0 +1,8 @@
+[script]
+name=[Infinity] Rendering
+type=lib
+
+[files]
+file=RenderHelper.lua
+
+[dependencies]

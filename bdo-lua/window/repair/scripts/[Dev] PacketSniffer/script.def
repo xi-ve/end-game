@@ -1,0 +1,21 @@
+[script]
+name=PacketSniffer
+type=script
+description=Allows capturing and reading of BDO Packets for developers.
+
+[files]
+file=PacketInspector.lua
+file=MainWindow.lua
+file=PacketRecorder.lua
+file=PacketSniffer.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+
+[categories]
+category=Development
+category=Retail

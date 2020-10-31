@@ -1,0 +1,21 @@
+[script]
+name=Radar
+type=script
+description=Allows displaying of defined actors on the screen based on given filters. For example it can draw a circle around every potato, bush, troll, lion or player.
+
+[files]
+file=Data/Settings.lua
+file=MainWindow.lua
+file=Radar.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/bdo/script.def
+file=../libs/rendering/script.def
+
+[categories]
+category=Utility
+category=Development
+category=Retail

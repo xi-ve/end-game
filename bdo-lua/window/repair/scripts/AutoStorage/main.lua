@@ -1,0 +1,22 @@
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnScriptStart", function()
+	AutoStorage.Start()
+end)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnScriptStop", function()
+	AutoStorage.Stop()
+end)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPulse", function()
+	AutoStorage.OnPulse()
+end)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnGUIDraw", function()
+	AutoStorage.OnGuiDraw()
+end)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnRenderD2D", function()
+	AutoStorage.OnRenderD2D()
+end)
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnAutoLoginAutoLoad", function()
+	AutoStorage.OnAutoLoginAutoLoad()
+end)
+
+--[[
+Infinity.Scripting.CurrentScript:RegisterCallback("Infinity.OnPacketReceive", AutoStorage.OnPacketReceive)
+]]

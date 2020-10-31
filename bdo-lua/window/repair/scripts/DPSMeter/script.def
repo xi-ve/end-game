@@ -1,0 +1,18 @@
+[script]
+name=DPSMeter
+type=script
+description=Displaying DPS as well as hit and miss statistics.
+
+[files]
+file=ValueCache.lua
+file=DPSMeter.lua
+file=GUI.lua
+file=main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/rendering/script.def
+
+[categories]
+category=Statistics
+category=Retail

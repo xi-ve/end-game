@@ -1,0 +1,19 @@
+[script]
+name=TargetLock
+type=script
+description=Locking onto selected enemies, perfectly tracking them.
+
+[files]
+file=Data/Settings.lua
+file=MainWindow.lua
+file=TargetLock.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/vkeys/script.def
+
+[categories]
+category=PVP
+category=Retail

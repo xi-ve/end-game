@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "Lua.workspace.library": {
+      "../Documentation/": true,
+      "../libs/": true,
+      "../dev__MagLib/": true,
+    }
+  }
+}

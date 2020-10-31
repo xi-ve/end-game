@@ -1,0 +1,18 @@
+{
+  "name": "Default",
+  "style": {
+    "color": {
+      "0": "FF001FFF",
+      "2": "FFFFFA00",
+      "9": "FFFFFEFE",
+      "11": "FFFFFEFE",
+      "23": "FFFFFEFE",
+      "27": "FF00FF00",
+      "31": "FFFF0000"
+    },
+    "var": {
+      "imVec2": [],
+      "number": []
+    }
+  }
+}

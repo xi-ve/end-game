@@ -1,0 +1,1 @@
+MagLib.Run.States = {}

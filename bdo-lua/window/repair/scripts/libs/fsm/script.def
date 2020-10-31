@@ -1,0 +1,8 @@
+[script]
+name=[Infinity] FSM
+type=lib
+
+[files]
+file=Fsm.lua
+
+[dependencies]

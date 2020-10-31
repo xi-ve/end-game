@@ -1,0 +1,22 @@
+[script]
+name=ReblathBuddy
+type=script
+description=Uses reblath (or other) items to fully automatically farm Advice of Valks. 
+
+[files]
+file=States/RepairState.lua
+file=States/BuyStackItemsState.lua
+file=States/BuyExtractionBookState.lua
+file=States/GetArmorStonesState.lua
+file=States/DowngradeState.lua
+file=States/UpgradeState.lua
+file=ReblathBuddy.lua
+file=UI.lua
+
+[dependencies]
+file=../MagLib/BDO.def
+
+[categories]
+category=Enhancing
+category=Bot
+category=Retail

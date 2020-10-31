@@ -1,0 +1,25 @@
+[script]
+name=Combatscript Creator
+type=script
+description=Create combatscripts for GrindBuddy without any coding knowledge!
+
+[files]
+file=Conditions/Conditions.lua
+file=Conditions/Player.lua
+file=Conditions/Target.lua
+file=CCreator.lua
+file=MainWindow.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/combat/script.def
+file=../libs/bdo/script.def
+file=../libs/table/script.def
+file=../libs/net/script.def
+file=../libs/rendering/script.def
+file=../libs/json/script.def
+
+[categories]
+category=Grinding
+category=Development
+category=Retail

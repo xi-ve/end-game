@@ -1,0 +1,39 @@
+{
+  "name": "Black + Green",
+  "style": {
+    "color": {
+      "0": "FFFEFFFE",
+      "1": "FF252525",
+      "2": "FF424242",
+      "5": "FF1DE9B6",
+      "6": "FF1DE9B6",
+      "7": "FF2F957C",
+      "8": "FF40CFAF",
+      "9": "FF44EAC7",
+      "10": "FF2F957C",
+      "11": "FF40CFAF",
+      "12": "FF44EAC7",
+      "14": "FF2F957C",
+      "15": "FF40CFAF",
+      "16": "FF40CFAF",
+      "17": "FF44EAC7",
+      "18": "FF000000",
+      "19": "FF000000",
+      "20": "FF000000",
+      "21": "FF2F957C",
+      "22": "FF40CFAF",
+      "23": "FF44EAC7",
+      "24": "FF2F957C",
+      "25": "FF40CFAF",
+      "26": "FF44EAC7",
+      "27": "FF2F957C",
+      "30": "FF2F957C",
+      "31": "FF40CFAF",
+      "32": "FF44EAC7"
+    },
+    "var": {
+      "imVec2": [],
+      "number": [ null, 10, 1, null, null, null, null, null, null, null, 8, null, null, null, null, null, 2 ]
+    }
+  }
+}

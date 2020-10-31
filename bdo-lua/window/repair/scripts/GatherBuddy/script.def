@@ -1,0 +1,36 @@
+[script]
+name=[BETA] GatherBuddy
+type=script
+description=A full fledged gathering bot (Current beta version only contains gathering, no repairing etc.) that is able to gather animals, plants, ores, trees and more.
+
+[files]
+
+file=States/GatheringState.lua
+file=States/TownrunState.lua
+file=Modules/RecordingModule.lua
+file=Modules/ClearInventoryToolsModule.lua
+file=Modules/LootingModule.lua
+file=UI/Elements/HomeTab.lua
+file=UI/Elements/GatheringTab.lua
+file=UI/Elements/LootingTab.lua
+file=UI/Elements/RenderTab.lua
+file=UI/Elements/ProfileTab.lua
+file=UI/Elements/NavigationTab.lua
+file=UI/Elements/StatsTab.lua
+file=UI/Elements/CombatTab.lua
+file=UI/UI.lua
+file=RenderD2D/RenderD2D.lua
+file=RenderD2D/Profile.lua
+file=RenderD2D/Radar.lua
+file=Utils/GatherObjectUtils.lua
+file=Stats.lua
+file=GatherBuddy.lua
+
+
+[dependencies]
+file=../MagLib/BDO.def
+
+[categories]
+category=Gathering
+category=Bot
+category=Beta

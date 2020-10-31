@@ -1,0 +1,21 @@
+[script]
+name=Template
+type=script
+description= A template script for developers 
+
+[files]
+file=MainWindow.lua
+file=template.lua
+file=Main.lua
+
+[dependencies]
+file=../libs/table/script.def
+file=../libs/json/script.def
+file=../libs/rendering/script.def
+file=../libs/bdo/script.def
+file=../libs/net/script.def
+file=../libs/combat/script.def
+
+[categories]
+category=Development
+category=Retail

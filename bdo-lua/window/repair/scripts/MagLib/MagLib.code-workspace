@@ -1,0 +1,18 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "Lua.workspace.library": {
+            "../libs/": true,
+            "../Documentation/": true,
+        },
+        "vscode-lua-format.configPath": "LuaFormatConfig.config",
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true
+    }
+}

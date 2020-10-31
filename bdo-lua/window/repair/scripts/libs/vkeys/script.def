@@ -1,0 +1,8 @@
+[script]
+name=[Infinity] VKeys
+type=lib
+
+[files]
+file=VirtualKeys.lua
+
+[dependencies]

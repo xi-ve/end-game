@@ -1,0 +1,14 @@
+[script]
+name=Theme Manager
+type=script
+description=Allows creating, loading and modifying of Themes for the Infinity UI
+
+[files]
+file=EditorUI.lua
+file=UI.lua
+[dependencies]
+file=../MagLib/base.def
+
+[categories]
+category=Customization
+category=Retail
