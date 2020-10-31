@@ -25,6 +25,7 @@ std::string sys::c_rebuff::gstr(uint64_t p, int s)
 }
 bool sys::c_rebuff::update()
 {
+	if (sdk::dialog::dialog->find_panel(sdk::dialog::dialog->core_dialogs["NPC_Interaction"])) return false;
 	auto m_c = *(BYTE*)(this->self + 0x1c0);
 	auto n = *(uint64_t*)(this->self + 0x1b8);
 	auto nf = *(uint64_t*)(n);
