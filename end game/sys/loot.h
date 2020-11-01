@@ -43,8 +43,7 @@ namespace sys
 		sys::s_cfg_v* ienable_filter = NULL;
 		std::vector<int>			blacklist;
 		std::vector<int>			whitelist;
-		uint64_t					self = NULL, last_ent = NULL;
-		void						spack(int k);
+		uint64_t					self = NULL, last_ent = NULL;		
 		void						spick(int k, int sk, int s, int c);
 		uint64_t					gitem(int s);
 		s_looting_item				gctx(uint64_t p);
@@ -65,7 +64,9 @@ namespace sys
 		void     reset_blacklist();
 		std::vector<std::string> gwl();
 		std::vector<std::string> gbl();
+		void	 spack(int k);
 		void work(uint64_t self);
+		void check_loot(uint64_t self, uint64_t t);
 	};
 	extern c_loot* loot;
 }

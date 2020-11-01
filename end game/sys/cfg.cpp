@@ -130,5 +130,7 @@ void sys::c_config::vars()
 	this->proc("scroll_bot", "ienable_do_all", "1");
 	this->proc("scroll_bot", "ienable_do_num", "0");
 
+	this->proc("reconnector", "ienable", "1");
+
 }
 sys::c_config* sys::config;

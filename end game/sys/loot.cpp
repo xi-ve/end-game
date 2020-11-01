@@ -100,9 +100,6 @@ void sys::c_loot::spack(int k)
 }
 void sys::c_loot::spick(int k, int sk, int s, int c)
 {
-	//opc   target key  0  cnt                        s        self key    null
-	//33 0d 02 cc 35 03 00 58 00 00 00 00 00 00 00 00 01 01 01 00 ac 71 00 00 
-	//33 0d 06 7c 1e 04 00 02 00 00 00 00 00 00 00 00 01 01 01 00 b4 11 00 00 
 	ByteBuffer a;
 	a.putShort(3379);
 	a.putInt(k);
@@ -148,7 +145,7 @@ uint64_t sys::c_loot::hnear()
 		}
 		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, sp);
-		if (rd <= l && rd <= 300)
+		if (rd <= l && rd <= 250)
 		{
 			l = rd;
 			rr = a.ptr;
@@ -219,7 +216,7 @@ bool sys::c_loot::lhas(int s)
 		{
 			auto p = sdk::player::player_->gpos(a.ptr);
 			auto d = sdk::util::math->gdst_3d(m, p);
-			if (d <= 300) return true;
+			if (d <= 250) return true;
 			else return false;
 		}
 	}
@@ -230,12 +227,18 @@ void sys::c_loot::work(uint64_t self)
 	this->self = self;
 	if (!ienable) ienable = sys::config->gvar("auto_loot", "ienable");
 	if (!ienable->iv) return;
+
 	auto n = this->hnear();						   if (!n) return;
 	auto actid = *(int*)(n + core::offsets::actor::actor_proxy_key);
-	auto sk = *(int*)(self + core::offsets::actor::actor_proxy_key);	
+	auto sk = *(int*)(self + core::offsets::actor::actor_proxy_key);
 	if (!this->lhas(actid)) return;
 	//Panel_Window_Looting_All
-	auto cur_loot_window_k = *(int*)(core::offsets::cl::loot_base); if (cur_loot_window_k != actid) { this->spack(actid); return; }
+	auto cur_loot_window_k = *(int*)(core::offsets::cl::loot_base); 
+	if (cur_loot_window_k != actid) 
+	{ 
+		this->spack(actid); 
+		return;
+	}
 	auto i = this->f_loot_get_item_count();		   if (!i) { return; }
 	if (!ienable_filter) ienable_filter = sys::config->gvar("auto_loot", "ienable_filter");
 	auto did_loot_good_item = false;
@@ -244,11 +247,11 @@ void sys::c_loot::work(uint64_t self)
 		auto o = this->gitem(b);
 		if (!o) continue;
 		auto ctx = this->gctx(o);
-		if (!this->pick(ctx)) continue; 					
+		if (!this->pick(ctx)) continue;
 		this->spick(actid, sk, b, ctx.count);
 		did_loot_good_item = true;
 		if (last_actor == actid) continue;
-		if (this->looted_log.size() > 100) this->looted_log.erase(this->looted_log.begin(), this->looted_log.begin()+50);
+		if (this->looted_log.size() > 100) this->looted_log.erase(this->looted_log.begin(), this->looted_log.begin() + 50);
 		this->looted_log.push_back(ctx);
 		switch (ctx.rarity)
 		{

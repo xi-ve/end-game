@@ -13,13 +13,14 @@ fn::t_focus_validator fn::o_focus_validator;
 fn::t_adddamage fn::o_adddamage;
 fn::t_damageregister fn::o_damageregister;
 fn::t_canjump fn::o_canjump;
+fn::t_set_action fn::o_set_action;
 int  fn::traffic_bytes = 0;
 int  fn::buffer_traffic_bytes = 0;
 bool fn::log_dobuffer = false;
 bool fn::block_test = false;
 //
 sys::s_cfg_v* fn::ibypass_trial = NULL; sys::s_cfg_v* fn::iteleport_gen2 = NULL; sys::s_cfg_v* fn::iloot_enable = NULL; sys::s_cfg_v* ienable = NULL;
-sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL; sys::s_cfg_v* igather_instant = NULL;
+sys::s_cfg_v* fn::ikey_ctp = NULL; sys::s_cfg_v* fn::ilock_key = NULL; sys::s_cfg_v* igather_instant = NULL; sys::s_cfg_v* fn::reconnectorienable = NULL;
 bool fn::executing = false;
 ULONGLONG fn::execution_time = 0;
 ULONGLONG fn::time_since_player_playable = 0;
@@ -42,7 +43,7 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;
 	if (!fn::hook((void*)core::offsets::hk::add_damage, &fn::f_adddamage, (void**)&fn::o_adddamage)) return false;
 	//if (!fn::hook((void*)0x140946740, &fn::f_damageregister, (void**)&fn::o_damageregister)) return false;
-	//if (!fn::hook((void*)0x14162BD20, &fn::f_canjump, (void**)&fn::o_canjump)) return false;
+	//if (!fn::hook((void*)0x14085C010, &fn::f_set_action, (void**)&fn::o_set_action)) return false;
 	fn::o_canjump = (fn::t_canjump)core::offsets::fn::canjump;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
@@ -120,6 +121,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 		auto str6_10948_packet17 = new sys::s_str_container(std::vector<int>{121, 104, 106, 98, 108, 125}); /*packet*/
 		auto str15_23068_igather_instant27 = new sys::s_str_container(std::vector<int>{96, 110, 104, 125, 97, 108, 123, 86, 96, 103, 122, 125, 104, 103, 125}); /*igather_instant*/
 		igather_instant = sys::config->gvar(str6_10948_packet17->get(), str15_23068_igather_instant27->get());
+		reconnectorienable = sys::config->gvar("reconnector", "ienable");
 		delete str6_10948_packet17;
 		delete str15_23068_igather_instant27;
 		delete str10_22761_scroll_bot22;
@@ -133,6 +135,7 @@ uint64_t __fastcall fn::f_lua_to_string(void* a1)
 	//
 	if (GetTickCount64() > execution_time) execution_time = GetTickCount64() + 15;
 	else { executing = false; return v; }
+	if (reconnectorienable->iv) sys::reconnect->work();
 	auto self_actor_proxy = *(uint64_t*)(core::offsets::actor::actor_self);
 	if (!self_actor_proxy) { executing = false; return v; }
 	auto can_play = *(byte*)(self_actor_proxy + core::offsets::actor::actor_can_play);
@@ -184,27 +187,7 @@ uint64_t fn::f_lua_dobuffer(void* arg1, const char* arg2)
 	if (fn::log_dobuffer)
 	{
 		if (fn::lua_log.size() > 2048) fn:lua_log.clear();
-		fn::lua_log.push_back(arg2);
-	}
-	if (strstr(arg2, "Over")
-		|| strstr(arg2, "MouseOn")
-		|| strstr(arg2, "Tooltip") || strstr(arg2, "ToolTip")
-		|| strstr(arg2, "ANI") || strstr(arg2, "Ani")
-		|| strstr(arg2, "Update")
-		|| strstr(arg2, "Frame")
-		|| strstr(arg2, "Help")
-		|| strstr(arg2, "Pushed")
-		|| strstr(arg2, "Chat")
-		|| strstr(arg2, "quest") || strstr(arg2, "Quest")
-		|| strstr(arg2, "MenuRemake")
-		|| strstr(arg2, "Icon")
-		|| strstr(arg2, "QuickSlot")
-		|| strstr(arg2, "Hide")
-		|| strstr(arg2, "collect")
-		|| arg2[0] == '\0') return v;
-	if (sys::roar_bot->glua_actions)
-	{
-		sys::roar_bot->last_lua_actions.push_back(arg2);
+		if (!strstr(arg2, "Frame") && strstr(arg2, "Update")) fn::lua_log.push_back(arg2);
 	}
 	//sdk::util::log->add(std::string("arg1:").append(sdk::util::log->as_hex((uint64_t)arg1)).append(" arg2:").append(arg2), sdk::util::e_info, true);
 	return v;
@@ -327,4 +310,10 @@ uint64_t __stdcall fn::f_canjump(uint64_t x410x8, uint64_t a2, uint64_t a3, uint
 	//sdk::util::log->b("ret:%i", r);
 	//
 	return r;
+}
+
+bool __fastcall fn::f_set_action(uint64_t self, int actid)
+{
+	sdk::util::log->b("[%s] setting id %i", __FUNCTION__, actid);
+	return fn::o_set_action(self,actid);
 }

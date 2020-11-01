@@ -150,7 +150,7 @@ void sys::c_pack_tp::capture_packet(ByteBuffer buf, uint64_t pack, int size, int
 		sys::pack_tp->packet_copy = buf;
 		sys::pack_tp->packet_id = opcode;
 		sys::pack_tp->get_packet_again = false;
-		sdk::util::log->add(std::string("found packet:").append(std::to_string(opcode)).append(" pos count:").append(std::to_string(sys::pack_tp->x_pos.size())), sdk::util::e_info, true);
+		//sdk::util::log->add(std::string("found packet:").append(std::to_string(opcode)).append(" pos count:").append(std::to_string(sys::pack_tp->x_pos.size())), sdk::util::e_info, true);
 	}
 }
 sys::c_pack_tp* sys::pack_tp;

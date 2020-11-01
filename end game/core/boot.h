@@ -29,6 +29,7 @@ static void __stdcall init_thread()
 	sys::scrollbot = new sys::c_scrollbot();
 	sys::damage = new sys::c_damage();
 	sdk::dialog::dialog = new sdk::dialog::c_dialog();
+	sys::reconnect = new sys::c_reconnect();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

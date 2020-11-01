@@ -213,6 +213,9 @@
     <ClCompile Include="sdk\player\dialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sys\reconnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\boot.h">
@@ -435,6 +438,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sdk\player\dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\reconnect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

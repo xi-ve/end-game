@@ -53,6 +53,11 @@ namespace fn
 	extern t_canjump o_canjump;
 	extern uint64_t __stdcall f_canjump(uint64_t x410x8, uint64_t a2, uint64_t a3, uint64_t a4, float& pos1, float& a6, float& a7, uint64_t a8);
 	//
+	//char __fastcall sub_14085C010(__int64 a1, int a2)
+	typedef bool(__fastcall* t_set_action)(uint64_t, int);
+	extern t_set_action o_set_action;
+	extern bool __fastcall f_set_action(uint64_t self, int actid);
+	//
 	extern int  traffic_bytes;
 	extern int  buffer_traffic_bytes;
 	extern bool log_dobuffer;
@@ -62,6 +67,7 @@ namespace fn
 	extern sys::s_cfg_v* iloot_enable;
 	extern sys::s_cfg_v* ikey_ctp;
 	extern sys::s_cfg_v* ilock_key;
+	extern sys::s_cfg_v* reconnectorienable;
 	//
 	extern ULONGLONG execution_time;
 	extern ULONGLONG time_since_player_playable;
