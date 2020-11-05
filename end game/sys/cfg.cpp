@@ -103,6 +103,7 @@ void sys::c_config::vars()
 	this->proc("visuals", "ienable_debug", "0");
 	this->proc("visuals", "ienable_player", "1");
 	this->proc("visuals", "ialive_byname", "0");
+	this->proc("visuals", "iauto_disable_render", "0");
 	this->proc("roar_bot", "ibot_timescale", "350");
 	this->proc("roar_bot", "ibot_lootrange", "400");
 	this->proc("roar_bot", "iloot_tp", "1");

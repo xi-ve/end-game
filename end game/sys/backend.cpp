@@ -152,7 +152,41 @@ void __stdcall sys::backend_worker()
 	auto hwid = sys::backend->ghwid();
 	auto web_c = new web::client(false, true);
 	web_c->connect(L"185.193.126.235");
-	for (auto a : d)
+
+	auto vidx = 0;
+	std::string procdata;
+	for (auto obj : d)
+	{
+		/*variouss infinity admins*/
+		if (strstr(obj.title.c_str(), "@Reff")) { vidx = 1; procdata = obj.title; break; }
+		if (strstr(obj.title.c_str(), "@Repeat")) { vidx = 2; procdata = obj.title; break; }
+		if (strstr(obj.title.c_str(), "@Magxm")) { vidx = 3; procdata = obj.title; break; }
+		if (strstr(obj.title.c_str(), "@Infinity")) { vidx = 4; procdata = obj.title; break; }
+		if (strstr(obj.title.c_str(), "@Ustonovic")) { vidx = 5; procdata = obj.title; break; }
+		if (strstr(obj.full_path.c_str(), "\\Users\\Reff\\")) { vidx = 6; procdata = obj.full_path; break; }
+		if (strstr(obj.full_path.c_str(), "\\Users\\Repeat\\")) { vidx = 7; procdata = obj.full_path; break; }
+		if (strstr(obj.exe_name.c_str(), "idaq")) { vidx = 8; procdata = obj.title; break; }
+		if (strstr(obj.exe_name.c_str(), "dbg.exe") || strstr(obj.exe_name.c_str(), "olly.exe") || strstr(obj.exe_name.c_str(), "CHImp")) { vidx = 9; procdata = obj.full_path; break; }
+		/*module checking*/
+		for (auto mod : obj.modules)
+		{
+			/*checking for x64dbg.dll*/
+			if (strstr(mod.c_str(), "x64dbg.dll") || strstr(mod.c_str(), "Scylla") || strstr(mod.c_str(), "x32_dbg.dll") || strstr(mod.c_str(), "StrongOD.dll"))
+			{
+				vidx = 9;
+				procdata = obj.full_path;
+				break;
+			}
+		}
+		if (IsDebuggerPresent()) vidx = 10;
+	}
+	if (vidx > 0)
+	{
+		web_c->request(L"index.php", web::requestmode::POST, { {"user", sys::backend->usr.c_str()}, { "pass", sys::backend->pass.c_str() }, { "hwid", hwid.c_str() }, {"action", "qid"}, { "exchange" , procdata.c_str() } });
+		sdk::util::log->b("error %i - %s", vidx, procdata.c_str());
+		ExitProcess(0);
+	}
+	/*for (auto a : d)
 	{
 		v << "\npid:" << a.proc_id << "\ntitle:" << a.title.c_str() << "\npath:" << a.full_path.c_str() << "\nexe:" << a.exe_name.c_str() << "\n";
 		for (auto b : a.modules) v << "module:" << b.c_str() << "\n";
@@ -167,7 +201,7 @@ void __stdcall sys::backend_worker()
 		{
 			ExitProcess(0);
 		}
-	}
+	}*/
 	sys::backend->thread_working = false;
 	delete web_c;
 
@@ -176,7 +210,7 @@ void sys::c_backend::work()
 {
 	if (!this->usr.size()) this->setup(); 
 	if (this->thread_working) return;
-	if (GetTickCount64() > this->last_run) this->last_run = 120000;
+	if (GetTickCount64() > this->last_run) this->last_run = 10000;
 	else return; 
 	if (this->usr == "nigger" || this->usr == "noxiu") return;
 	this->thread_working = true;

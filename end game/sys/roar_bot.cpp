@@ -536,6 +536,7 @@ void sys::c_roar_bot::work(uint64_t s)
 	if (!iloot_tp) iloot_tp = sys::config->gvar("roar_bot", "iloot_tp");
 	if (!istop_on_player) istop_on_player = sys::config->gvar("protection", "istop_on_player");
 	if (!iexit_on_player) this->iexit_on_player = sys::config->gvar("protection", "iexit_on_player");
+	if (!iauto_disable_render) iauto_disable_render = sys::config->gvar("visuals", "iauto_disable_render");
 	if (!this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	if (GetTickCount64() > this->execution) this->execution = GetTickCount64() + ibot_timescale->iv;
 	else return;
@@ -545,6 +546,26 @@ void sys::c_roar_bot::work(uint64_t s)
 	//
 	if (!this->stance()) return;
 	this->skill();
+	if (!iauto_disable_render->iv)
+	{
+		auto base = *(uint64_t*)(core::offsets::cl::client_base);
+		if (!base) return;
+		auto _x18 = *(uint64_t*)(base + 0x18);
+		if (!_x18) return;
+		auto _x178 = *(uint64_t*)(_x18 + 0x178);
+		if (!_x178) return;
+		*(byte*)(_x178 + 0x800) = 0;
+	}
+	else
+	{
+		auto base = *(uint64_t*)(core::offsets::cl::client_base);
+		if (!base) return;
+		auto _x18 = *(uint64_t*)(base + 0x18);
+		if (!_x18) return;
+		auto _x178 = *(uint64_t*)(_x18 + 0x178);
+		if (!_x178) return;
+		*(byte*)(_x178 + 0x800) = 1;
+	}
 	//e.g auto scroll combine/event items
 	//
 	if (this->gssize() && this->cur_route.empty() && this->ssp({}) && this->p_mode == 0)
@@ -582,6 +603,12 @@ void sys::c_roar_bot::work(uint64_t s)
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
 					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
 					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+
+					if (!npc_wanted_ptr)
+					{
+						sdk::util::log->b("npc cannot be found");
+						return;
+					}
 
 					this->f_npc_interaction(npc_wanted_ptr);
 					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);

@@ -46,6 +46,7 @@ void sys::c_visuals::monster_proxy_debug()
 	for (auto b : a)
 	{
 		if (b.ptr == NULL) continue;
+		if (b.type != 9) continue;
 		auto bpos = sdk::player::player_->gpos(b.ptr);
 		auto v = sdk::util::c_vector3();
 		if (!sdk::util::math->w2s(bpos, v)) continue;

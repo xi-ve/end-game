@@ -43,7 +43,6 @@ bool fn::setup()
 	if (!fn::hook((void*)core::offsets::hk::focus_validator, &fn::f_focus_validator, (void**)&fn::o_focus_validator)) return false;
 	if (!fn::hook((void*)core::offsets::hk::add_damage, &fn::f_adddamage, (void**)&fn::o_adddamage)) return false;
 	//if (!fn::hook((void*)0x140946740, &fn::f_damageregister, (void**)&fn::o_damageregister)) return false;
-	//if (!fn::hook((void*)0x14085C010, &fn::f_set_action, (void**)&fn::o_set_action)) return false;
 	fn::o_canjump = (fn::t_canjump)core::offsets::fn::canjump;
 	if (!fn::hook((void*)&GetFocus, &fn::f_get_focus, (void**)&asdf)) return false;
 	//if (!fn::hook((void*)&GetActiveWindow, &fn::f_get_active_window, (void**)&fn::o_get_active_window)) return false;
@@ -89,7 +88,7 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 		fn::traffic_bytes = 0;
 	}
 
-	if (ibypass_trial->iv)				if (b == 4336) return 0;
+	if (ibypass_trial->iv)				if (b == 5158) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);
@@ -203,7 +202,6 @@ uint64_t fn::f_proxy_deadbody(uint64_t a, uint64_t b, int c)
 		delete str4_6375_loot14;
 		delete str7_18514_ienable18;
 	}
-	//sdk::util::log->add(std::string("[deadbody] b:").append(sdk::util::log->as_hex(b)).append(" c:").append(sdk::util::log->as_hex(c)), sdk::util::e_info, true);
 	if (iloot_enable->iv)
 	{
 		auto self_key = *(int*)(*(uint64_t*)(core::offsets::actor::actor_self) + core::offsets::actor::actor_proxy_key);

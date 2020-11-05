@@ -315,7 +315,7 @@ void sys::c_legit_bot::aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s)
 	this->spitch(-0.8f);
 	this->syaw(rot);
 	*(float*)(c_base + 0x43C) = rot;
-
+	
 }
 void sys::c_legit_bot::spitch(float f)
 {

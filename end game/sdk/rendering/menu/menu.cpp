@@ -141,6 +141,7 @@ bool sdk::menu::c_menu::setup()
 	if (!string_last_path) string_last_path = sys::config->gvar("roar_bot", "string_last_path");
 	if (!string_last_path_lb) string_last_path_lb = sys::config->gvar("legit_bot", "string_last_path");
 	if (!string_last_combo_lb) string_last_combo_lb = sys::config->gvar("legit_bot", "string_last_combo");
+	if (!iauto_disable_render) iauto_disable_render = sys::config->gvar("visuals", "iauto_disable_render");
 	if (!this->add_tab("roar-bot",
 		{
 		{	{"core-options"},
@@ -167,11 +168,28 @@ bool sdk::menu::c_menu::setup()
 									sys::roar_bot->load();
 								}
 								sys::roar_bot->snear(); sys::roar_bot->dwork = true; 
+								if (iauto_disable_render->iv)
+								{
+									auto base = *(uint64_t*)(core::offsets::cl::client_base);
+									auto _x18 = *(uint64_t*)(base + 0x18);
+									auto _x178 = *(uint64_t*)(_x18 + 0x178);
+									*(byte*)(_x178 + 0x800) = 1;
+								}
 							}
 						}
 						else
 						{
-							if (ImGui::Button("disable-bot-rb")) { sys::roar_bot->dwork = false; sys::roar_bot->reset(); sys::roar_bot->load(); }
+							if (ImGui::Button("disable-bot-rb")) 
+							{ 
+								sys::roar_bot->dwork = false; 
+								sys::roar_bot->reset(); 
+								sys::roar_bot->load(); 
+
+								auto base = *(uint64_t*)(core::offsets::cl::client_base);
+								auto _x18 = *(uint64_t*)(base + 0x18);
+								auto _x178 = *(uint64_t*)(_x18 + 0x178);
+								*(byte*)(_x178 + 0x800) = 0;
+							}
 						}
 					}
 				},
@@ -179,7 +197,8 @@ bool sdk::menu::c_menu::setup()
 				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
 				{"store-roar", 0, "roar_bot", "ibot_storage_roar", true},
 				{"reconnector", 0, "reconnector", "ienable", false},
-				{"store-test", 0, "", "", false, (void*)&sys::roar_bot->force_store}
+				{"no-render  ", 0, "visuals", "iauto_disable_render", true},
+				{"store-test ", 0, "", "", false, (void*)&sys::roar_bot->force_store}
 			}
 		},
 		{
@@ -872,6 +891,7 @@ bool sdk::menu::c_menu::setup()
 			{
 				{"log-panel-shit", 5, "", "", false, [this]()
 					{
+						ImGui::Text(std::string("Actors:").append(std::to_string(sys::loot->loot_proxys.size())).c_str());
 						auto v = sys::loot->looted_log; std::reverse(v.begin(), v.end());
 						if (v.size())
 						{
@@ -1031,11 +1051,12 @@ bool sdk::menu::c_menu::setup()
 							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
+							auto anim = sdk::player::player_->ganim(self);
 							auto hp = sdk::player::player_->ghp(self);
 							auto max_hp = sdk::player::player_->gmhp(self);
 							auto sp = sdk::player::player_->gsp(self);
 							auto max_sp = sdk::player::player_->gmsp(self);
-							auto anim = sdk::player::player_->ganim(self);
+							
 							if (hp <= 500) ImGui::TextColored(ImColor(255, 165, 0), std::string("hp:").append(std::to_string((int)hp)).append("/").append(std::to_string((int)max_hp)).c_str());
 							else ImGui::TextColored(ImColor(0, 255, 0), std::string("hp:").append(std::to_string((int)hp)).append("/").append(std::to_string((int)max_hp)).c_str());
 							ImGui::SameLine();

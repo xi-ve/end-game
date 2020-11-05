@@ -10,6 +10,7 @@ namespace sys
 		uint64_t last_loot_actor = 0; ULONGLONG last_loot_time = 0;
 		sys::s_cfg_v* ibot_lootrange = NULL; sys::s_cfg_v* ibot_timescale = NULL; sys::s_cfg_v* iloot_tp = NULL;
 		sys::s_cfg_v* ibot_storage_roar = NULL; sys::s_cfg_v* istop_on_player = NULL; sys::s_cfg_v* iexit_on_player = NULL;
+		sys::s_cfg_v* iauto_disable_render = NULL;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
 		std::vector<int> wp_items = { 591, 592, 593, 594, 582, -1 };
 		std::string last_interaction_name = "";

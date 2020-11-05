@@ -122,7 +122,7 @@ namespace sdk
 			sys::s_cfg_v* ienable_debug = NULL; sys::s_cfg_v* ient_alt = NULL; sys::s_cfg_v* istore_path = NULL;
 			sys::s_cfg_v* ibot_storage_roar = NULL; sys::s_cfg_v* ivis_linestart = NULL; sys::s_cfg_v* ialive_byname = NULL;
 			sys::s_cfg_v* irebuffer_enable = NULL; sys::s_cfg_v* string_last_path = NULL; sys::s_cfg_v* string_last_path_lb = NULL; sys::s_cfg_v* string_last_combo_lb = NULL;
-			sys::s_skill* current_skill = NULL;
+			sys::s_skill* current_skill = NULL; sys::s_cfg_v* iauto_disable_render = NULL;
 			size_t TabHeight = 0; size_t TabWidth = 100; size_t ctab = 0;
 			int selected_whitelist = 0; float t = 1.1f; char ct[128] = "def.28"; int ps = 0; int si = 0; int ni = 0; int is_scr = 0; int witem_s = 0;
 			int selected_buff = 0; int selected_buff_item = 0; int selected_packet = 0; char lua_input[2048] = "empty";
