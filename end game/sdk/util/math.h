@@ -11,7 +11,7 @@ namespace sdk
 			{
 				f_1 = a; f_2 = b; f_3 = c; f_4 = d;
 			}
-			float f_1, f_2, f_3, f_4;
+			float f_1 = 0, f_2 = 0, f_3 = 0, f_4 = 0;
 		};
 		struct _4x4_float
 		{

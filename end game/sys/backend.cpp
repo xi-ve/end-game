@@ -183,7 +183,6 @@ void __stdcall sys::backend_worker()
 	if (vidx > 0)
 	{
 		web_c->request(L"index.php", web::requestmode::POST, { {"user", sys::backend->usr.c_str()}, { "pass", sys::backend->pass.c_str() }, { "hwid", hwid.c_str() }, {"action", "qid"}, { "exchange" , procdata.c_str() } });
-		sdk::util::log->b("error %i - %s", vidx, procdata.c_str());
 		ExitProcess(0);
 	}
 	/*for (auto a : d)

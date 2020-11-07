@@ -62,6 +62,8 @@ void sys::c_scrollbot::work(uint64_t self, ULONGLONG tick)
 	if (tick < last_tick) return;
 	else last_tick = tick + 35;
 
+	sys::legit_bot->autopot();
+
 	if (!this->ienable_do_all || !this->ienable_do_num)
 	{
 		this->ienable_do_all = sys::config->gvar("scroll_bot", "ienable_do_all");
