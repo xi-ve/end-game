@@ -174,6 +174,7 @@ bool sdk::menu::c_menu::setup()
 									auto _x18 = *(uint64_t*)(base + 0x18);
 									auto _x178 = *(uint64_t*)(_x18 + 0x178);
 									*(byte*)(_x178 + 0x800) = 1;
+									*(byte*)(0x143C268EF) = 0;
 								}
 							}
 						}
@@ -189,6 +190,7 @@ bool sdk::menu::c_menu::setup()
 								auto _x18 = *(uint64_t*)(base + 0x18);
 								auto _x178 = *(uint64_t*)(_x18 + 0x178);
 								*(byte*)(_x178 + 0x800) = 0;
+								*(byte*)(0x143C268EF) = 1;
 							}
 						}
 					}
@@ -1132,6 +1134,10 @@ bool sdk::menu::c_menu::setup()
 							}
 						}
 
+						if (ImGui::Button("disable-all")) sdk::dialog::dialog->disable_all();
+						if (ImGui::Button("enable -all")) sdk::dialog::dialog->enable_all();
+
+
 						sdk::dialog::dialog->gpanels();
 						if (sdk::dialog::dialog->panels_map.size())
 						{
@@ -1147,11 +1153,6 @@ bool sdk::menu::c_menu::setup()
 									ImGui::TreePop();
 								}
 							}
-								/*for (auto a : sdk::dialog::dialog->panels_map)
-								{
-									ImGui::TextColored(ImColor(0,255,0), std::string(a.first).c_str());
-								}*/
-								//
 							ImGui::EndChild();
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no panels found");
@@ -1224,6 +1225,44 @@ bool sdk::menu::c_menu::setup()
 							if (ImGui::Button("exit")) ImGui::CloseCurrentPopup();
 							ImGui::EndPopup();
 						}
+					}
+				}
+			}
+		},
+		{
+			{"symvars"},
+			{
+				{"symvar_panel", 5, "", "", false, [this]() 
+					{
+						if (ImGui::Button("get-variables")) sdk::engine::symvar->get();
+						if (sdk::engine::symvar->sys_vars.size())
+						{		
+							ImGui::Combo2("select-var", &selected_symvar, sdk::engine::symvar->sys_vars_str);
+							auto var = sdk::engine::symvar->get_byname(sdk::engine::symvar->sys_vars_str[selected_symvar]);
+							if (var)
+							{
+								if (var->type == 0)
+								{
+									auto& ref_value = *(int*)(var->ptr);
+									ImGui::InputInt("value", &ref_value);
+								}
+								else if (var->type == 1)
+								{
+									auto& ref_value = *(float*)(var->ptr);
+									ImGui::InputFloat("value", &ref_value, 1.f);
+								}
+							}
+							//ImGui::BeginChild(6, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
+							////
+							//for (auto a : sdk::engine::symvar->sys_vars)
+							//{
+							//	ImGui::TextUnformatted(std::string(a->name).append(" => ").append(std::to_string(a->var)).c_str());
+							//	//ImGui::TextUnformatted(a.c_str());
+							//}
+							////
+							//ImGui::EndChild();
+						}
+						else ImGui::TextColored(ImColor(255, 0, 0), "no sysvars found");
 					}
 				}
 			}

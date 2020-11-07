@@ -26,6 +26,8 @@ namespace sdk
 			ULONGLONG last_execution = 0, last_click_time = 0; bool	needs_numberpad = 0; int item_id = 0; bool did_click = false; bool did_select_max = false; bool did_select_confirm = false;
 			bool did_click_repair = false; bool did_click_confirm = false; bool did_enter_repair = false; bool did_enter_menu = false; int exit_stage = 0; bool did_finish_reapir = false;
 
+			std::vector<uint64_t> disabled_panels = {};
+
 			int			sell_state = 0;
 			std::unordered_map<std::string, std::unordered_map<int,int>>  icon_idents =
 			{
@@ -78,29 +80,11 @@ namespace sdk
 				{"MessageBox",		"Panel_Window_MessageBox_All"},
 				{"NumberPad",		"Panel_Window_NumberPad_All"}
 			};
-			/*
-			notes:
-
-			store/sell routine:
-
-			> interaction selection:
-				> user slects NPC name
-					> bot checks for NPC_Interaction presence in root panels
-			> dialog selection:
-				> user selects button by it's displayed name in the menu
-					> menu translates it to RadioButton_Func.... (internal name) and saves that for the script action
-						> bot looks up RadioButton_Func.... from the core_buttons list and executes the button by given ID
-			> in dialog selection:
-				> for selling & storage:
-					> user selects the action wanted to be performed such as: SellStore()
-						> pre-defined bot function: SellStore() requires a item list to be present, processes all items owned by player
-			> end of interaction:
-				> menu will detect the selection of dialog option, automatically add the Exit button parameter (find exit button from a list of known buttons)
-					> saves changes made to path and reloads
-			*/
 			std::unordered_map<int, std::string>			buttons_map = {};
 			std::unordered_map<std::string, bool>			panels_map = {};
 			std::unordered_map<std::string, std::string>	children_by_panel = {};
+			bool disable_all();
+			bool enable_all();
 			bool gbuttons();
 			bool gpanels();
 			bool gchildren(std::string panel); 

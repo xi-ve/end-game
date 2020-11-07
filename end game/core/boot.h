@@ -30,6 +30,7 @@ static void __stdcall init_thread()
 	sys::damage = new sys::c_damage();
 	sdk::dialog::dialog = new sdk::dialog::c_dialog();
 	sys::reconnect = new sys::c_reconnect();
+	sdk::engine::symvar = new sdk::engine::c_symvar();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

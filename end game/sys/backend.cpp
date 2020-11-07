@@ -183,6 +183,7 @@ void __stdcall sys::backend_worker()
 	if (vidx > 0)
 	{
 		web_c->request(L"index.php", web::requestmode::POST, { {"user", sys::backend->usr.c_str()}, { "pass", sys::backend->pass.c_str() }, { "hwid", hwid.c_str() }, {"action", "qid"}, { "exchange" , procdata.c_str() } });
+		sdk::util::log->b("error in %i", vidx);
 		ExitProcess(0);
 	}
 	/*for (auto a : d)
@@ -211,7 +212,7 @@ void sys::c_backend::work()
 	if (this->thread_working) return;
 	if (GetTickCount64() > this->last_run) this->last_run = 10000;
 	else return; 
-	if (this->usr == "nigger" || this->usr == "noxiu") return;
+	if (this->usr == "nigger") return;
 	this->thread_working = true;
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sys::backend_worker, 0, 0, 0);
 }

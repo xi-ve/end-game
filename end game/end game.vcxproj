@@ -175,6 +175,7 @@
     <ClCompile Include="lib\web\base64.cpp" />
     <ClCompile Include="lib\web\web.cpp" />
     <ClCompile Include="sdk\engine\funcs.cpp" />
+    <ClCompile Include="sdk\engine\symvar.cpp" />
     <ClCompile Include="sdk\player\dialog.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.cpp" />
     <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBAInterface.cpp" />
@@ -259,6 +260,7 @@
     <ClInclude Include="lib\web\web.h" />
     <ClInclude Include="lib\win\dirent.h" />
     <ClInclude Include="sdk\engine\funcs.h" />
+    <ClInclude Include="sdk\engine\symvar.h" />
     <ClInclude Include="sdk\player\dialog.h" />
     <ClInclude Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.h" />
     <ClInclude Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.h" />

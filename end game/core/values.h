@@ -32,6 +32,7 @@ namespace core
 			extern uint64_t cursor_world;
 			extern uint64_t dialog_base;
 			extern uint64_t ui_manager;
+			extern uint64_t symvar_base;
 		}
 		namespace fn
 		{
