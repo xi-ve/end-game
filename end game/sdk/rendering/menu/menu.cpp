@@ -1089,6 +1089,21 @@ bool sdk::menu::c_menu::setup()
 							ImGui::Text(std::string("slots left:").append(std::to_string(in_l)).c_str());
 
 							//
+							ImGui::Text(std::string("main wep dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_main_weapon_id))).c_str());
+							ImGui::Text(std::string("awak wep dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_awak_id))).c_str());
+							ImGui::Text(std::string("sub  wep dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_sub_weapon_id))).c_str());
+							ImGui::Text(std::string("armor    dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_armor_id))).c_str());
+							ImGui::Text(std::string("gloves   dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_gloves_id))).c_str());
+							ImGui::Text(std::string("shoes    dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_shoes_id))).c_str());
+							ImGui::Text(std::string("helmet   dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_helmet_id))).c_str());
+							ImGui::Text(std::string("neck     dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_neck_id))).c_str());
+							ImGui::Text(std::string("ring1    dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_ring1_id))).c_str());
+							ImGui::Text(std::string("ring2    dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_ring2_id))).c_str());
+							ImGui::Text(std::string("ear1     dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_ear1_id))).c_str());
+							ImGui::Text(std::string("ear2     dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_ear2_id))).c_str());
+							ImGui::Text(std::string("belt     dur:").append(std::to_string(*(byte*)(self + core::offsets::actor::eq_dur_belt_id))).c_str());
+
+							//
 							ImGui::Text(std::string("x:").append(std::to_string(self_pos.x)).c_str());
 							ImGui::Text(std::string("y:").append(std::to_string(self_pos.y)).c_str());
 							ImGui::Text(std::string("z:").append(std::to_string(self_pos.z)).c_str());
@@ -1111,7 +1126,13 @@ bool sdk::menu::c_menu::setup()
 								ImGui::Text(std::string("special:").append(std::to_string(rbp.special_event)).c_str());
 								ImGui::Text(std::string("npc:").append(rbp.npc_name).c_str());
 								ImGui::Text(std::string("scr:").append(rbp.script).c_str());
+							}
 
+							//
+							if (ImGui::Button("del 0"))
+							{
+								auto key = *(int*)(self + core::offsets::actor::actor_proxy_key);
+								sys::gear_exchanger->f_delete_item(key, 0, 2, 1);
 							}
 						}
 						else ImGui::TextColored(ImColor(255,0,0), "no player found");
@@ -1122,9 +1143,9 @@ bool sdk::menu::c_menu::setup()
 		{
 			{"spooky-scary-tests"},
 			{
-				{"spoof-dmg", 0 , "debug", "ispoofdmg", false},
 				{"test_panel_db", 5, "", "", false, [this]()
 					{
+						if (ImGui::Button("test-swapper")) sys::gear_exchanger->work();
 						if (ImGui::Button("get-buttons")) sdk::dialog::dialog->gbuttons();
 						if (sdk::dialog::dialog->buttons_map.size())
 						{
@@ -1137,8 +1158,6 @@ bool sdk::menu::c_menu::setup()
 						if (ImGui::Button("disable-all")) sdk::dialog::dialog->disable_all();
 						if (ImGui::Button("enable -all")) sdk::dialog::dialog->enable_all();
 
-
-						sdk::dialog::dialog->gpanels();
 						if (sdk::dialog::dialog->panels_map.size())
 						{
 							ImGui::BeginChild(3, ImVec2(350, 350), false, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize | ImGuiWindowFlags_HorizontalScrollbar);
@@ -1149,6 +1168,7 @@ bool sdk::menu::c_menu::setup()
 								{
 										//
 									if (ImGui::Button("get-children")) sdk::dialog::dialog->gchildren(b.first);
+									if (ImGui::Button("disable")) sdk::dialog::dialog->disable_by_name(b.first);
 										//
 									ImGui::TreePop();
 								}
@@ -1180,51 +1200,7 @@ bool sdk::menu::c_menu::setup()
 						{
 							auto id_button = sdk::dialog::dialog->find_button_ex("Store", "Panel_Npc_Dialog_All");
 						}
-						if (ImGui::Button("run test sell thread"))
-						{
-							if (!sdk::dialog::dialog->thread_running)
-							{
-								sdk::dialog::dialog->thread_running = true;
-								auto stru = new sdk::dialog::s_thread_p();
-								stru->npc = "Lonely Palieva";
-								stru->items = { 44266 };
-								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
-							}
-						}
-						if (ImGui::Button("run test store thread"))
-						{
-							if (!sdk::dialog::dialog->thread_running)
-							{
-								sdk::dialog::dialog->thread_running = true;
-								auto stru = new sdk::dialog::s_thread_p();
-								stru->npc = "Deve";
-								stru->items = { 44436, 5963, 4409, 7922, 44221 };
-								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
-							}
-						}
-						if (ImGui::Button("run test repair thread"))
-						{
-							if (!sdk::dialog::dialog->thread_running)
-							{
-								sdk::dialog::dialog->thread_running = true;
-								auto stru = new sdk::dialog::s_thread_p();
-								stru->npc = "Tranan Underfoe";
-								CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::repair_eq, (PVOID)stru, 0, 0);
-							}
-						}
 						if (ImGui::Button("reset sale")) sdk::dialog::dialog->sell_reset();
-
-						if (ImGui::Button("test-popup"))
-						{
-							ImGui::SetNextWindowBgAlpha(0.f);
-							ImGui::OpenPopup("test_modal");
-						}
-						if (ImGui::BeginPopupModal("test_modal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-						{
-							ImGui::Text("test-popup");
-							if (ImGui::Button("exit")) ImGui::CloseCurrentPopup();
-							ImGui::EndPopup();
-						}
 					}
 				}
 			}

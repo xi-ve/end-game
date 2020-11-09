@@ -31,6 +31,7 @@ static void __stdcall init_thread()
 	sdk::dialog::dialog = new sdk::dialog::c_dialog();
 	sys::reconnect = new sys::c_reconnect();
 	sdk::engine::symvar = new sdk::engine::c_symvar();
+	sys::gear_exchanger = new sys::c_gear_exchanger();
 	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//

@@ -92,6 +92,7 @@ namespace sdk
 			std::string find_button(std::string display_name, std::string panel);
 			int			find_button_ex(std::string display_name, std::string panel);
 			bool		find_panel(std::string panel);
+			void		disable_by_name(std::string panel);
 			//
 			void		sell_reset()
 			{

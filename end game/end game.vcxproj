@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{95098A8C-2C00-4ABD-BAE6-E5B43AECECDF}</ProjectGuid>
     <RootNamespace>endgame</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -215,6 +215,7 @@
     <ClCompile Include="sys\cfg.cpp" />
     <ClCompile Include="sys\cursor_tp.cpp" />
     <ClCompile Include="sys\damage.cpp" />
+    <ClCompile Include="sys\gear_exchanger.cpp" />
     <ClCompile Include="sys\key_q.cpp" />
     <ClCompile Include="sys\legit_bot.cpp" />
     <ClCompile Include="sys\loot.cpp" />
@@ -293,6 +294,7 @@
     <ClInclude Include="sys\cfg.h" />
     <ClInclude Include="sys\cursor_tp.h" />
     <ClInclude Include="sys\damage.h" />
+    <ClInclude Include="sys\gear_exchanger.h" />
     <ClInclude Include="sys\key_q.h" />
     <ClInclude Include="sys\legit_bot.h" />
     <ClInclude Include="sys\loot.h" />

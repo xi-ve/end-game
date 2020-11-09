@@ -1,14 +1,20 @@
 #include <inc.h>
 bool sys::c_roar_bot::ssp(s_path_script s)
 {
-	if (this->force_store) 
-	{ 
+	if (this->force_store)
+	{
 		sdk::util::log->add("going storage reason: force_store", sdk::util::e_critical, true);
-		return true; 
+		return true;
 	}
+
+	if (this->path_contains_repair)
+	{
+		if (this->is_arsha_low_dur()) return true;
+	}
+
 	auto in_m = *(int*)(this->self + core::offsets::actor::actor_inv_max_weight) / 10000;
 	auto in_w = (*(int*)(this->self + core::offsets::actor::actor_inv_raw_weight) + *(int*)(this->self + core::offsets::actor::actor_inv_gear_weight)) / 10000;
-	if (in_w >= in_m) 
+	if (in_w >= in_m)
 	{
 		sdk::util::log->add(std::string("going storage reason: in_w >= in_m > in_w:").append(std::to_string(in_w)).append(" in_m:").append(std::to_string(in_m)), sdk::util::e_critical, true);
 		return true;
@@ -16,7 +22,7 @@ bool sys::c_roar_bot::ssp(s_path_script s)
 	//
 	auto in_l = *(int*)(this->self + core::offsets::actor::actor_inv_left);
 	if (in_l < 0) return false;
-	if (in_l <= 2) 
+	if (in_l <= 2)
 	{
 		sdk::util::log->add(std::string("going storage reason: in_l <= 2 > in_l:").append(std::to_string(in_l)), sdk::util::e_critical, true);
 		return true;
@@ -108,7 +114,7 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 
 	auto has = this->has_lootables(o);
 	if (!has) { sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3(o.x / 100, o.y / 100, o.z / 100)); return true; }
-	
+
 	auto selfpos = sdk::player::player_->gpos(this->self);
 
 	auto l = 9999.f; auto rr = uint64_t(0);
@@ -134,11 +140,11 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 	{
 		auto lpos = sdk::player::player_->gpos(rr);
 		sys::cursor_tp->set_pos(this->self, sdk::util::c_vector3((int)lpos.x / 100, (int)lpos.y / 100, (int)lpos.z / 100));
-		this->loot_act_k = *(int*)(rr+core::offsets::actor::actor_proxy_key);
+		this->loot_act_k = *(int*)(rr + core::offsets::actor::actor_proxy_key);
 		if (rr != this->last_loot_actor)//test this ok
 		{
 			this->last_loot_actor = rr;
-			this->last_loot_time = GetTickCount64()+5000;
+			this->last_loot_time = GetTickCount64() + 5000;
 		}
 		else
 		{
@@ -147,9 +153,9 @@ bool sys::c_roar_bot::loot_near(sdk::util::c_vector3 o)
 				for (auto b = 0; b < sys::loot->loot_proxys.size(); b++)
 				{
 					auto a = sys::loot->loot_proxys[b];
-					if (a.ptr != this->last_loot_actor) continue;					
+					if (a.ptr != this->last_loot_actor) continue;
 					sys::loot->loot_proxys.erase(sys::loot->loot_proxys.begin() + b);
-					break;					
+					break;
 				}
 				this->last_loot_actor = 0;
 				this->last_loot_time = 0;
@@ -178,7 +184,7 @@ bool sys::c_roar_bot::stance()
 	if (strstr(a.c_str(), "BT_skill_AggroShout_Ing_UP")) return true;//autoskip
 	if (strstr(a.c_str(), "BT_WAIT")) return true;//autoskip
 	if (GetTickCount64() > this->sct) this->sct = GetTickCount64() + 5000;
-	else return false;	
+	else return false;
 	if (strstr(a.c_str(), "WAIT"))
 	{
 		sys::key_q->add(new sys::s_key_input({ VK_TAB }, 500));
@@ -278,6 +284,35 @@ void sys::c_roar_bot::reset()
 	this->s_npc = "NONE";
 	this->s_scr = "NONE";
 	this->lp.clear();
+	this->path_contains_repair = false;
+	this->arsha_char = false;
+}
+bool sys::c_roar_bot::is_arsha_low_dur()
+{
+	auto is_arsha = [&](uint64_t adr, byte slot) -> bool
+	{
+		auto id = *(WORD*)(this->self + adr);
+		auto id_dur = *(byte*)(this->self + (adr + 0x4));
+		if (id < 1 || id == 0xFFFF) return 0;
+		if (id_dur > 20) return 0;
+		for (auto obj : arsha_items) if (obj == id) { this->arsha_char = true; return 1; }
+		for (auto obj : arsha_weapons) if (obj == id) { this->arsha_char = true; return 1; }
+		return 0;
+	};
+	if (is_arsha(core::offsets::actor::eq_dur_main_weapon, 0)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_awak, 29)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_sub_weapon, 1)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_ear1, 10)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_ear2, 11)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_armor, 3)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_helmet, 6)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_neck, 7)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_gloves, 4)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_shoes, 5)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_belt, 12)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_ring1, 8)) return 1;
+	if (is_arsha(core::offsets::actor::eq_dur_ring2, 9)) return 1;
+	return 0;
 }
 void sys::c_roar_bot::gpoint()
 {
@@ -487,8 +522,12 @@ void sys::c_roar_bot::load()
 		{
 			auto res = parse_storage(s);
 			if (res.script != "NONE") { res.special_event = 1; res.pause = 1.2f; }
-			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }
-			if (res.pos.valid() && res.script.size() > 0) { this->store.push_back(res); continue; }
+			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }					
+			if (res.pos.valid() && res.script.size() > 0) 
+			{ 
+				if (strstr(res.script.c_str(), "repair_routine()")) this->path_contains_repair = true;
+				this->store.push_back(res); continue; 
+			}
 		}
 		if (strstr(s.c_str(), "[gp]"))
 		{
@@ -522,7 +561,7 @@ void sys::c_roar_bot::save()
 		if (a.pause > 0.1f && a.pause != 0.f) p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << a.pause << ")\n";
 		else p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << 0.1f << ")\n";
 	}
- 	for (auto a : this->store) p << "(sp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
+	for (auto a : this->store) p << "(sp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
 	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
 	sdk::util::log->add("resaved path");
 }
@@ -689,12 +728,35 @@ void sys::c_roar_bot::work(uint64_t s)
 					{
 						if (sdk::dialog::dialog->completed_repair)
 						{
-							sdk::dialog::dialog->completed_repair = false;
-							sdk::dialog::dialog->thread_running = false;
-							this->npc_interacted = false;
-							this->cur_route.pop_front();
-							this->execution = GetTickCount64() + 1000;
-							return;
+							if (this->arsha_char)
+							{
+								if (!sys::gear_exchanger->done_exchange && sys::gear_exchanger->thread_is_working) return;
+								if (sys::gear_exchanger->done_exchange)
+								{
+									sdk::dialog::dialog->completed_repair = false;
+									sdk::dialog::dialog->thread_running = false;
+									sys::gear_exchanger->done_exchange = false;
+									sys::gear_exchanger->thread_is_working = false;
+									this->npc_interacted = false;
+									this->cur_route.pop_front();
+									this->execution = GetTickCount64() + 1000;
+									return;
+								}
+								if (this->is_arsha_low_dur() && !sys::gear_exchanger->thread_is_working && !sys::gear_exchanger->done_exchange)
+								{
+									sys::gear_exchanger->work();
+									return;
+								}
+							}
+							else
+							{
+								sdk::dialog::dialog->completed_repair = false;
+								sdk::dialog::dialog->thread_running = false;
+								this->npc_interacted = false;
+								this->cur_route.pop_front();
+								this->execution = GetTickCount64() + 1000;
+								return;
+							}
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
 

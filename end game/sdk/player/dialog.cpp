@@ -94,15 +94,21 @@ bool sdk::dialog::c_dialog::gchildren(std::string t)
 		{
 			auto child = *(uint64_t*)(c_s + b);
 			if (!child) continue;
+			auto child_state = *(BYTE*)(child + 0x239);
+			if (child_state == 0xC) continue;
 			auto child_name = sdk::player::player_->gstring(child + 0xD0, 64);
 			if (child_name.empty()) continue;
 			auto has_txt = *(BYTE*)(child + 0x298);
-			if (!has_txt || !*(uint64_t*)(child + 0x298)) continue;
-			auto txt = *(sdk::dialog::str_btn*)(*(uint64_t*)(child + 0x298));
-			if (!txt.str_btn_) continue;
-			auto s = std::wstring(txt.str_btn_); if (!s.size()) continue;
-			auto e = std::string(s.begin(), s.end()); if (!e.size() || e.size() < 3) continue;
-			this->children_by_panel[e] = child_name;
+			if (has_txt)
+			{
+				if (!has_txt || !*(uint64_t*)(child + 0x298)) continue;
+				auto txt = *(sdk::dialog::str_btn*)(*(uint64_t*)(child + 0x298));
+				if (!txt.str_btn_) continue;
+				auto s = std::wstring(txt.str_btn_); if (!s.size()) continue;
+				auto e = std::string(s.begin(), s.end()); if (!e.size() || e.size() < 3) continue;
+				this->children_by_panel[e] = child_name;
+			}
+			this->children_by_panel[child_name] = "=>";
 			//+0x120 -> +0x98 = lua for buttons
 		}
 	}
@@ -225,6 +231,30 @@ bool sdk::dialog::c_dialog::find_panel(std::string panel)
 {
 	for (auto a : this->panels_map) if (strstr(a.first.c_str(), panel.c_str())) return true;
 	return false;
+}
+void sdk::dialog::c_dialog::disable_by_name(std::string fef)
+{
+	auto uimgr = *(uint64_t*)(core::offsets::cl::ui_manager);
+	if (!uimgr) return;
+	auto p_s = *(uint64_t*)(uimgr + 0x3c0);
+	auto p_e = *(uint64_t*)(uimgr + 0x3c8);
+	if (!p_s || !p_e) return;
+	auto delta = ((p_e - p_s) / 8);
+	for (auto a = 0; a < delta * 8; a += 8)
+	{
+		auto panel = *(uint64_t*)(p_s + a);
+		if (!panel) continue;
+		auto panel_state = *(BYTE*)(panel + 0x239);
+		if (panel_state == 0xC) continue;
+		auto panel_name = sdk::player::player_->gstring(panel + 0xD0, 64);
+		if (panel_name.empty()) continue;
+		if (panel_name == fef)
+		{
+			*(BYTE*)(panel + 0x239) = 0xC;
+			this->disabled_panels.push_back(panel);
+			return;
+		}
+	}
 }
 bool sdk::dialog::c_dialog::sell_test(int id)
 {

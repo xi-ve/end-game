@@ -72,6 +72,7 @@
 #include "..\\sdk\\engine\funcs.h"
 #include "..\\sdk\player\player.h"
 #include "..\\sdk\player\dialog.h"
+#include "..\\sys\gear_exchanger.h"
 #include "..\\sys\rebuff.h"
 #include "..\\sys\pack_tp.h"
 #include "..\\sys\\cursor_tp.h"

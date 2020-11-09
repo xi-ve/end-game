@@ -5,6 +5,39 @@ namespace sys
 	class c_roar_bot
 	{
 	private:
+		std::vector<int> arsha_chests = 
+		{
+			/*weapon chests for all classes*/
+			617, 618, 621
+		};
+		std::vector<int> arsha_items =
+		{
+			/*armor and acc.*/
+			48291, 48292, 48294, 48296, 48343, 48346, 48340, 48348
+		};
+		std::vector<int> arsha_weapons =
+		{
+			/*weapons*/
+			/*archer*/	 48191, 48195, 48192,
+			/*guardian*/ 35187, 48142, 48256,
+			/*sorc*/     48149, 48241, 48150,
+			/*zerker*/   48153, 48242, 48154,
+			/*maewha*/   48161, 48162, 48247,
+			/*warrior*/  48141, 48240,
+			/*ranger*/   48145, 48146, 48243,
+			/*lahn*/     48177, 48178, 48255,
+			/*tamer*/    48157, 48158, 48244,
+			/*shai*/	 63232, 63697, 34649,
+			/*striker*/  48173, 48174, 48253,
+			/*musa*/     48246,
+			/*mystic*/   48254,
+			/*valk*/     48245,
+			/*kuno*/     48166, 48249,
+			/*ninja*/    48169, 48248,
+			/*dk*/       48172, 48252,
+			/*witch*/    48165, 48250,
+			/*witcher*/  48251
+		};
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
 		uint64_t last_loot_actor = 0; ULONGLONG last_loot_time = 0;
@@ -26,6 +59,8 @@ namespace sys
 		int p_mode = 0;//0,grind 1,store
 		int reversed = 0;
 		bool skill_locked = 0; bool npc_interacted = false;
+		bool path_contains_repair = false;
+		bool arsha_char = false;
 		std::deque<s_path_script> cur_route = {};
 		//
 		bool ssp(s_path_script s);
@@ -65,6 +100,7 @@ namespace sys
 		void work(uint64_t s);
 		bool snear();
 		void reset();
+		bool is_arsha_low_dur();
 		//
 		void snpc(std::string a);
 		void sscr(std::string a);

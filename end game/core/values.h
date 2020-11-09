@@ -96,6 +96,34 @@ namespace core
 			extern uint64_t actor_attack_target;
 			extern uint64_t actor_max_sp;
 			extern uint64_t actor_combat_stance;
+			extern uint64_t eq_dur_main_weapon;
+			extern uint64_t eq_dur_main_weapon_id;
+			extern uint64_t eq_dur_sub_weapon;
+			extern uint64_t eq_dur_sub_weapon_id;
+			extern uint64_t eq_dur_gather_tool;
+			extern uint64_t eq_dur_gather_tool_id;
+			extern uint64_t eq_dur_armor;
+			extern uint64_t eq_dur_armor_id;
+			extern uint64_t eq_dur_gloves;
+			extern uint64_t eq_dur_gloves_id;
+			extern uint64_t eq_dur_shoes;
+			extern uint64_t eq_dur_shoes_id;
+			extern uint64_t eq_dur_helmet;
+			extern uint64_t eq_dur_helmet_id;
+			extern uint64_t eq_dur_neck;
+			extern uint64_t eq_dur_neck_id;
+			extern uint64_t eq_dur_ring1;
+			extern uint64_t eq_dur_ring1_id;
+			extern uint64_t eq_dur_ring2;
+			extern uint64_t eq_dur_ring2_id;
+			extern uint64_t eq_dur_ear1;
+			extern uint64_t eq_dur_ear1_id;
+			extern uint64_t eq_dur_ear2;
+			extern uint64_t eq_dur_ear2_id;
+			extern uint64_t eq_dur_belt;
+			extern uint64_t eq_dur_belt_id;
+			extern uint64_t eq_dur_awak;
+			extern uint64_t eq_dur_awak_id;
 		}
 	}
 }
