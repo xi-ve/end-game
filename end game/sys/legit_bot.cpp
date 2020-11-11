@@ -996,7 +996,6 @@ void sys::c_legit_bot::load()
 	}
 	v.close();
 	this->items_left_sell = this->allowed_sell_items;
-	sdk::util::log->add(std::string("done load"), sdk::util::e_info, true);
 }
 void sys::c_legit_bot::save()
 {

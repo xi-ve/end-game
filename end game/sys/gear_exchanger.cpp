@@ -125,7 +125,6 @@ void __stdcall sys::exchange()
 				auto key = *(int*)(self + core::offsets::actor::actor_proxy_key);
 				sys::gear_exchanger->f_delete_item(key, 0, slot, 1);
 				execution = GetTickCount64() + 500;
-				//sdk::util::log->b("deleting %i", cur.slot);
 				break;
 			}
 			else

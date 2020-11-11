@@ -1,15 +1,17 @@
 #include <inc.h>
 bool sys::c_roar_bot::ssp(s_path_script s)
 {
+
+	if (this->path_contains_repair) if (this->is_arsha_low_dur())
+	{
+		sdk::util::log->b("going to storage reason: arsha gear swap");
+		return true;
+	}
+
 	if (this->force_store)
 	{
 		sdk::util::log->add("going storage reason: force_store", sdk::util::e_critical, true);
 		return true;
-	}
-
-	if (this->path_contains_repair)
-	{
-		if (this->is_arsha_low_dur()) return true;
 	}
 
 	auto in_m = *(int*)(this->self + core::offsets::actor::actor_inv_max_weight) / 10000;
@@ -312,6 +314,7 @@ bool sys::c_roar_bot::is_arsha_low_dur()
 	if (is_arsha(core::offsets::actor::eq_dur_belt, 12)) return 1;
 	if (is_arsha(core::offsets::actor::eq_dur_ring1, 8)) return 1;
 	if (is_arsha(core::offsets::actor::eq_dur_ring2, 9)) return 1;
+	if (this->force_store) { this->arsha_char=true; return 1; }
 	return 0;
 }
 void sys::c_roar_bot::gpoint()
@@ -550,7 +553,6 @@ void sys::c_roar_bot::load()
 	}
 	v.close();
 	this->items_left_sell = this->allowed_sell_items;
-	sdk::util::log->add(std::string("done load"), sdk::util::e_info, true);
 }
 void sys::c_roar_bot::save()
 {
@@ -639,19 +641,9 @@ void sys::c_roar_bot::work(uint64_t s)
 					if (this->has_aggro()) return;
 
 					sdk::dialog::dialog->sell_reset();
+
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
 					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
-					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
-
-					if (!npc_wanted_ptr)
-					{
-						sdk::util::log->b("npc cannot be found");
-						return;
-					}
-
-					this->f_npc_interaction(npc_wanted_ptr);
-					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
-					if (!cinteract || cinteract != npc_wanted_ptr) return;
 
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 					this->cur_route.pop_front();
@@ -664,7 +656,9 @@ void sys::c_roar_bot::work(uint64_t s)
 					*(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
 
 					this->items_left_sell = this->allowed_sell_items;
-					this->last_interaction_name = cur_point.npc_name;
+					this->last_interaction_name = npc_wanted;
+
+					sdk::util::log->b("wanted interaction setup for %s", this->last_interaction_name.c_str());
 
 					return;
 				}
@@ -687,6 +681,8 @@ void sys::c_roar_bot::work(uint64_t s)
 
 						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
 						{
+							sdk::util::log->b("starting sell routine");
+							sdk::util::log->b("for %s", this->last_interaction_name.c_str());
 							sdk::dialog::dialog->completed_sales = false;
 							sdk::dialog::dialog->thread_running = true;
 							auto stru = new sdk::dialog::s_thread_p();
@@ -701,6 +697,7 @@ void sys::c_roar_bot::work(uint64_t s)
 					{
 						if (sdk::dialog::dialog->completed_sales)
 						{
+							sdk::util::log->b("completed store routine");
 							sdk::dialog::dialog->sell_reset();
 							sdk::dialog::dialog->thread_running = false;
 							sdk::dialog::dialog->completed_sales = false;
@@ -714,6 +711,7 @@ void sys::c_roar_bot::work(uint64_t s)
 
 						if (!sdk::dialog::dialog->completed_sales && !sdk::dialog::dialog->thread_running)
 						{
+							sdk::util::log->b("starting store routine <now>");
 							sdk::dialog::dialog->completed_sales = false;
 							sdk::dialog::dialog->thread_running = true;
 							auto stru = new sdk::dialog::s_thread_p();
@@ -730,26 +728,43 @@ void sys::c_roar_bot::work(uint64_t s)
 						{
 							if (this->arsha_char)
 							{
-								if (!sys::gear_exchanger->done_exchange && sys::gear_exchanger->thread_is_working) return;
 								if (sys::gear_exchanger->done_exchange)
 								{
 									sdk::dialog::dialog->completed_repair = false;
 									sdk::dialog::dialog->thread_running = false;
 									sys::gear_exchanger->done_exchange = false;
 									sys::gear_exchanger->thread_is_working = false;
+									this->arsha_char = false;
 									this->npc_interacted = false;
 									this->cur_route.pop_front();
 									this->execution = GetTickCount64() + 1000;
+									sdk::util::log->b("exchange done");
 									return;
 								}
-								if (this->is_arsha_low_dur() && !sys::gear_exchanger->thread_is_working && !sys::gear_exchanger->done_exchange)
+								if (!sys::gear_exchanger->thread_is_working && !sys::gear_exchanger->done_exchange)
 								{
 									sys::gear_exchanger->work();
+									sdk::util::log->b("exchange started");
 									return;
 								}
+								if (!sys::gear_exchanger->thread_is_working)
+								{
+									sdk::dialog::dialog->completed_repair = false;
+									sdk::dialog::dialog->thread_running = false;
+									sys::gear_exchanger->done_exchange = false;
+									sys::gear_exchanger->thread_is_working = false;
+									this->arsha_char = false;
+									this->npc_interacted = false;
+									this->cur_route.pop_front();
+									this->execution = GetTickCount64() + 1000;
+									sdk::util::log->b("exchange not needed, done");
+									return;
+								}
+								return;
 							}
 							else
 							{
+								this->arsha_char = false;
 								sdk::dialog::dialog->completed_repair = false;
 								sdk::dialog::dialog->thread_running = false;
 								this->npc_interacted = false;

@@ -556,6 +556,7 @@ void __stdcall sdk::dialog::do_sell(void* a)
 			{
 				for (auto a : sdk::player::player_->npcs) if (strstr(a.name.c_str(), data->npc.c_str())) sys::roar_bot->f_npc_interaction(a.ptr);
 				//sdk::util::log->b("interacted with %s", npc.c_str());
+				sdk::dialog::dialog->last_execution = GetTickCount64() + 1000;
 				continue;
 			}
 			auto shop_panel = sdk::dialog::dialog->find_panel("Panel_Dialog_NPCShop_All");
