@@ -417,6 +417,29 @@ bool sys::c_legit_bot::ssp()
 bool sys::c_legit_bot::srp()
 {
 	if (this->force_repair) return true;
+
+	auto should_repair = [&](uint64_t adr, byte slot) -> bool
+	{
+		auto id = *(WORD*)(this->self + adr);
+		auto id_dur = *(byte*)(this->self + (adr + 0x4));
+		if (id < 1 || id == 0xFFFF) return 0;
+		if (id_dur > 20) return 0;
+		return 1;
+	};
+	if (should_repair(core::offsets::actor::eq_dur_main_weapon, 0)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_awak, 29)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_sub_weapon, 1)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_ear1, 10)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_ear2, 11)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_armor, 3)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_helmet, 6)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_neck, 7)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_gloves, 4)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_shoes, 5)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_belt, 12)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_ring1, 8)) return 1;
+	if (should_repair(core::offsets::actor::eq_dur_ring2, 9)) return 1;
+
 	return false;
 }
 void sys::c_legit_bot::repath(int a, int b)

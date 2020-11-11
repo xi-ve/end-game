@@ -20,8 +20,10 @@ namespace sys
 	class c_gear_exchanger
 	{
 	public:		
-		t_delete_item f_delete_item = (t_delete_item)0x140AAF480;
-		t_unequip	  f_unequip = (t_unequip)0x140AAE3F0;
+		//48 83 EC 68 48 C7 44 24 ? ? ? ? ? 8B C1 
+		t_delete_item f_delete_item = (t_delete_item)0x140AB94B0;
+		//80 F9 20 0F 83 ? ? ? ? 48 83 EC 58 
+		t_unequip	  f_unequip = (t_unequip)0x140AB8410;
 		bool thread_is_working = false;
 		bool done_exchange = false;
 		bool work();

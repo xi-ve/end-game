@@ -39,19 +39,18 @@ std::vector<sdk::util::c_vector3> sys::c_visuals::gcircle_front(sdk::util::c_vec
 }
 void sys::c_visuals::monster_proxy_debug()
 {
-	auto a = sdk::player::player_->actors;
+	auto a = sdk::player::player_->corpses;
 	if (a.size() <= 1) return;
 	auto sv = sdk::util::c_vector3();
 	if (!sdk::util::math->w2s(sdk::player::player_->gpos(this->self), sv)) return;
 	for (auto b : a)
 	{
 		if (b.ptr == NULL) continue;
-		if (b.type != 9) continue;
 		auto bpos = sdk::player::player_->gpos(b.ptr);
 		auto v = sdk::util::c_vector3();
 		if (!sdk::util::math->w2s(bpos, v)) continue;
 		sdk::render::render->DrawLine(sv.x, sv.z, v.x, v.z, 0xff00ff0f);
-		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b.ptr).c_str());
+		sdk::render::render->RenderText(v.x, v.z - 50, 0xff00ff00, (char*)sdk::util::log->as_hex(b.key).c_str());
 	}
 }
 void sys::c_visuals::alive_proxy_debug()
