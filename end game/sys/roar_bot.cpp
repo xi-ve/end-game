@@ -642,8 +642,20 @@ void sys::c_roar_bot::work(uint64_t s)
 
 					sdk::dialog::dialog->sell_reset();
 
+					sdk::dialog::dialog->sell_reset();
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
 					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
+
+					if (!npc_wanted_ptr)
+					{
+						sdk::util::log->b("npc cannot be found");
+						return;
+					}
+
+					this->f_npc_interaction(npc_wanted_ptr);
+					auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
+					if (!cinteract || cinteract != npc_wanted_ptr) return;
 
 					sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 					this->cur_route.pop_front();
@@ -689,6 +701,8 @@ void sys::c_roar_bot::work(uint64_t s)
 							stru->npc = this->last_interaction_name;
 							stru->items = this->items_left_sell;
 							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_sell, (PVOID)stru, 0, 0);
+							this->execution = GetTickCount64() + 1000;
+							return;
 						}
 
 						return;
@@ -718,6 +732,8 @@ void sys::c_roar_bot::work(uint64_t s)
 							stru->npc = this->last_interaction_name;
 							stru->items = this->items_left_sell;
 							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::do_store, (PVOID)stru, 0, 0);
+							this->execution = GetTickCount64() + 1000;
+							return;
 						}
 
 						return;
@@ -782,6 +798,8 @@ void sys::c_roar_bot::work(uint64_t s)
 							auto stru = new sdk::dialog::s_thread_p();
 							stru->npc = this->last_interaction_name;
 							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)sdk::dialog::repair_eq, (PVOID)stru, 0, 0);
+							this->execution = GetTickCount64() + 1000;
+							return;
 						}
 						return;
 					}

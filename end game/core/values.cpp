@@ -44,7 +44,7 @@ uint64_t core::offsets::cl::cursor_world = 0x143DFAD38;
 uint64_t core::offsets::cl::dialog_base = 0x143DFFD70;
 //48 8B 05 ? ? ? ? 48 8B 90 ? ? ? ? 48 8B 4A 48 
 uint64_t core::offsets::cl::ui_manager = 0x143DADC50;
-//48 89 05 ? ? ? ? C7 05 ? ? ? ? ? ? ? ? 48 8D 05 ? ? ? ? 48 89 44 24 ? E8 ? ? ? ? 48 85 C0 74 46 4C 8D 05 ? ? ? ? 48 8B 54 24 ? 48 8B C8 E8 ? ? ? ? 84 C0 75 18 4C 8D 44 24 ? 
+//ch_updatingSkinningTextureBatchSize second off_14xxxxx counting upwards
 uint64_t core::offsets::cl::symvar_base = 0x143C6C458;
 
 
