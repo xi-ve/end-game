@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}</ProjectGuid>
+    <RootNamespace>endgame</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <SpectreMitigation>false</SpectreMitigation>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
+    <LibraryPath>$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)lib\themida;$(ProjectDir)lib\imgui;$(IncludePath);$(DXSDK_DIR)Include;$(ProjectDir)core</IncludePath>
+    <LibraryPath>$(ProjectDir)lib\themida;$(ProjectDir)sdk\rendering\fx;$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(ProjectDir)lib\mh</LibraryPath>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <UseFullPaths>false</UseFullPaths>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <LanguageStandard>Default</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+    <PostBuildEvent>
+      <Command>start C:\do_themida.bat</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="core\core.cpp" />
+    <ClCompile Include="core\values.cpp" />
+    <ClCompile Include="core\workers.cpp" />
+    <ClCompile Include="fn\hooks.cpp" />
+    <ClCompile Include="fn\patches.cpp" />
+    <ClCompile Include="lib\d3d\d3d11.cpp" />
+    <ClCompile Include="lib\imgui\imgui.cpp" />
+    <ClCompile Include="lib\imgui\imgui_demo.cpp" />
+    <ClCompile Include="lib\imgui\imgui_draw.cpp" />
+    <ClCompile Include="lib\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="lib\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="lib\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="lib\web\base64.cpp" />
+    <ClCompile Include="lib\web\web.cpp" />
+    <ClCompile Include="sdk\engine\funcs.cpp" />
+    <ClCompile Include="sdk\engine\symvar.cpp" />
+    <ClCompile Include="sdk\player\dialog.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1ColorRGBAInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTargetInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1Factory.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FactoryInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FontWrapper.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1FontWrapperInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphAtlas.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphAtlasInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphProvider.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphProviderInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStates.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStatesInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphSheet.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphSheetInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawer.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawerInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1StateSaver.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextGeometry.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextGeometryInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRenderer.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\CFW1TextRendererInterface.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\FW1FontWrapper.cpp" />
+    <ClCompile Include="sdk\rendering\font_wrapper\FW1Precompiled.cpp" />
+    <ClCompile Include="sdk\rendering\menu\menu.cpp" />
+    <ClCompile Include="sdk\rendering\menu\m_packet.cpp" />
+    <ClCompile Include="sdk\rendering\render.cpp" />
+    <ClCompile Include="sdk\rendering\shader.cpp" />
+    <ClCompile Include="sdk\util\file.cpp" />
+    <ClCompile Include="sdk\util\math.cpp" />
+    <ClCompile Include="sdk\player\player.cpp" />
+    <ClCompile Include="sdk\util\bytebuffer.cpp" />
+    <ClCompile Include="sdk\util\log.cpp" />
+    <ClCompile Include="sys\backend.cpp" />
+    <ClCompile Include="sys\cfg.cpp" />
+    <ClCompile Include="sys\cursor_tp.cpp" />
+    <ClCompile Include="sys\damage.cpp" />
+    <ClCompile Include="sys\gear_exchanger.cpp" />
+    <ClCompile Include="sys\key_q.cpp" />
+    <ClCompile Include="sys\legit_bot.cpp" />
+    <ClCompile Include="sys\loot.cpp" />
+    <ClCompile Include="sys\lua_q.cpp" />
+    <ClCompile Include="sys\pack_tp.cpp" />
+    <ClCompile Include="sys\pet_boost.cpp" />
+    <ClCompile Include="sys\protection.cpp" />
+    <ClCompile Include="sys\rebuff.cpp" />
+    <ClCompile Include="sys\reconnect.cpp" />
+    <ClCompile Include="sys\roar_bot.cpp" />
+    <ClCompile Include="sys\scroll_bot.cpp" />
+    <ClCompile Include="sys\str_enc.cpp" />
+    <ClCompile Include="sys\visual.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="core\boot.h" />
+    <ClInclude Include="core\inc.h" />
+    <ClInclude Include="core\values.h" />
+    <ClInclude Include="core\workers.h" />
+    <ClInclude Include="fn\hooks.h" />
+    <ClInclude Include="fn\patches.h" />
+    <ClInclude Include="lib\d3d\d3d11.h" />
+    <ClInclude Include="lib\imgui\imconfig.h" />
+    <ClInclude Include="lib\imgui\imgui.h" />
+    <ClInclude Include="lib\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="lib\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="lib\imgui\imgui_internal.h" />
+    <ClInclude Include="lib\imgui\imstb_rectpack.h" />
+    <ClInclude Include="lib\imgui\imstb_textedit.h" />
+    <ClInclude Include="lib\imgui\imstb_truetype.h" />
+    <ClInclude Include="lib\imgui\stb_rect_pack.h" />
+    <ClInclude Include="lib\imgui\stb_textedit.h" />
+    <ClInclude Include="lib\imgui\stb_truetype.h" />
+    <ClInclude Include="lib\mh\mh.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_BorlandC_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_GNU_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_ICL_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_LCC_inline.h" />
+    <ClInclude Include="lib\themida\SecureEngineCustomVMs_VC_inline.h" />
+    <ClInclude Include="lib\themida\ThemidaSDK.h" />
+    <ClInclude Include="lib\web\base64.h" />
+    <ClInclude Include="lib\web\web.h" />
+    <ClInclude Include="lib\win\dirent.h" />
+    <ClInclude Include="sdk\engine\funcs.h" />
+    <ClInclude Include="sdk\engine\symvar.h" />
+    <ClInclude Include="sdk\player\dialog.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1ColorRGBA.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1DWriteRenderTarget.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1Factory.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1FontWrapper.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphAtlas.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphProvider.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphRenderStates.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphSheet.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1GlyphVertexDrawer.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1Object.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1StateSaver.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1TextGeometry.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\CFW1TextRenderer.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1CompileSettings.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1FontWrapper.h" />
+    <ClInclude Include="sdk\rendering\font_wrapper\FW1Precompiled.h" />
+    <ClInclude Include="sdk\rendering\fx\d3dx11effect.h" />
+    <ClInclude Include="sdk\rendering\fx\d3dxGlobal.h" />
+    <ClInclude Include="sdk\rendering\menu\menu.h" />
+    <ClInclude Include="sdk\rendering\menu\m_packet.h" />
+    <ClInclude Include="sdk\rendering\render.h" />
+    <ClInclude Include="sdk\rendering\shader.h" />
+    <ClInclude Include="sdk\util\file.h" />
+    <ClInclude Include="sdk\util\math.h" />
+    <ClInclude Include="sdk\player\player.h" />
+    <ClInclude Include="sdk\util\bytebuffer.h" />
+    <ClInclude Include="sdk\util\log.h" />
+    <ClInclude Include="sys\backend.h" />
+    <ClInclude Include="sys\cfg.h" />
+    <ClInclude Include="sys\cursor_tp.h" />
+    <ClInclude Include="sys\damage.h" />
+    <ClInclude Include="sys\gear_exchanger.h" />
+    <ClInclude Include="sys\key_q.h" />
+    <ClInclude Include="sys\legit_bot.h" />
+    <ClInclude Include="sys\loot.h" />
+    <ClInclude Include="sys\lua_q.h" />
+    <ClInclude Include="sys\pack_tp.h" />
+    <ClInclude Include="sys\pet_boost.h" />
+    <ClInclude Include="sys\protection.h" />
+    <ClInclude Include="sys\rebuff.h" />
+    <ClInclude Include="sys\reconnect.h" />
+    <ClInclude Include="sys\roar_bot.h" />
+    <ClInclude Include="sys\scroll_bot.h" />
+    <ClInclude Include="sys\str_enc.h" />
+    <ClInclude Include="sys\visual.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\mh\mh_lib.lib" />
+    <Library Include="lib\themida\SecureEngineSDK32.lib" />
+    <Library Include="lib\themida\SecureEngineSDK64.lib" />
+    <Library Include="sdk\rendering\fx\Effects11.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\themida\SecureEngineSDK32.dll" />
+    <None Include="lib\themida\SecureEngineSDK64.dll" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "end game", "end game\end game.vcxproj", "{95098A8C-2C00-4ABD-BAE6-E5B43AECECDF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "end game-gz", "end game-gz\end game-gz.vcxproj", "{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{95098A8C-2C00-4ABD-BAE6-E5B43AECECDF}.Release|x64.Build.0 = Release|x64
 		{95098A8C-2C00-4ABD-BAE6-E5B43AECECDF}.Release|x86.ActiveCfg = Release|Win32
 		{95098A8C-2C00-4ABD-BAE6-E5B43AECECDF}.Release|x86.Build.0 = Release|Win32
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Debug|x64.ActiveCfg = Debug|x64
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Debug|x64.Build.0 = Debug|x64
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Debug|x86.ActiveCfg = Debug|Win32
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Debug|x86.Build.0 = Debug|Win32
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Release|x64.ActiveCfg = Release|x64
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Release|x64.Build.0 = Release|x64
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Release|x86.ActiveCfg = Release|Win32
+		{EF6D882B-B4A2-4909-8F6F-6EC6544BF452}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
