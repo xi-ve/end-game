@@ -91,37 +91,38 @@ std::vector<std::string> sys::c_loot::gbl()
 }
 void sys::c_loot::spack(int k)
 {
+	//48 15 00 00 00 00 00 00 00 2c 69 03 
 	ByteBuffer a;
-	a.putShort(4959);
-	a.put(0x88);
+	a.putShort(5448);
+	a.putEmptyBytes(6);
 	a.putInt(k);
-	a.putEmptyBytes(1);
-	fn::send_packet(a, 4959, 8);
+	fn::send_packet(a, 5448, 12);
 }
 void sys::c_loot::spick(int k, int sk, int s, int c)
 {
-	//00 7c 57 00 self key
-	//5x 0slot
-	//d0 0c 01 00 7c 57 00 01 00 a4 a9 02 00 05 00 00 00 00 00 00 00 00 00 00 bd 00 00 
-	//260x 1slot
-	//d0 0c 01 00 7c 57 00 01 00 a4 a9 02 00 04 01 00 00 00 00 00 00 01 00 00 bd 00 00 
-	//88x 1slot 
-	//d0 0c 01   00 7c 57 00   01   00 1c c0 02  00   58 00   00 00 00 00 00 00   01   00 00   bd   00 00 
-	//d0 0c 01   00 ec 1f 00   01   01 24 45 01  00   01 00   00 00 00 00 00 00   00   00 00   21   00 00
+	//0 slot
+	//f6 12 ff ff ff 00 00 00 7c a0 03 01 00 00 00 00 00 00 00 01 01 00 ec ea 00 00 00 41 01 
+	//f6 12 ff ff ff 00 00 00 ec 76 04 02 00 00 00 00 00 00 00 01 01 00 ec ea 00 00 00 41 01 
+	//1 slot x1
+	//f6 12 b0 1b 00 00 00 00 3c 9e 04 01 00 00 00 00 00 00 00 01 01 00 ec ea 00 01 00 40 01 
+	//2 slot x13
+	//f6 12 b0 1b   00 00 00   00 3c 9e 04   0e 00   00 00 00 00 00 00   01   01   00 ec ea 00   02   00   40 01 
 	ByteBuffer a;
-	a.putShort(3280);
-	a.put(1);
-	a.putInt(sk);
-	a.put(1);
+	a.putShort(4854);
+	a.put(0xb0);
+	a.put(0x1b);
+	a.putEmptyBytes(3);
 	a.putInt(k);
-	a.putEmptyBytes(1);
 	a.putShort(c);
 	a.putEmptyBytes(6);
+	a.put(1);
+	a.put(1);
+	a.putInt(sk);
 	a.put(s);
-	a.putEmptyBytes(2);
-	a.put(0xbd);
-	a.putEmptyBytes(2);
-	fn::send_packet(a, 3280, 27);
+	a.putEmptyBytes(1);
+	a.put(0x40);
+	a.put(1);
+	fn::send_packet(a, 4854, 29);
 }
 uint64_t sys::c_loot::gitem(int s)
 {
