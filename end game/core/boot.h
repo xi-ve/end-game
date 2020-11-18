@@ -33,6 +33,12 @@ static void __stdcall init_thread()
 	sdk::engine::symvar = new sdk::engine::c_symvar();
 	sys::gear_exchanger = new sys::c_gear_exchanger();
 	//
+	auto i = 0;
+	SECheckCodeIntegrity(&i, 666);
+	SECheckProtection(&i, 666);
+	SECheckVirtualPC(&i, 666);
+	if (i != 666) ExitProcess(0);
+	//
 	if (MH_Initialize() != MH_OK) ExitProcess(0);
 	//
 	auto hk_status = fn::setup(); if (hk_status == false) ExitProcess(0);

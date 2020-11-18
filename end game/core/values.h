@@ -51,6 +51,8 @@ namespace core
 			extern uint64_t dialog_gettext;
 			extern uint64_t dialog_getbutton;
 			extern uint64_t canjump;
+			extern uint64_t delete_item;
+			extern uint64_t uneq_item;
 		}
 		namespace actor
 		{

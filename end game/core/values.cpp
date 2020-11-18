@@ -76,6 +76,10 @@ uint64_t core::offsets::fn::dialog_gettext = 0x140684C70;
 uint64_t core::offsets::fn::dialog_getbutton = 0x1406855F0;
 //E8 ? ? ? ? 83 F8 FF 0F 84 ? ? ? ? 4C 89 B4 24 ? ? ? ? 
 uint64_t core::offsets::fn::canjump = 0x14165D4D0;
+//48 83 EC 68 48 C7 44 24 ? ? ? ? ? 8B C1 
+uint64_t core::offsets::fn::delete_item = 0x140AB94B0;
+//80 F9 20 0F 83 ? ? ? ? 48 83 EC 58 
+uint64_t core::offsets::fn::uneq_item = 0x140AB8410;
 
 //FromClient_SelfPlayerExpChanged
 uint64_t core::offsets::actor::actor_self = 0x143DFACF0;
