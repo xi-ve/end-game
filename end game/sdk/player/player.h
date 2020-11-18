@@ -136,6 +136,7 @@ namespace sdk
 			int							gmsp(uint64_t a);
 			float						gmhp(uint64_t a);
 			bool						alive();
+			uint64_t					ganimspeed(uint64_t s);
 		};
 		extern c_player* player_;
 	}

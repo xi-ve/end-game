@@ -1053,6 +1053,10 @@ bool sdk::menu::c_menu::setup()
 							auto interact = *(uint64_t*)(core::offsets::actor::interaction_current);
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
+
+							auto fvar = sdk::player::player_->ganimspeed(self);
+							ImGui::SliderFloat("anim-speed", &*(float*)(fvar), 1.f, 100.f);
+
 							auto anim = sdk::player::player_->ganim(self);
 							auto hp = sdk::player::player_->ghp(self);
 							auto max_hp = sdk::player::player_->gmhp(self);
@@ -1157,6 +1161,7 @@ bool sdk::menu::c_menu::setup()
 
 						if (ImGui::Button("disable-all")) sdk::dialog::dialog->disable_all();
 						if (ImGui::Button("enable -all")) sdk::dialog::dialog->enable_all();
+						if (ImGui::Button("get panels")) sdk::dialog::dialog->gpanels();
 
 						if (sdk::dialog::dialog->panels_map.size())
 						{

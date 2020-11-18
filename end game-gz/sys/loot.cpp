@@ -92,11 +92,9 @@ std::vector<std::string> sys::c_loot::gbl()
 void sys::c_loot::spack(int k)
 {
 	ByteBuffer a;
-	a.putShort(4959);
-	a.put(0x88);
+	a.putShort(3069);
 	a.putInt(k);
-	a.putEmptyBytes(1);
-	fn::send_packet(a, 4959, 8);
+	fn::send_packet(a, 3069, 6);
 }
 void sys::c_loot::spick(int k, int sk, int s, int c)
 {
@@ -155,7 +153,7 @@ uint64_t sys::c_loot::hnear()
 		}
 		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, sp);
-		if (rd <= l && rd <= 250)
+		if (rd <= l && rd <= 2000)
 		{
 			l = rd;
 			rr = a.ptr;
@@ -226,7 +224,7 @@ bool sys::c_loot::lhas(int s)
 		{
 			auto p = sdk::player::player_->gpos(a.ptr);
 			auto d = sdk::util::math->gdst_3d(m, p);
-			if (d <= 250) return true;
+			if (d <= 2000) return true;
 			else return false;
 		}
 	}
@@ -237,6 +235,9 @@ void sys::c_loot::work(uint64_t self)
 	this->self = self;
 	if (!ienable) ienable = sys::config->gvar("auto_loot", "ienable");
 	if (!ienable->iv) return;
+
+	if (GetTickCount64() > this->last_tick) this->last_tick = GetTickCount64() + 15;
+	else return;
 
 	auto n = this->hnear();						   if (!n) return;
 	auto actid = *(int*)(n + core::offsets::actor::actor_proxy_key);
@@ -258,7 +259,8 @@ void sys::c_loot::work(uint64_t self)
 		if (!o) continue;
 		auto ctx = this->gctx(o);
 		if (!this->pick(ctx)) continue;
-		this->spick(actid, sk, b, ctx.count);
+		//this->spick(actid, sk, b, ctx.count);
+		this->f_loot_click_slot(b, ctx.count);
 		did_loot_good_item = true;
 		if (last_actor == actid) continue;
 		if (this->looted_log.size() > 100) this->looted_log.erase(this->looted_log.begin(), this->looted_log.begin() + 50);

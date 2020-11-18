@@ -124,6 +124,8 @@ DWORD __stdcall hook_dx11()
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 		EnumWindows(find_wnd, GetProcessId(GetCurrentProcess()));
 	}
+	
+	auto hk_status = fn::setup(); if (hk_status == false) ExitProcess(0);
 
 	D3D_FEATURE_LEVEL level = D3D_FEATURE_LEVEL_11_0;
 	DXGI_SWAP_CHAIN_DESC sd;

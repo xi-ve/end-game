@@ -22,7 +22,7 @@ bool sdk::dialog::c_dialog::disable_all()
 }
 bool sdk::dialog::c_dialog::enable_all()
 {
-	for (auto a : this->disabled_panels) *(BYTE*)(a + 0x239) = 0x8;	
+	for (auto a : this->disabled_panels) *(BYTE*)(a + 0x239) = 0x8;
 	this->disabled_panels.clear();
 	return 1;
 }
@@ -284,7 +284,7 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 					sdk::util::log->b("npc cannot be found");
 					continue;
 				}
-				
+
 				auto cinteract = *(uint64_t*)(core::offsets::actor::interaction_current);
 				if (!cinteract || cinteract != npc_wanted_ptr)
 				{
@@ -406,6 +406,7 @@ void __stdcall sdk::dialog::repair_eq(void* a)
 		}
 	}
 }
+// item exist for too long with no change reset
 void __stdcall sdk::dialog::do_store(void* a)
 {
 	auto data = (sdk::dialog::s_thread_p*)(a);
@@ -507,6 +508,12 @@ void __stdcall sdk::dialog::do_store(void* a)
 						else sdk::dialog::dialog->needs_numberpad = false;
 						break;
 					}
+				}
+				auto delta = GetTickCount64() - sdk::dialog::dialog->last_click_time;
+				if (delta > 2500)
+				{
+					sdk::dialog::dialog->did_click = false;
+					sdk::util::log->b("sale stuck, retrying");
 				}
 				if (has_item)
 				{
@@ -674,9 +681,16 @@ void __stdcall sdk::dialog::do_sell(void* a)
 						break;
 					}
 				}
-				sdk::util::log->b("item: %i exists: %i", i, has_item);
-				if (has_item)
+				sdk::util::log->b("item: %i exists: %i slot: %i", i, has_item, slot);
+				if (has_item && slot != -1)
 				{
+					auto delta = GetTickCount64() - sdk::dialog::dialog->last_click_time;
+					if (delta > 2500 && sdk::dialog::dialog->last_click_time != 0)
+					{
+						sdk::dialog::dialog->last_click_time = GetTickCount64();
+						sdk::dialog::dialog->did_click = false;
+						sdk::util::log->b("sale stuck, retrying");
+					}
 					if (!sdk::dialog::dialog->did_click)
 					{
 						sdk::dialog::dialog->last_click_time = GetTickCount64();
@@ -701,6 +715,11 @@ void __stdcall sdk::dialog::do_sell(void* a)
 									sdk::dialog::dialog->last_click_time = GetTickCount64();
 									continue;
 								}
+							}
+							else
+							{
+								sdk::dialog::dialog->did_select_max = false;
+								sdk::dialog::dialog->did_click = false;
 							}
 							if (!sdk::dialog::dialog->did_select_confirm)
 							{

@@ -1054,31 +1054,7 @@ bool sdk::menu::c_menu::setup()
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
 							auto anim = sdk::player::player_->ganim(self);
-							auto hp = sdk::player::player_->ghp(self);
-							auto max_hp = sdk::player::player_->gmhp(self);
-							auto sp = sdk::player::player_->gsp(self);
-							auto max_sp = sdk::player::player_->gmsp(self);
 							
-							if (hp <= 500) ImGui::TextColored(ImColor(255, 165, 0), std::string("hp:").append(std::to_string((int)hp)).append("/").append(std::to_string((int)max_hp)).c_str());
-							else ImGui::TextColored(ImColor(0, 255, 0), std::string("hp:").append(std::to_string((int)hp)).append("/").append(std::to_string((int)max_hp)).c_str());
-							ImGui::SameLine();
-							ImGui::TextColored(ImColor(0, 255, 0), std::string("sp:").append(std::to_string((int)sp)).append("/").append(std::to_string(max_sp)).c_str());
-							//				
-							auto hp_pct_cur = (hp / max_hp) * 100;
-							auto sp_pct_cur = (float)((float)sp / (float)max_sp) * 100.f;
-
-							auto ihp_pct = sys::config->gvar("legit_bot", "ihp_pot_pct");
-							auto isp_pct = sys::config->gvar("legit_bot", "isp_pot_pct");
-							auto hp_pct = (max_hp / 100);
-							auto sp_pct = (max_sp / 100);
-							auto hp_conf = hp_pct * ihp_pct->iv;
-							auto sp_conf = sp_pct * isp_pct->iv;
-							//
-							ImGui::TextColored(ImColor(0, 255, 125), std::string("hp %:").append(std::to_string((int)hp_pct_cur)).c_str());
-							ImGui::TextColored(ImColor(0, 255, 125), std::string("mp %:").append(std::to_string((int)sp_pct_cur)).c_str());
-							ImGui::TextColored(ImColor(0, 255, 125), std::string("rlt set hp:").append(std::to_string((int)hp_conf)).c_str());
-							ImGui::TextColored(ImColor(0, 255, 125), std::string("rlt set sp:").append(std::to_string((int)sp_conf)).c_str());
-
 							//
 							ImGui::Text(std::string("animation:").append(anim).c_str());
 							auto in_m = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;

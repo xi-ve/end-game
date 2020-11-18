@@ -330,4 +330,13 @@ bool sdk::player::c_player::alive()
 	if (!s) return false;
 	return true;
 }
+uint64_t sdk::player::c_player::ganimspeed(uint64_t s)
+{
+	auto ctrl = *(uint64_t*)(s + core::offsets::actor::actor_char_ctrl);
+	if (!ctrl) return 0;
+	auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
+	if (!scene) return 0;
+	auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
+	return core::offsets::actor::actor_animation_speed;
+}
 sdk::player::c_player* sdk::player::player_;
