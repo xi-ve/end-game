@@ -5,7 +5,7 @@ namespace sys
 	class c_roar_bot
 	{
 	private:
-		std::vector<int> arsha_chests = 
+		std::vector<int> arsha_chests =
 		{
 			/*weapon chests for all classes*/
 			617, 618, 621
@@ -108,7 +108,7 @@ namespace sys
 		int gpsize() { return (int)this->grind.size(); }
 		int gssize() { return (int)this->store.size(); }
 		int assize() { return (int)this->allowed_sell_items.size(); }
-		s_path_script gcur() 
+		s_path_script gcur()
 		{
 			if (this->cur_route.size()) return this->cur_route.front();
 			else return {};

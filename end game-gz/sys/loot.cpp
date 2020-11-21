@@ -153,7 +153,7 @@ uint64_t sys::c_loot::hnear()
 		}
 		auto ap = sdk::player::player_->gpos(a.ptr);
 		auto rd = sdk::util::math->gdst_3d(ap, sp);
-		if (rd <= l && rd <= 2000)
+		if (rd <= l && rd <= 800)
 		{
 			l = rd;
 			rr = a.ptr;
@@ -224,7 +224,7 @@ bool sys::c_loot::lhas(int s)
 		{
 			auto p = sdk::player::player_->gpos(a.ptr);
 			auto d = sdk::util::math->gdst_3d(m, p);
-			if (d <= 2000) return true;
+			if (d <= 800) return true;
 			else return false;
 		}
 	}

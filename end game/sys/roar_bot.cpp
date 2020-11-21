@@ -34,7 +34,7 @@ bool sys::c_roar_bot::ssp(s_path_script s)
 }
 void sys::c_roar_bot::repath(int a, int b)
 {
-	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "NONE", "NONE", c.pause); }
+	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "X", "X", c.pause); }
 	if (a == 1)
 	{
 		this->cur_route.clear();
@@ -208,7 +208,7 @@ void sys::c_roar_bot::skill()
 		if (cv >= 800000.f) *(float*)(scene + core::offsets::actor::actor_animation_speed) = 1.f;
 		return;
 	}
-	if (this->cur_route.front().script != "NONE") return;
+	if (this->cur_route.front().script != "X") return;
 	if (this->skill_delay > GetTickCount64()) return;
 	auto an = sdk::player::player_->ganim(this->self);
 	if (!an.size()) return;
@@ -283,8 +283,8 @@ void sys::c_roar_bot::reset()
 	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear(); this->items_left_sell.clear();
 	this->p_mode = 0;
 	this->reversed = 0;
-	this->s_npc = "NONE";
-	this->s_scr = "NONE";
+	this->s_npc = "X";
+	this->s_scr = "X";
 	this->lp.clear();
 	this->path_contains_repair = false;
 	this->arsha_char = false;
@@ -322,7 +322,7 @@ void sys::c_roar_bot::gpoint()
 	auto p = sdk::player::player_->gpos(this->self);
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "[gp](" << p.x << ")(" << p.y << ")(" << p.z << ")(0.1)\n";
+	f << "(grinding){" << p.x << "}{" << p.y << "}{" << p.z << "}{0.1}\n";
 	f.close();
 	this->grind.push_back(p);
 	sdk::util::log->add("gpoint add", sdk::util::e_info, true);
@@ -332,19 +332,19 @@ void sys::c_roar_bot::spoint()
 	auto p = sdk::player::player_->gpos(this->self);
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "NONE" << "}{" << "NONE" << "}" << "\n";
+	f << "(sellstore){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "X" << "}{" << "X" << "}" << "\n";
 	f.close();
 	sdk::util::log->add("spoint add", sdk::util::e_info, true);
-	this->store.emplace_back(p, "NONE", "NONE", false);
+	this->store.emplace_back(p, "X", "X", false);
 }
 void sys::c_roar_bot::sepoint()
 {
 	auto p = sdk::player::player_->gpos(this->self);
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
+	f << "(sellstore){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
 	f.close();
-	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
+	this->s_npc = "X"; this->s_scr = "X"; this->glua_actions = false; this->last_lua_actions.clear();
 	this->store.emplace_back(p, this->s_npc, this->s_scr, true);
 	sdk::util::log->add("sepoint add", sdk::util::e_info, true);
 }
@@ -353,7 +353,7 @@ void sys::c_roar_bot::sitem(int i)
 	for (auto a : this->allowed_sell_items) if (a == i) return;
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "[item](" << i << ")\n";
+	f << "(sellstoreitem){" << i << "}\n";
 	this->allowed_sell_items.push_back(i);
 	sdk::util::log->add("sitem add", sdk::util::e_info, true);
 }
@@ -379,7 +379,7 @@ void sys::c_roar_bot::gppoint(float t)
 	auto p = sdk::player::player_->gpos(this->self); p.pause = t;
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "[gp](" << p.x << ")(" << p.y << ")(" << p.z << ")(" << t << ")\n";
+	f << "(grinding){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << t << "}\n";
 	f.close();
 	this->grind.push_back(p);
 	sdk::util::log->add("gppoint add", sdk::util::e_info, true);
@@ -394,7 +394,7 @@ void sys::c_roar_bot::record()
 		this->grind.clear(); this->allowed_sell_items.clear(); this->store.clear();
 		lp = p;
 		if (this->recording_g) this->grind.push_back(p);
-		if (this->recording_s) this->store.emplace_back(p, "NONE", "NONE", false);
+		if (this->recording_s) this->store.emplace_back(p, "X", "X", false);
 		return;
 	}
 	auto d = sdk::util::math->gdst_3d(p, lp);
@@ -418,11 +418,11 @@ void sys::c_roar_bot::load()
 		{
 			if (res.pause != 0) break; /*finish*/
 			/*parse all 4 vector parts*/
-			auto pos = line.find("(");
+			auto pos = line.find("{");
 
 			if (!pos) break;
 			line.erase(0, pos + 1);
-			pos = line.find(")");
+			pos = line.find("}");
 
 			auto cpy = line;
 			cpy.erase(pos, cpy.size()); /*cpy only contains the seperated string now*/
@@ -445,7 +445,7 @@ void sys::c_roar_bot::load()
 	{
 		auto line = l;
 		s_path_script res;
-		//"(sp){" << obj.pos.x << "}{" << obj.pos.y << "}{" << obj.pos.z << "}{" << obj.npc_name << "}{" << obj.script << "}"
+		//"(sellstore){" << obj.pos.x << "}{" << obj.pos.y << "}{" << obj.pos.z << "}{" << obj.npc_name << "}{" << obj.script << "}"
 		while (line.size() > 0)
 		{
 			if (res.script.size() > 0) break;/*done parsing*/
@@ -470,7 +470,7 @@ void sys::c_roar_bot::load()
 			}
 			else if (res.npc_name.empty()) /*parse npc name from script*/
 			{
-				/* "NONE" = no npc*/
+				/* "X" = no npc*/
 				auto pos = line.find("{");
 				line.erase(0, pos + 1);
 
@@ -485,7 +485,7 @@ void sys::c_roar_bot::load()
 			}
 			else if (res.script.empty()) /*parse lua script line*/
 			{
-				/* "NONE" = no scr*/
+				/* "X" = no scr*/
 				auto pos = line.find("{");
 				line.erase(0, pos + 1);
 
@@ -506,11 +506,11 @@ void sys::c_roar_bot::load()
 	auto parse_item = [&](std::string l) -> int
 	{
 		auto line = l;
-		auto pos = line.find("(");
+		auto pos = line.find("{");
 
 		line.erase(0, pos + 1);
 
-		pos = line.find(")");
+		pos = line.find("}");
 		line.erase(pos, line.size());
 
 		return std::stoi(line);
@@ -521,18 +521,18 @@ void sys::c_roar_bot::load()
 	while (std::getline(v, s))
 	{
 		if (s.empty()) continue;
-		if (strstr(s.c_str(), "(sp)"))
+		if (strstr(s.c_str(), "(sellstore)"))
 		{
 			auto res = parse_storage(s);
-			if (res.script != "NONE") { res.special_event = 1; res.pause = 1.2f; }
-			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }					
+			if (res.script != "X") { res.special_event = 1; res.pause = 1.2f; }
+			if (res.npc_name != "X") { res.special_event = 1; res.pause = 8.0f; }					
 			if (res.pos.valid() && res.script.size() > 0) 
 			{ 
 				if (strstr(res.script.c_str(), "repair_routine()")) this->path_contains_repair = true;
 				this->store.push_back(res); continue; 
 			}
 		}
-		if (strstr(s.c_str(), "[gp]"))
+		if (strstr(s.c_str(), "(grinding)"))
 		{
 			/*grinding path line would look like __gp__1234_12__1234_12__28973007_dec */
 			/*                                    head   x         y        z     pause  */
@@ -541,7 +541,7 @@ void sys::c_roar_bot::load()
 			else { v.close(); return; }
 			continue;
 		}
-		if (strstr(s.c_str(), "[item]"))
+		if (strstr(s.c_str(), "(sellstoreitem)"))
 		{
 			/*item whitelist line would look like __item__1234_1643616536_dec */
 			/*                                      head  item idx*/
@@ -560,11 +560,11 @@ void sys::c_roar_bot::save()
 	if (!p.is_open()) return;
 	for (auto a : this->grind)
 	{
-		if (a.pause > 0.1f && a.pause != 0.f) p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << a.pause << ")\n";
-		else p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << 0.1f << ")\n";
+		if (a.pause > 0.1f && a.pause != 0.f) p << "(grinding){" << a.x << "}{" << a.y << "}{" << a.z << "}{" << a.pause << "}\n";
+		else p << "(grinding){" << a.x << "}{" << a.y << "}{" << a.z << "}{" << 0.1f << "}\n";
 	}
-	for (auto a : this->store) p << "(sp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
-	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
+	for (auto a : this->store) p << "(sellstore){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
+	for (auto a : this->allowed_sell_items)	p << "(sellstoreitem)(" << a << ")\n";
 	sdk::util::log->add("resaved path");
 }
 void sys::c_roar_bot::work(uint64_t s)
@@ -636,7 +636,7 @@ void sys::c_roar_bot::work(uint64_t s)
 		{
 			if (cur_point.special_event)
 			{
-				if (cur_point.npc_name != "NONE")//npc
+				if (cur_point.npc_name != "X")//npc
 				{
 					if (this->has_aggro()) return;
 
@@ -644,7 +644,7 @@ void sys::c_roar_bot::work(uint64_t s)
 
 					sdk::dialog::dialog->sell_reset();
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
-					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : this->store) if (b.npc_name != "X") { npc_wanted = b.npc_name; break; }
 					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
 
 					if (!npc_wanted_ptr)
@@ -674,7 +674,7 @@ void sys::c_roar_bot::work(uint64_t s)
 
 					return;
 				}
-				else if (cur_point.script != "NONE")//scr
+				else if (cur_point.script != "X")//scr
 				{
 					if (cur_point.script == "sell_routine()")
 					{

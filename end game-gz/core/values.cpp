@@ -90,7 +90,7 @@ uint64_t core::offsets::actor::unsealed_pet_end = core::offsets::actor::unsealed
 uint64_t core::offsets::actor::sealed_pet_start = 0x143D7CBA0;
 uint64_t core::offsets::actor::sealed_pet_end = core::offsets::actor::sealed_pet_start + 0x8;
 //struct offsets
-uint64_t core::offsets::actor::actor_was_looted = 0x480;
+uint64_t core::offsets::actor::actor_was_looted = 0x460;
 uint64_t core::offsets::actor::actor_proxy_key = 0x58;
 uint64_t core::offsets::actor::actor_proxy_type = 0x5C;
 uint64_t core::offsets::actor::actor_char_ctrl = 0x408;
@@ -99,7 +99,7 @@ uint64_t core::offsets::actor::actor_char_scene = 0x10;
 uint64_t core::offsets::actor::actor_loot_owner = 0x440;
 uint64_t core::offsets::actor::actor_networked_move = 0x198;
 uint64_t core::offsets::actor::actor_animation_speed = 0x4C0;
-uint64_t core::offsets::actor::actor_is_dead = 0x1F0;
+uint64_t core::offsets::actor::actor_is_dead = 0x1D0;
 uint64_t core::offsets::actor::actor_mov_cx = 0x120;
 uint64_t core::offsets::actor::actor_mov_cy = core::offsets::actor::actor_mov_cx + 0x4;
 uint64_t core::offsets::actor::actor_mov_cz = core::offsets::actor::actor_mov_cy + 0x4;

@@ -68,7 +68,7 @@ std::unordered_map<int, int> sys::v_quickslot =
 };
 std::unordered_map<int, std::string> sys::v_keys =
 {
-	{-1        , "None"		  },
+	{-1        , "X"		  },
 	{VK_LBUTTON, "Left  mouse"},
 	{VK_RBUTTON, "Right mouse"},
 	{VK_SPACE  , "Space key  "},
@@ -274,10 +274,6 @@ bool sys::c_legit_bot::load_skill_profile()
 		if (awakening == 0) res->awakening = 1;
 		if (awakening == -1) res->awakening = -1;
 
-		std::stringstream k;
-		k << "key1:" << key1 << " key2:" << key2 << " key3:" << key3 << " cd:" << cd << " mp:" << mp << " iv:" << interval << " aw:" << awakening << " cn:" << condition;
-		sdk::util::log->add(k.str(), sdk::util::e_info, true);
-
 		this->skills.push_back(res);
 
 		return 1;
@@ -315,7 +311,7 @@ void sys::c_legit_bot::aim_pos(sdk::util::c_vector3 t, sdk::util::c_vector3 s)
 	this->spitch(-0.8f);
 	this->syaw(rot);
 	*(float*)(c_base + 0x43C) = rot;
-	
+
 }
 void sys::c_legit_bot::spitch(float f)
 {
@@ -444,7 +440,7 @@ bool sys::c_legit_bot::srp()
 }
 void sys::c_legit_bot::repath(int a, int b)
 {
-	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "NONE", "NONE", 0); }
+	if (a == 0) { this->cur_route.clear(); for (auto c : this->grind) this->cur_route.emplace_back(c, "X", "X", 0); }
 	if (a == 1)
 	{
 		this->cur_route.clear();
@@ -694,8 +690,8 @@ void sys::c_legit_bot::reset()
 	this->cur_route.clear(); this->grind.clear(); this->store.clear(); this->allowed_sell_items.clear(); this->items_left_sell.clear(); this->repair.clear();
 	this->p_mode = 0;
 	this->reversed = 0;
-	this->s_npc = "NONE";
-	this->s_scr = "NONE";
+	this->s_npc = "X";
+	this->s_scr = "X";
 	this->lp.clear();
 }
 void sys::c_legit_bot::sgpos(sdk::util::c_vector3 to_replace, sdk::util::c_vector3 new_pos)
@@ -716,64 +712,54 @@ std::vector<std::string> sys::c_legit_bot::gnpcs()
 	}
 	return r;
 }
+
 void sys::c_legit_bot::gpoint()
 {
 	auto p = sdk::player::player_->gpos(this->self);
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "[gp](" << p.x << ")(" << p.y << ")(" << p.z << ")(0.1)\n";
+	f << "(grinding){" << p.x << "}{" << p.y << "}{" << p.z << "}{0.1}\n";
 	f.close();
 	this->grind.push_back(p);
 	sdk::util::log->add("gpoint add", sdk::util::e_info, true);
-}
-void sys::c_legit_bot::spoint()
-{
-	auto p = sdk::player::player_->gpos(this->self);
-	std::ofstream f(this->pathname, std::ios::app);
-	if (!f.is_open()) return;
-	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "NONE" << "}{" << "NONE" << "}" << "\n";
-	f.close();
-	sdk::util::log->add("spoint add", sdk::util::e_info, true);
-	this->store.emplace_back(p, "NONE", "NONE", false);
 }
 void sys::c_legit_bot::rpoint()
 {
 	auto p = sdk::player::player_->gpos(this->self);
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "(rp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "NONE" << "}{" << "NONE" << "}" << "\n";
+	f << "(repairing){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "X" << "}{" << "X" << "}" << "\n";
 	f.close();
 	sdk::util::log->add("rpoint add", sdk::util::e_info, true);
-	this->repair.emplace_back(p, "NONE", "NONE", false);
+	this->repair.emplace_back(p, "X", "X", false);
+}
+void sys::c_legit_bot::spoint()
+{
+	auto p = sdk::player::player_->gpos(this->self);
+	std::ofstream f(this->pathname, std::ios::app);
+	if (!f.is_open()) return;
+	f << "(sellstore){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << "X" << "}{" << "X" << "}" << "\n";
+	f.close();
+	sdk::util::log->add("spoint add", sdk::util::e_info, true);
+	this->store.emplace_back(p, "X", "X", false);
 }
 void sys::c_legit_bot::sepoint()
 {
 	auto p = sdk::player::player_->gpos(this->self);
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "(sp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
+	f << "(sellstore){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
 	f.close();
-	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
+	this->s_npc = "X"; this->s_scr = "X"; this->glua_actions = false; this->last_lua_actions.clear();
 	this->store.emplace_back(p, this->s_npc, this->s_scr, true);
 	sdk::util::log->add("sepoint add", sdk::util::e_info, true);
-}
-void sys::c_legit_bot::srpoint()
-{
-	auto p = sdk::player::player_->gpos(this->self);
-	std::ofstream f(this->pathname, std::ios::app);
-	if (!f.is_open()) return;
-	f << "(rp){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
-	f.close();
-	this->s_npc = "NONE"; this->s_scr = "NONE"; this->glua_actions = false; this->last_lua_actions.clear();
-	this->repair.emplace_back(p, this->s_npc, this->s_scr, true);
-	sdk::util::log->add("srpoint add", sdk::util::e_info, true);
 }
 void sys::c_legit_bot::sitem(int i)
 {
 	for (auto a : this->allowed_sell_items) if (a == i) return;
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "[item](" << i << ")\n";
+	f << "(sellstoreitem){" << i << "}\n";
 	this->allowed_sell_items.push_back(i);
 	sdk::util::log->add("sitem add", sdk::util::e_info, true);
 }
@@ -841,7 +827,7 @@ void sys::c_legit_bot::gppoint(float t)
 	auto p = sdk::player::player_->gpos(this->self); p.pause = t;
 	std::ofstream f(this->pathname, std::ios::app);
 	if (!f.is_open()) return;
-	f << "[gp](" << p.x << ")(" << p.y << ")(" << p.z << ")(" << t << ")\n";
+	f << "(grinding){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << t << "}\n";
 	f.close();
 	this->grind.push_back(p);
 	sdk::util::log->add("gppoint add", sdk::util::e_info, true);
@@ -857,8 +843,8 @@ void sys::c_legit_bot::record()
 		this->grind.clear(); this->allowed_sell_items.clear(); this->store.clear(); this->repair.clear();
 		lp = p;
 		if (this->recording_g) this->grind.push_back(p);
-		if (this->recording_s) this->store.emplace_back(p, "NONE", "NONE", false);
-		if (this->recording_r) this->store.emplace_back(p, "NONE", "NONE", false);
+		if (this->recording_s) this->store.emplace_back(p, "X", "X", false);
+		if (this->recording_r) this->store.emplace_back(p, "X", "X", false);
 		return;
 	}
 	auto d = sdk::util::math->gdst_3d(p, lp);
@@ -882,11 +868,11 @@ void sys::c_legit_bot::load()
 		{
 			if (res.pause != 0) break; /*finish*/
 			/*parse all 4 vector parts*/
-			auto pos = line.find("(");
+			auto pos = line.find("{");
 
 			if (!pos) break;
 			line.erase(0, pos + 1);
-			pos = line.find(")");
+			pos = line.find("}");
 
 			auto cpy = line;
 			cpy.erase(pos, cpy.size()); /*cpy only contains the seperated string now*/
@@ -934,7 +920,7 @@ void sys::c_legit_bot::load()
 			}
 			else if (res.npc_name.empty()) /*parse npc name from script*/
 			{
-				/* "NONE" = no npc*/
+				/* "X" = no npc*/
 				auto pos = line.find("{");
 				line.erase(0, pos + 1);
 
@@ -949,7 +935,7 @@ void sys::c_legit_bot::load()
 			}
 			else if (res.script.empty()) /*parse lua script line*/
 			{
-				/* "NONE" = no scr*/
+				/* "X" = no scr*/
 				auto pos = line.find("{");
 				line.erase(0, pos + 1);
 
@@ -970,11 +956,11 @@ void sys::c_legit_bot::load()
 	auto parse_item = [&](std::string l) -> int
 	{
 		auto line = l;
-		auto pos = line.find("(");
+		auto pos = line.find("{");
 
 		line.erase(0, pos + 1);
 
-		pos = line.find(")");
+		pos = line.find("}");
 		line.erase(pos, line.size());
 
 		return std::stoi(line);
@@ -984,21 +970,21 @@ void sys::c_legit_bot::load()
 	while (std::getline(v, s))
 	{
 		if (s.empty()) continue;
-		if (strstr(s.c_str(), "(sp)"))
+		if (strstr(s.c_str(), "(sellstore)"))
 		{
 			auto res = parse_storage(s);
-			if (res.script != "NONE") { res.special_event = 1; res.pause = 1.2f; }
-			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }
+			if (res.script != "X") { res.special_event = 1; res.pause = 1.2f; }
+			if (res.npc_name != "X") { res.special_event = 1; res.pause = 8.0f; }
 			if (res.pos.valid() && res.script.size() > 0) { this->store.push_back(res); continue; }
 		}
-		if (strstr(s.c_str(), "(rp)"))
+		if (strstr(s.c_str(), "(repairing)"))
 		{
 			auto res = parse_storage(s);
-			if (res.script != "NONE") { res.special_event = 1; res.pause = 1.2f; }
-			if (res.npc_name != "NONE") { res.special_event = 1; res.pause = 8.0f; }
+			if (res.script != "X") { res.special_event = 1; res.pause = 1.2f; }
+			if (res.npc_name != "X") { res.special_event = 1; res.pause = 8.0f; }
 			if (res.pos.valid() && res.script.size() > 0) { this->repair.push_back(res); continue; }
 		}
-		if (strstr(s.c_str(), "[gp]"))
+		if (strstr(s.c_str(), "(grinding)"))
 		{
 			/*grinding path line would look like __gp__1234_12__1234_12__28973007_dec */
 			/*                                    head   x         y        z     pause  */
@@ -1007,7 +993,7 @@ void sys::c_legit_bot::load()
 			else { v.close(); return; }
 			continue;
 		}
-		if (strstr(s.c_str(), "[item]"))
+		if (strstr(s.c_str(), "(sellstoreitem)"))
 		{
 			/*item whitelist line would look like __item__1234_1643616536_dec */
 			/*                                      head  item idx*/
@@ -1026,12 +1012,12 @@ void sys::c_legit_bot::save()
 	if (!p.is_open()) return;
 	for (auto a : this->grind)
 	{
-		if (a.pause > 0.1f && a.pause != 0.f) p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << a.pause << ")\n";
-		else p << "[gp](" << a.x << ")(" << a.y << ")(" << a.z << ")(" << 0.1f << ")\n";
+		if (a.pause > 0.1f && a.pause != 0.f) p << "(grinding){" << a.x << "}{" << a.y << "}{" << a.z << "}{" << a.pause << "}\n";
+		else p << "(grinding){" << a.x << "}{" << a.y << "}{" << a.z << "}{" << 0.1f << "}\n";
 	}
-	for (auto a : this->store) p << "(sp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
-	for (auto a : this->repair) p << "(rp){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
-	for (auto a : this->allowed_sell_items)	p << "[item](" << a << ")\n";
+	for (auto a : this->store) p << "(sellstore){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
+	for (auto a : this->repair) p << "(repairing){" << a.pos.x << "}{" << a.pos.y << "}{" << a.pos.z << "}{" << a.npc_name << "}{" << a.script << "}\n";
+	for (auto a : this->allowed_sell_items)	p << "(sellstoreitem)(" << a << ")\n";
 	sdk::util::log->add("resaved path");
 }
 bool sys::c_legit_bot::nav_to(sdk::util::c_vector3 spos, float dstf)
@@ -1046,6 +1032,17 @@ void sys::c_legit_bot::set_walk()
 	if (!input_adr) return;
 	if (this->walk_node.valid()) *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 1;
 	else *((uint64_t*)((input_adr + 0x840) + (0x57 * 4))) = 0;
+}
+void sys::c_legit_bot::srpoint()
+{
+	auto p = sdk::player::player_->gpos(this->self);
+	std::ofstream f(this->pathname, std::ios::app);
+	if (!f.is_open()) return;
+	f << "(repairing){" << p.x << "}{" << p.y << "}{" << p.z << "}{" << this->s_npc << "}{" << this->s_scr << "}\n";
+	f.close();
+	this->s_npc = "X"; this->s_scr = "X"; this->glua_actions = false; this->last_lua_actions.clear();
+	this->repair.emplace_back(p, this->s_npc, this->s_scr, true);
+	sdk::util::log->add("srpoint add", sdk::util::e_info, true);
 }
 void sys::c_legit_bot::work(uint64_t s)
 {
@@ -1106,14 +1103,14 @@ void sys::c_legit_bot::work(uint64_t s)
 		{
 			if (cur_point.special_event)
 			{
-				if (cur_point.npc_name != "NONE")//npc
+				if (cur_point.npc_name != "X")//npc
 				{
 					this->walk_node.clear();
 					this->set_walk();
 					sdk::dialog::dialog->sell_reset();
 
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
-					for (auto b : this->store) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : this->store) if (b.npc_name != "X") { npc_wanted = b.npc_name; break; }
 					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
 
 					this->f_npc_interaction(npc_wanted_ptr);
@@ -1128,7 +1125,7 @@ void sys::c_legit_bot::work(uint64_t s)
 
 					return;
 				}
-				else if (cur_point.script != "NONE")//scr
+				else if (cur_point.script != "X")//scr
 				{
 					if (cur_point.script == "sell_routine()")
 					{
@@ -1224,7 +1221,7 @@ void sys::c_legit_bot::work(uint64_t s)
 			/*sys::cursor_tp->set_pos(s, sdk::util::c_vector3(cur_point.pos.x / 100, cur_point.pos.y / 100, cur_point.pos.z / 100));
 			this->cur_route.pop_front();*/
 
-			if (this->stuck(this->walk_node, spos)) return; 
+			if (this->stuck(this->walk_node, spos)) return;
 			if (this->find_node(cur_point.pos, spos, 150)) this->set_walk();
 			this->aim_pos(this->walk_node, spos);
 			auto dtn = sdk::util::math->gdst_2d(cur_point.pos, spos);
@@ -1251,14 +1248,14 @@ void sys::c_legit_bot::work(uint64_t s)
 		{
 			if (cur_point.special_event)
 			{
-				if (cur_point.npc_name != "NONE")//npc
+				if (cur_point.npc_name != "X")//npc
 				{
 					this->walk_node.clear();
 					this->set_walk();
 					sdk::dialog::dialog->sell_reset();
 
 					std::string npc_wanted = ""; uint64_t npc_wanted_ptr = 0;
-					for (auto b : this->repair) if (b.npc_name != "NONE") { npc_wanted = b.npc_name; break; }
+					for (auto b : this->repair) if (b.npc_name != "X") { npc_wanted = b.npc_name; break; }
 					for (auto b : sdk::player::player_->npcs) if (strstr(b.name.c_str(), npc_wanted.c_str())) { npc_wanted_ptr = b.ptr; break; }
 
 					this->f_npc_interaction(npc_wanted_ptr);
@@ -1273,7 +1270,7 @@ void sys::c_legit_bot::work(uint64_t s)
 
 					return;
 				}
-				else if (cur_point.script != "NONE")//scr
+				else if (cur_point.script != "X")//scr
 				{
 					if (cur_point.script == "sell_routine()")
 					{

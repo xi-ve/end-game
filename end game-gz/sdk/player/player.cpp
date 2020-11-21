@@ -294,7 +294,7 @@ std::string sdk::player::c_player::gstring(uint64_t start, int size)
 			char read = *(char*)(c);
 			if (read == '\0' || read == '?') break;
 			s.push_back(read);
-		}
+		}		
 	}
 	return s;
 }

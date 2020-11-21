@@ -31,10 +31,9 @@ void sdk::menu::c_menu::overlay(bool* acti)
 	{
 		window_flags |= ImGuiWindowFlags_NoMove;
 	}
-	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+	ImGui::SetNextWindowBgAlpha(0.35f);
 	if (ImGui::Begin("notifications", acti, window_flags))
 	{
-
 		if (this->notifications.empty())
 		{
 			if (sys::damage->buffer_hps != 0)
@@ -174,7 +173,6 @@ bool sdk::menu::c_menu::setup()
 									auto _x18 = *(uint64_t*)(base + 0x18);
 									auto _x178 = *(uint64_t*)(_x18 + 0x178);
 									*(byte*)(_x178 + 0x800) = 1;
-									*(byte*)(0x143C268EF) = 0;
 								}
 							}
 						}
@@ -190,12 +188,11 @@ bool sdk::menu::c_menu::setup()
 								auto _x18 = *(uint64_t*)(base + 0x18);
 								auto _x178 = *(uint64_t*)(_x18 + 0x178);
 								*(byte*)(_x178 + 0x800) = 0;
-								*(byte*)(0x143C268EF) = 1;
 							}
 						}
 					}
 				},
-				{"timescale", 2, "roar_bot", "ibot_timescale", false, new sdk::menu::s_imgui_intslider(400, 1000)},
+				{"timescale", 2, "roar_bot", "ibot_timescale", false, new sdk::menu::s_imgui_intslider(40, 1000)},
 				{"loot-range", 2, "roar_bot", "ibot_lootrange", false, new sdk::menu::s_imgui_intslider(300, 800)},
 				{"store-roar", 0, "roar_bot", "ibot_storage_roar", true},
 				{"reconnector", 0, "reconnector", "ienable", false},
@@ -285,16 +282,16 @@ bool sdk::menu::c_menu::setup()
 							{
 								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
-								if (ImGui::Button("set-npc")) { sys::roar_bot->glua_actions = true; sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sscr("NONE"); sys::roar_bot->sepoint(); sys::roar_bot->snpc("NONE"); si++; }
+								if (ImGui::Button("set-npc")) { sys::roar_bot->glua_actions = true; sys::roar_bot->snpc(npcs[ni]); sys::roar_bot->sscr("X"); sys::roar_bot->sepoint(); sys::roar_bot->snpc("X"); si++; }
 							}
 							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
 						}
 						if (si == 2 && sys::roar_bot->recording_s)
 						{
-							if (ImGui::Button("set-sell-event")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
-							if (ImGui::Button("set-repair-event")) { sys::roar_bot->sscr("repair_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
-							if (ImGui::Button("set-storage-event")) { sys::roar_bot->sscr("store_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
-							if (ImGui::Button("done")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("NONE"); sys::roar_bot->snpc("NONE"); }
+							if (ImGui::Button("set-sell-event")) { sys::roar_bot->sscr("sell_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("X"); sys::roar_bot->snpc("X"); }
+							if (ImGui::Button("set-repair-event")) { sys::roar_bot->sscr("repair_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("X"); sys::roar_bot->snpc("X"); }
+							if (ImGui::Button("set-storage-event")) { sys::roar_bot->sscr("store_routine()"); sys::roar_bot->sepoint(); sys::roar_bot->sscr("X"); sys::roar_bot->snpc("X"); }
+							if (ImGui::Button("done")) { si = 0; sys::roar_bot->glua_actions = false; sys::roar_bot->store_can_path = true; sys::roar_bot->recording_s = false; sys::roar_bot->load(); sys::roar_bot->sscr("X"); sys::roar_bot->snpc("X"); }
 						}
 					}
 				},
@@ -520,16 +517,16 @@ bool sdk::menu::c_menu::setup()
 							{
 								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
-								if (ImGui::Button("set-npc")) { sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("NONE"); sys::legit_bot->sepoint(); sys::legit_bot->snpc("NONE"); si++; }
+								if (ImGui::Button("set-npc")) { sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("X"); sys::legit_bot->sepoint(); sys::legit_bot->snpc("X"); si++; }
 							}
 							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
 						}
 						if (si == 2 && sys::legit_bot->recording_s)
 						{
-							if (ImGui::Button("set-sell-event")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
-							if (ImGui::Button("set-repair-event")) { sys::legit_bot->sscr("repair_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
-							if (ImGui::Button("set-storage-event")) { sys::legit_bot->sscr("store_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
-							if (ImGui::Button("done")) { si = 0; sys::legit_bot->glua_actions = false; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_s = false; sys::legit_bot->load(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("set-sell-event")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
+							if (ImGui::Button("set-repair-event")) { sys::legit_bot->sscr("repair_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
+							if (ImGui::Button("set-storage-event")) { sys::legit_bot->sscr("store_routine()"); sys::legit_bot->sepoint(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
+							if (ImGui::Button("done")) { si = 0; sys::legit_bot->glua_actions = false; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_s = false; sys::legit_bot->load(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
 						}
 						//
 						if (si == 0 && sys::legit_bot->recording_r)
@@ -545,16 +542,16 @@ bool sdk::menu::c_menu::setup()
 							{
 								ImGui::PushItemWidth(125);
 								ImGui::Combo2("##select-npc", &ni, npcs); ImGui::SameLine();
-								if (ImGui::Button("set-npc")) { sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("NONE"); sys::legit_bot->srpoint(); sys::legit_bot->snpc("NONE"); si++; }
+								if (ImGui::Button("set-npc")) { sys::legit_bot->snpc(npcs[ni]); sys::legit_bot->sscr("X"); sys::legit_bot->srpoint(); sys::legit_bot->snpc("X"); si++; }
 							}
 							else ImGui::TextColored(ImColor(255, 0, 0), "no npcs found");
 						}
 						if (si == 2 && sys::legit_bot->recording_r)
 						{
-							if (ImGui::Button("set-sell-event")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
-							if (ImGui::Button("set-repair-event")) { sys::legit_bot->sscr("repair_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
-							if (ImGui::Button("set-storage-event")) { sys::legit_bot->sscr("store_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
-							if (ImGui::Button("done")) { si = 0; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_r = false; sys::legit_bot->load(); sys::legit_bot->sscr("NONE"); sys::legit_bot->snpc("NONE"); }
+							if (ImGui::Button("set-sell-event")) { sys::legit_bot->sscr("sell_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
+							if (ImGui::Button("set-repair-event")) { sys::legit_bot->sscr("repair_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
+							if (ImGui::Button("set-storage-event")) { sys::legit_bot->sscr("store_routine()"); sys::legit_bot->srpoint(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
+							if (ImGui::Button("done")) { si = 0; sys::legit_bot->store_can_path = true; sys::legit_bot->recording_r = false; sys::legit_bot->load(); sys::legit_bot->sscr("X"); sys::legit_bot->snpc("X"); }
 						}
 					}
 				}

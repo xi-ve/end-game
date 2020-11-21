@@ -32,7 +32,7 @@ namespace sys
 		ULONGLONG loot_outtime = 0; ULONGLONG ltp = 0; ULONGLONG pause_ending_tick = 0; ULONGLONG sp_delay = 0; ULONGLONG skill_delay = 0;
 		ULONGLONG max_cooltime = 0; ULONGLONG sct = 0;
 		int i_sell_state = 0; std::vector<int> items_left_sell = {};
-		std::vector<int> wp_items = { 591, 592, 593, 594, 582, 977, 17710, 17709, 17708, 830, 829, 828, 827, -1 };		
+		std::vector<int> wp_items = { 591, 592, 593, 594, 582, 977, 17710, 17709, 17708, 830, 829, 828, 827, -1 };
 		std::vector<int> hp_pots = { 529, 524, 530, 525, 528, 519, 514, 518, 513, 517, 583, 580, 750108 };
 		std::vector<int> mp_pots = { 532, 526, 533, 527, 531, 522, 516, 521, 515, 520, 581, 17688, 19936, 19937, 19938 };
 		//
