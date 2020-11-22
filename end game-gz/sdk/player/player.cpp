@@ -284,7 +284,7 @@ std::string sdk::player::c_player::gstring(uint64_t start, int size)
 		if (read == '\0' || read == '?') break;
 		s.push_back(read);
 	}
-	if (s.size() < 6)
+	if (s.size() <= 7)
 	{
 		s.clear();
 		auto start_asptr = *(uint64_t*)(start);

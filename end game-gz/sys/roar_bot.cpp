@@ -1,13 +1,6 @@
 #include <inc.h>
 bool sys::c_roar_bot::ssp(s_path_script s)
 {
-
-	if (this->path_contains_repair) if (this->is_arsha_low_dur())
-	{
-		sdk::util::log->b("going to storage reason: arsha gear swap");
-		return true;
-	}
-
 	if (this->force_store)
 	{
 		sdk::util::log->add("going storage reason: force_store", sdk::util::e_critical, true);
@@ -742,52 +735,13 @@ void sys::c_roar_bot::work(uint64_t s)
 					{
 						if (sdk::dialog::dialog->completed_repair)
 						{
-							if (this->arsha_char)
-							{
-								if (sys::gear_exchanger->done_exchange)
-								{
-									sdk::dialog::dialog->completed_repair = false;
-									sdk::dialog::dialog->thread_running = false;
-									sys::gear_exchanger->done_exchange = false;
-									sys::gear_exchanger->thread_is_working = false;
-									this->arsha_char = false;
-									this->npc_interacted = false;
-									this->cur_route.pop_front();
-									this->execution = GetTickCount64() + 1000;
-									sdk::util::log->b("exchange done");
-									return;
-								}
-								if (!sys::gear_exchanger->thread_is_working && !sys::gear_exchanger->done_exchange)
-								{
-									sys::gear_exchanger->work();
-									sdk::util::log->b("exchange started");
-									return;
-								}
-								if (!sys::gear_exchanger->thread_is_working)
-								{
-									sdk::dialog::dialog->completed_repair = false;
-									sdk::dialog::dialog->thread_running = false;
-									sys::gear_exchanger->done_exchange = false;
-									sys::gear_exchanger->thread_is_working = false;
-									this->arsha_char = false;
-									this->npc_interacted = false;
-									this->cur_route.pop_front();
-									this->execution = GetTickCount64() + 1000;
-									sdk::util::log->b("exchange not needed, done");
-									return;
-								}
-								return;
-							}
-							else
-							{
-								this->arsha_char = false;
-								sdk::dialog::dialog->completed_repair = false;
-								sdk::dialog::dialog->thread_running = false;
-								this->npc_interacted = false;
-								this->cur_route.pop_front();
-								this->execution = GetTickCount64() + 1000;
-								return;
-							}
+							this->arsha_char = false;
+							sdk::dialog::dialog->completed_repair = false;
+							sdk::dialog::dialog->thread_running = false;
+							this->npc_interacted = false;
+							this->cur_route.pop_front();
+							this->execution = GetTickCount64() + 1000;
+							return;
 						}
 						if (!strstr(sdk::player::player_->ganim(this->self).c_str(), "WAIT")) return;
 

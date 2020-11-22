@@ -62,6 +62,18 @@ bool sdk::dialog::c_dialog::gpanels()
 		if (panel_state == 0xC) continue;
 		auto panel_name = sdk::player::player_->gstring(panel + 0xD0, 64);
 		if (panel_name.empty()) continue;
+		if (!strstr(panel_name.c_str(), "Panel"))
+		{
+			panel_name.clear();
+			auto start_asptr = *(uint64_t*)(panel + 0xD0);
+			if (!start_asptr) continue;
+			for (auto c = start_asptr; c < start_asptr + 64; c++)
+			{
+				char read = *(char*)(c);
+				if (read == '\0' || read == '?') break;
+				panel_name.push_back(read);
+			}
+		}
 		this->panels_map[panel_name] = 1;
 	}
 	if (this->panels_map.size()) return true;
@@ -130,6 +142,18 @@ std::string sdk::dialog::c_dialog::find_button(std::string display_name, std::st
 		if (panel_state == 0xC) continue;
 		auto panel_name = sdk::player::player_->gstring(panel + 0xD0, 64);
 		if (panel_name.empty()) continue;
+		if (!strstr(panel_name.c_str(), "Panel"))
+		{
+			panel_name.clear();
+			auto start_asptr = *(uint64_t*)(panel + 0xD0);
+			if (!start_asptr) continue;
+			for (auto c = start_asptr; c < start_asptr + 64; c++)
+			{
+				char read = *(char*)(c);
+				if (read == '\0' || read == '?') break;
+				panel_name.push_back(read);
+			}
+		}
 		if (!strstr(panel_name.c_str(), t.c_str())) continue;
 		auto c_s = *(uint64_t*)(panel + 0xF0);
 		auto c_e = *(uint64_t*)(panel + 0xF8);
@@ -219,7 +243,7 @@ int sdk::dialog::c_dialog::find_button_ex(std::string display_name, std::string 
 				vt[0x88] == _x88 &&
 				vt[0x8C] == _x8C)
 			{
-				//sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
+				sdk::util::log->b("match for %s -> %s", display_name.c_str(), child_name.c_str());
 				auto idx = std::string(); idx.push_back(child_name.back());
 				return std::stoi(idx);
 			}

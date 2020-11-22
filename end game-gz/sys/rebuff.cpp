@@ -9,7 +9,7 @@ std::string sys::c_rebuff::gstr(uint64_t p, int s)
 		if (chr == '\0' || chr == '?') break;
 		r.push_back(chr);
 	}
-	if (r.size() < 6)
+	if (r.size() <= 6)
 	{
 		r.clear();
 		auto st = *(uint64_t*)(p); if (!st) return "";
@@ -19,6 +19,10 @@ std::string sys::c_rebuff::gstr(uint64_t p, int s)
 			if (chr == '\0' || chr == '?') break;
 			r.push_back(chr);
 		}
+	}
+	if (r.size() <= 6)
+	{
+		r = *(char**)(p);
 	}
 	//
 	return r;

@@ -45,7 +45,7 @@ uint64_t core::offsets::cl::dialog_base = 0x143B8DC30;
 //48 8B 05 ? ? ? ? 48 8B 90 ? ? ? ? 48 8B 4A 48 
 uint64_t core::offsets::cl::ui_manager = 0x143B3E2D0;
 //ch_updatingSkinningTextureBatchSize second off_14xxxxx counting upwards
-uint64_t core::offsets::cl::symvar_base = 0x142F980C0;
+uint64_t core::offsets::cl::symvar_base = 0x143A08338;
 
 
 //48 8B C4 56 57 41 56 48 81 EC ? ? ? ? 48 C7 80 ? ? ? ? ? ? ? ? 48 89 58 10 48 89 68 18 0F 29 70 D8 
@@ -99,7 +99,7 @@ uint64_t core::offsets::actor::actor_char_scene = 0x10;
 uint64_t core::offsets::actor::actor_loot_owner = 0x440;
 uint64_t core::offsets::actor::actor_networked_move = 0x198;
 uint64_t core::offsets::actor::actor_animation_speed = 0x4C0;
-uint64_t core::offsets::actor::actor_is_dead = 0x1D0;
+uint64_t core::offsets::actor::actor_is_dead = 0x1F0;
 uint64_t core::offsets::actor::actor_mov_cx = 0x120;
 uint64_t core::offsets::actor::actor_mov_cy = core::offsets::actor::actor_mov_cx + 0x4;
 uint64_t core::offsets::actor::actor_mov_cz = core::offsets::actor::actor_mov_cy + 0x4;

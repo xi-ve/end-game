@@ -685,32 +685,32 @@ bool sdk::menu::c_menu::setup()
 	)) return false;
 	if (!this->add_tab("packets",
 		{
-		{
-			{"teleporter"},
-			{
-				{"tele-options", 5, "", "", false, [this]()
-					{
-						ImGui::Checkbox("setup-packet", (bool*)&sys::pack_tp->get_packet_again);
-						if (sys::pack_tp->x_pos.size())
-						{
-							ImGui::TextColored(ImColor(0, 255, 0), std::string("timestamp:").append(std::to_string(sys::pack_tp->time_signature)).c_str());
-							ImGui::TextColored(ImColor(0, 255, 0), std::string("opcode   :").append(std::to_string(sys::pack_tp->packet_id)).c_str());
-							ImGui::TextColored(ImColor(0, 255, 0), std::string("packet is captured!").c_str());
-							if (ImGui::Button("tp-to-marker")) sys::pack_tp->teleport_to_marker();
-						}
-					}
-				}
-			}
-		},
-		{
-			{"functions"},
-			{
-				{"allow-trial-chars", 0, "packet", "ibypass_trial", true},
-				{"cursor-tp-packet ", 0, "packet", "iteleport_gen2", false},
-				{"instant-gather", 0, "packet", "igather_instant", false}
-				//{"test-block", 0, "", "", false, (void*)&fn::block_test}
-			}
-		},
+		//{
+		//	{"teleporter"},
+		//	{
+		//		{"tele-options", 5, "", "", false, [this]()
+		//			{
+		//				ImGui::Checkbox("setup-packet", (bool*)&sys::pack_tp->get_packet_again);
+		//				if (sys::pack_tp->x_pos.size())
+		//				{
+		//					ImGui::TextColored(ImColor(0, 255, 0), std::string("timestamp:").append(std::to_string(sys::pack_tp->time_signature)).c_str());
+		//					ImGui::TextColored(ImColor(0, 255, 0), std::string("opcode   :").append(std::to_string(sys::pack_tp->packet_id)).c_str());
+		//					ImGui::TextColored(ImColor(0, 255, 0), std::string("packet is captured!").c_str());
+		//					if (ImGui::Button("tp-to-marker")) sys::pack_tp->teleport_to_marker();
+		//				}
+		//			}
+		//		}
+		//	}
+		//},
+		//{
+		//	{"functions"},
+		//	{
+		//		{"allow-trial-chars", 0, "packet", "ibypass_trial", true},
+		//		{"cursor-tp-packet ", 0, "packet", "iteleport_gen2", false},
+		//		{"instant-gather", 0, "packet", "igather_instant", false}
+		//		//{"test-block", 0, "", "", false, (void*)&fn::block_test}
+		//	}
+		//},
 		{
 			{"packet-sniffer"},
 			{
@@ -1133,6 +1133,7 @@ bool sdk::menu::c_menu::setup()
 
 						if (ImGui::Button("disable-all")) sdk::dialog::dialog->disable_all();
 						if (ImGui::Button("enable -all")) sdk::dialog::dialog->enable_all();
+						if (ImGui::Button("get panels")) sdk::dialog::dialog->gpanels();
 
 						if (sdk::dialog::dialog->panels_map.size())
 						{

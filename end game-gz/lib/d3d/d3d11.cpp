@@ -154,10 +154,6 @@ DWORD __stdcall hook_dx11()
 	MH_Initialize();
 	if (MH_CreateHook((DWORD*)pSwapChainVTable[8], PresentHook, reinterpret_cast<void**>(&phookD3D11Present)) != MH_OK) { return 1; }
 	if (MH_EnableHook((DWORD*)pSwapChainVTable[8]) != MH_OK) { return 1; }
-	if (MH_CreateHook((DWORD*)pSwapChainVTable[12], DrawIndexedHook, reinterpret_cast<void**>(&phookD3D11DrawIndexed)) != MH_OK) { return 1; }
-	if (MH_EnableHook((DWORD*)pSwapChainVTable[12]) != MH_OK) { return 1; }
-	if (MH_CreateHook((DWORD*)pSwapChainVTable[50], ClearRenderTargetViewHook, reinterpret_cast<void**>(&phookD3D11ClearRenderTargetViewHook)) != MH_OK) { return 1; }
-	if (MH_EnableHook((DWORD*)pSwapChainVTable[50]) != MH_OK) { return 1; }
 
 	lib::d3d11->h = g_hWnd;
 
