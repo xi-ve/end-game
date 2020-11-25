@@ -336,7 +336,6 @@ uint64_t sdk::player::c_player::ganimspeed(uint64_t s)
 	if (!ctrl) return 0;
 	auto scene = *(uint64_t*)(ctrl + core::offsets::actor::actor_char_scene);
 	if (!scene) return 0;
-	auto speed = *(float*)(scene + core::offsets::actor::actor_animation_speed);
-	return core::offsets::actor::actor_animation_speed;
+	return scene + core::offsets::actor::actor_animation_speed;
 }
 sdk::player::c_player* sdk::player::player_;

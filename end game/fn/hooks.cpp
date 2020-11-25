@@ -88,7 +88,7 @@ uint64_t __fastcall fn::f_packet_outbound(void* pack, uint16_t size, uint8_t enc
 		fn::traffic_bytes = 0;
 	}
 
-	if (ibypass_trial->iv)				if (b == 3494) return 0;
+	if (ibypass_trial->iv)				if (b == 4473) return 0;
 	if (sys::pack_tp->get_packet_again) sys::pack_tp->capture_packet(buf, (uint64_t)pack, size, b);
 
 	sdk::menu::m_packet->work((uint64_t)pack, size, enc, unk, unk2, xkey);

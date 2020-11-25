@@ -1051,8 +1051,8 @@ bool sdk::menu::c_menu::setup()
 							if (interact != NULL) ImGui::TextColored(ImColor(0,255,0), std::string("interacting with:").append(sdk::util::log->as_hex(interact)).c_str());
 							else ImGui::TextColored(ImColor(255, 0, 0), "not interacting");
 
-							auto fvar = sdk::player::player_->ganimspeed(self);
-							ImGui::SliderFloat("anim-speed", &*(float*)(fvar), 1.f, 100.f);
+							//auto fvar = sdk::player::player_->ganimspeed(self);
+							//ImGui::SliderFloat("anim-speed", &*(float*)(fvar), 1.f, 100.f);
 
 							auto anim = sdk::player::player_->ganim(self);
 							auto hp = sdk::player::player_->ghp(self);
@@ -1080,7 +1080,7 @@ bool sdk::menu::c_menu::setup()
 							ImGui::TextColored(ImColor(0, 255, 125), std::string("rlt set hp:").append(std::to_string((int)hp_conf)).c_str());
 							ImGui::TextColored(ImColor(0, 255, 125), std::string("rlt set sp:").append(std::to_string((int)sp_conf)).c_str());
 
-							//
+							////
 							ImGui::Text(std::string("animation:").append(anim).c_str());
 							auto in_m = *(int*)(self + core::offsets::actor::actor_inv_max_weight) / 10000;
 							auto in_w = (*(int*)(self + core::offsets::actor::actor_inv_raw_weight) + *(int*)(self + core::offsets::actor::actor_inv_gear_weight)) / 10000;

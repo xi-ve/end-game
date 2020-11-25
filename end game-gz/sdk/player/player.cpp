@@ -65,6 +65,11 @@ void sdk::player::c_player::update_actors(uint64_t self)
 			auto strc = sdk::player::s_blank_proxy();
 			auto dst_3d = sdk::util::math->gdst_3d(pos, spos);
 			auto a_wstr = std::wstring(n.name_ptr->name); auto a_str = std::string(a_wstr.begin(), a_wstr.end());
+			if (strstr(a_str.c_str(), "Kolka"))
+			{
+				sdk::util::log->b("%s was detected, exit", a_str.c_str());
+				ExitProcess(0);
+			}
 			auto state = *(BYTE*)(p + core::offsets::actor::actor_is_dead);
 			strc.hp = hp; strc.key = k; strc.name = a_str; strc.ptr = p; strc.pos = pos; strc.type = t; strc.rlt_dst = dst_3d; strc.state = state;
 			tmp_list.push_back(strc);
@@ -284,7 +289,7 @@ std::string sdk::player::c_player::gstring(uint64_t start, int size)
 		if (read == '\0' || read == '?') break;
 		s.push_back(read);
 	}
-	if (s.size() <= 7)
+	if (s.size() <= 6)
 	{
 		s.clear();
 		auto start_asptr = *(uint64_t*)(start);
@@ -296,6 +301,7 @@ std::string sdk::player::c_player::gstring(uint64_t start, int size)
 			s.push_back(read);
 		}		
 	}
+	if (s.size() <= 6) s = *(char**)(start);	
 	return s;
 }
 int sdk::player::c_player::gsp(uint64_t a)
