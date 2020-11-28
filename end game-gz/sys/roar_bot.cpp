@@ -517,8 +517,10 @@ void sys::c_roar_bot::load()
 		if (strstr(s.c_str(), "(sellstore)"))
 		{
 			auto res = parse_storage(s);
-			if (res.script != "X") { res.special_event = 1; res.pause = 1.2f; }
-			if (res.npc_name != "X") { res.special_event = 1; res.pause = 8.0f; }
+			if (res.npc_name == "NONE") res.npc_name = "X";
+			if (res.script == "NONE") res.script = "X";
+			if (res.script != "X" ) { res.special_event = 1; res.pause = 1.2f; }
+			if (res.npc_name != "X" ) { res.special_event = 1; res.pause = 8.0f; }
 			if (res.pos.valid() && res.script.size() > 0)
 			{
 				if (strstr(res.script.c_str(), "repair_routine()")) this->path_contains_repair = true;

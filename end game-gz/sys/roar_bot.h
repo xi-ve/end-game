@@ -54,7 +54,7 @@ namespace sys
 		std::deque<sdk::util::c_vector3> grind = {};
 		std::deque<s_path_script>		 store = {};
 		//
-		std::string s_scr = "NONE", s_npc = "NONE";
+		std::string s_scr = "X", s_npc = "X";
 		//
 		int p_mode = 0;//0,grind 1,store
 		int reversed = 0;
