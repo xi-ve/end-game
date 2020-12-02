@@ -93,33 +93,38 @@ void sys::c_loot::spack(int k)
 {
 	//
 	ByteBuffer a;
-	a.putShort(3415);
+	a.putShort(6160);
+	a.putEmptyBytes(1);
 	a.putInt(k);
-	fn::send_packet(a, 3415, 6);
+	a.putEmptyBytes(3);
+	fn::send_packet(a, 6160, 10);
 }
 void sys::c_loot::spick(int k, int sk, int s, int c)
 {
-	//0 1
-	//ca 0e 01 00 01 00 00 a4 e3 00 01 00 00 00 00 00 00 00 07 04 eb 03 00 00 
-	//
-	//1 2
-	//op   inv ?  ? slot self key   c     6x 0               target key
-	//ca 0e 01 00 01 01 00 e4 1d 00 02 00 00 00 00 00 00 00 08 fc ff ff 00 01 
-	//
-	//
+	//00 14 ff ff ff 01 ff ff 01 00 00 00 00 00 00 00 01 00 00 09 dc de 03 00 00 fc d3 00 00 
+	//0 3 47b9c09
+	//opc            1  0  0  count                   1        target key  s  self   key  0
+	//00 14 ff ff ff 01 ff ff 03 00 00 00 00 00 00 00 01 00 00 09 9c 7b 04 00 00 f4 f5 00 00 
+	//1 1 
+	//00 14 46 1d 00 01 00 00 01 00 00 00 00 00 00 00 01 00 00 09 34 49 03 01 00 bc 25 00 00 
+	//2 13
+	//00 14 46 1d 00 01 00 00 0e 00 00 00 00 00 00 00 01 00 00 09 34 49 03 02 00 bc 25 00 00 
 	ByteBuffer a;
-	a.putShort(3786);
-	a.put(1);
+	a.putShort(5120);
+	a.put(0x46);
+	a.put(0x1d);
 	a.putEmptyBytes(1);
 	a.put(1);
-	a.putEmptyBytes(1);
-	a.putInt(sk);
+	a.putEmptyBytes(2);
 	a.putShort(c);
 	a.putEmptyBytes(6);
+	a.put(1);
+	a.putEmptyBytes(2);
 	a.putInt(k);
-	a.putEmptyBytes(1);
 	a.put(s);
-	fn::send_packet(a, 3786, 24);
+	a.putInt(sk);
+	a.putEmptyBytes(1);
+	fn::send_packet(a, 5120, 29);
 }
 uint64_t sys::c_loot::gitem(int s)
 {
