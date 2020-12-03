@@ -174,7 +174,6 @@ bool sdk::menu::c_menu::setup()
 									auto _x18 = *(uint64_t*)(base + 0x18);
 									auto _x178 = *(uint64_t*)(_x18 + 0x178);
 									*(byte*)(_x178 + 0x800) = 1;
-									*(byte*)(0x143C268EF) = 0;
 								}
 							}
 						}
@@ -190,7 +189,6 @@ bool sdk::menu::c_menu::setup()
 								auto _x18 = *(uint64_t*)(base + 0x18);
 								auto _x178 = *(uint64_t*)(_x18 + 0x178);
 								*(byte*)(_x178 + 0x800) = 0;
-								*(byte*)(0x143C268EF) = 1;
 							}
 						}
 					}

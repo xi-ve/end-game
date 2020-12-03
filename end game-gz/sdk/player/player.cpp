@@ -306,8 +306,8 @@ std::string sdk::player::c_player::gstring(uint64_t start, int size)
 }
 int sdk::player::c_player::gsp(uint64_t a)
 {
-	auto _x1d30 = *(uint64_t*)(a + 0x1d58); if (!_x1d30) return 0; _x1d30 = *(uint32_t*)(_x1d30);
-	auto _x1d20 = *(uint64_t*)(a + 0x1d48); if (!_x1d20) return 0; auto key1 = _x1d20 >> 5;
+	auto _x1d30 = *(uint64_t*)(a + 0x1d60); if (!_x1d30) return 0; _x1d30 = *(uint32_t*)(_x1d30);
+	auto _x1d20 = *(uint64_t*)(a + 0x1d50); if (!_x1d20) return 0; auto key1 = _x1d20 >> 5;
 	return (key1^_x1d30);
 }
 float sdk::player::c_player::ghp(uint64_t a)

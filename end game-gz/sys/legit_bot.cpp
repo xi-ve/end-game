@@ -230,7 +230,11 @@ bool sys::c_legit_bot::load_skill_profile()
 	*/
 	this->skills.clear();
 
+	sdk::util::log->b("starting for %s", combo_name.c_str());
+
 	std::ifstream in(combo_name); std::string tmp;
+	if (!in.is_open()) { sdk::util::log->b("failed open"); return false; }
+
 	auto parse_skill = [&](std::string l) -> bool
 	{
 		auto line = l;
@@ -281,6 +285,7 @@ bool sys::c_legit_bot::load_skill_profile()
 
 	while (std::getline(in, tmp))
 	{
+		sdk::util::log->b("read line %s", tmp.c_str());
 		if (tmp.empty()) continue;
 		auto skill = parse_skill(tmp);
 		if (!skill) sdk::util::log->add("failed to load skill from file");
@@ -621,12 +626,14 @@ void sys::c_legit_bot::rskill()
 	uint64_t& input_adr = *((uint64_t*)(*((uint64_t*)(core::offsets::cl::client_base)) + 0x08));
 
 	auto msp = sdk::player::player_->gsp(this->self);
-	auto stance = *(BYTE*)(this->self + core::offsets::actor::actor_combat_stance);
+	//auto stance = *(BYTE*)(this->self + core::offsets::actor::actor_combat_stance);
 
 	auto cur_anim = sdk::player::player_->ganim(this->self);
 	auto loc = std::locale();
 	for (std::string::size_type i = 0; i < cur_anim.length(); ++i) std::cout << std::tolower(cur_anim[i], loc);
 	auto cur_anim_lower = loc.c_str();
+
+	sdk::util::log->b("running skills : sp %i anim %s", msp, cur_anim_lower);
 
 	for (auto&& a : this->skills)
 	{
