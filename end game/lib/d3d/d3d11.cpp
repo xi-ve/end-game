@@ -153,7 +153,6 @@ DWORD __stdcall hook_dx11()
 	if (MH_CreateHook((DWORD*)pSwapChainVTable[8], PresentHook, reinterpret_cast<void**>(&phookD3D11Present)) != MH_OK) { return 1; }
 	if (MH_EnableHook((DWORD*)pSwapChainVTable[8]) != MH_OK) { return 1; }
 
-
 	lib::d3d11->h = g_hWnd;
 
 	DWORD old_protect;

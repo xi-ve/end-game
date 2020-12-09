@@ -634,6 +634,11 @@ bool sdk::menu::c_menu::setup()
 			{"core-options"},
 			{
 				{"enable", 0, "scroll_bot", "ienable", false},
+				{"set-scroll-type", 5 , "", "", false, []()
+					{
+						if (ImGui::Button("set-scroll-type")) sys::scrollbot->set_scroll_type_by_pos(*(uint64_t*)(core::offsets::actor::actor_self));
+					}
+				},
 				{"do-all-scrolls", 0, "scroll_bot", "ienable_do_all", false},
 				{"do-num-scrolls", 2, "scroll_bot", "ienable_do_num", false, new sdk::menu::s_imgui_intslider(1, 250)}
 			}

@@ -91,40 +91,47 @@ std::vector<std::string> sys::c_loot::gbl()
 }
 void sys::c_loot::spack(int k)
 {
-	//
+	//4a 10 00 00 11 f4 38 04 00 
 	ByteBuffer a;
-	a.putShort(6160);
-	a.putEmptyBytes(1);
+	a.putShort(4170);
+	a.putEmptyBytes(2);
 	a.putInt(k);
-	a.putEmptyBytes(3);
-	fn::send_packet(a, 6160, 10);
+	a.putEmptyBytes(1);
+	fn::send_packet(a, 4170, 9);
 }
 void sys::c_loot::spick(int k, int sk, int s, int c)
 {
-	//00 14 ff ff ff 01 ff ff 01 00 00 00 00 00 00 00 01 00 00 09 dc de 03 00 00 fc d3 00 00 
-	//0 3 47b9c09
-	//opc            1  0  0  count                   1        target key  s  self   key  0
-	//00 14 ff ff ff 01 ff ff 03 00 00 00 00 00 00 00 01 00 00 09 9c 7b 04 00 00 f4 f5 00 00 
-	//1 1 
-	//00 14 46 1d 00 01 00 00 01 00 00 00 00 00 00 00 01 00 00 09 34 49 03 01 00 bc 25 00 00 
-	//2 13
-	//00 14 46 1d 00 01 00 00 0e 00 00 00 00 00 00 00 01 00 00 09 34 49 03 02 00 bc 25 00 00 
+	//0 1 1599c11
+	//37 11   00   00 4c 65 00   ff cc cc   01   01 00   00 00   11 9c 59 01   02   00 00 00 00 00 00 00   41   01   00 
+	//0 2 2a31411
+	//37 11 00 00 4c 65 00 ff cc cc 01 01 00 00 00 11 14 a3 02 02 00 00 00 00 00 00 00 41 01 00 
+	//1 2 
+	//37 11 00 00 4c 65 00 00 70 d5 01 01 01 00 00 11 d4 7e 01 02 00 00 00 00 00 00 00 40 01 00 
+	//2 12 
+	//37 11 00 00 4c 65 00 00 70 d5 01 01 02 00 00 11 d4 7e 01 0c 00 00 00 00 00 00 00 40 01 00
+
+	//1 1 self *->687400 
+	//37 11   00   00 74 68 00   00 70 d5   01   01 02 00 00 11 44 85 02 01 00 00 00 00 00 00 00 40 01 00 
+
+	//37 11   00   00 2c 7d 00   ff cc cc   01   01 00 00 00 14 ec ab 04 02 00 00 00 00 00 00 00 41 01 00 
 	ByteBuffer a;
-	a.putShort(5120);
-	a.put(0x46);
-	a.put(0x1d);
+	a.putShort(4407);
 	a.putEmptyBytes(1);
+	a.putInt(sk);
+	a.put(0xff);
+	a.put(0xcc);
+	a.put(0xcc);
 	a.put(1);
-	a.putEmptyBytes(2);
-	a.putShort(c);
-	a.putEmptyBytes(6);
 	a.put(1);
+	a.put(s);
 	a.putEmptyBytes(2);
 	a.putInt(k);
-	a.put(s);
-	a.putInt(sk);
+	a.putShort(c);
+	a.putEmptyBytes(6);
+	a.put(0x41);
+	a.put(1);
 	a.putEmptyBytes(1);
-	fn::send_packet(a, 5120, 29);
+	fn::send_packet(a, 4407, 30);
 }
 uint64_t sys::c_loot::gitem(int s)
 {

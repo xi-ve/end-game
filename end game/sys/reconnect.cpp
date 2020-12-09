@@ -3,7 +3,7 @@ int sys::c_reconnect::is_reconnecting()
 {
 	auto uimgr = *(uint64_t*)(core::offsets::cl::ui_manager);
 	if (!uimgr) return -1;
-	auto panel_reconnect = *(uint64_t*)(uimgr + 0x3d8);
+	auto panel_reconnect = *(uint64_t*)(uimgr + 0x418);
 	if (!panel_reconnect) return -1;
 	auto visible = *(BYTE*)(panel_reconnect + 0x239);
 	if (visible == 0x8) return 1;

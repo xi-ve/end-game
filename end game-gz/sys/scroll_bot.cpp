@@ -101,6 +101,7 @@ void sys::c_scrollbot::work(uint64_t self, ULONGLONG tick)
 	/*go back to spawning position*/
 	if (!this->walk_back_to_start(self)) return;
 
+	sdk::util::log->b("done scroll, resetting %i %i", this->took_rewards, this->walked_back);
 	this->reset();
 
 	scrolls_done++;
@@ -132,6 +133,7 @@ void sys::c_scrollbot::reset()
 	this->walked_back = 0;
 	this->walked_back_1 = 0;
 	this->walked_back_2 = 0;
+	sdk::util::log->b("reset done");
 }
 bool sys::c_scrollbot::did_use_scroll(uint64_t self)
 {
@@ -149,6 +151,7 @@ bool sys::c_scrollbot::did_use_scroll(uint64_t self)
 
 		if (strstr(sdk::player::player_->ganim(self).c_str(), "SUMMON"))
 		{
+			sdk::util::log->b("summon confirmed! %s", sdk::player::player_->ganim(self).c_str());
 			this->used_scroll = 1;
 			return 1;
 		}
@@ -179,8 +182,11 @@ bool sys::c_scrollbot::find_pre_boss(uint64_t self)
 		{
 			auto obj_target = *(int*)(obj.ptr + core::offsets::actor::actor_attack_target);
 			if (obj_target != self_key) continue;
+			if (obj.hp <= 0) continue;
+			if (obj.state == 1) continue;
 			this->boss_pre_detected = 1;
 			this->boss_pre_act = obj.ptr;
+			sdk::util::log->b("detected boss %s %i", this->boss_pre_name.c_str(), obj.hp);
 			break;
 		}
 	}
@@ -198,8 +204,11 @@ bool sys::c_scrollbot::find_pre_2_boss(uint64_t self)
 		{
 			auto obj_target = *(int*)(obj.ptr + core::offsets::actor::actor_attack_target);
 			if (obj_target != self_key) continue;
+			if (obj.hp <= 0) continue;
+			if (obj.state == 1) continue;
 			this->boss_pre_2_detected = 1;
 			this->boss_pre_2_act = obj.ptr;
+			sdk::util::log->b("detected boss 2 %s", this->boss_pre_name_2.c_str());
 			break;
 		}
 	}
@@ -217,8 +226,11 @@ bool sys::c_scrollbot::find_boss(uint64_t self)
 		{
 			auto obj_target = *(int*)(obj.ptr + core::offsets::actor::actor_attack_target);
 			if (obj_target != self_key) continue;
+			if (obj.hp <= 0) continue;
+			if (obj.state == 1) continue;
 			this->boss_detected = 1;
 			this->boss_act = obj.ptr;
+			sdk::util::log->b("detected boss 3 %s", this->boss_name.c_str());
 			break;
 		}
 	}
@@ -265,6 +277,7 @@ bool sys::c_scrollbot::kill_pre_boss(uint64_t self)
 		{
 			this->boss_pre_act = 0;
 			this->boss_pre_died = 1;
+			sdk::util::log->b("killed boss %s", this->boss_pre_name.c_str());
 			return 1;
 		}
 		this->kill_logic(self, this->boss_pre_act);
@@ -290,6 +303,7 @@ bool sys::c_scrollbot::kill_pre_2_boss(uint64_t self)
 		{
 			this->boss_pre_2_act = 0;
 			this->boss_pre_2_died = 1;
+			sdk::util::log->b("killed boss 2 %s", this->boss_pre_name_2.c_str());
 			return 1;
 		}
 		this->kill_logic(self, this->boss_pre_2_act);
@@ -315,6 +329,7 @@ bool sys::c_scrollbot::kill_boss(uint64_t self)
 		{
 			this->boss_act = 0;
 			this->boss_died = 1;
+			sdk::util::log->b("killed boss 3 %s", this->boss_name.c_str());
 			return 1;
 		}
 		this->kill_logic(self, this->boss_act);
@@ -366,9 +381,10 @@ bool sys::c_scrollbot::take_reward(uint64_t self)
 
 	case 4:
 	{
+		sdk::util::log->b("rewards taken");
 		this->took_rewards = 1;
 		step = 0;
-		return 0;
+		return 1;
 	}
 
 	}
@@ -388,7 +404,7 @@ bool sys::c_scrollbot::walk_to_start_after_1(uint64_t self)
 	{
 		/*need to get closer*/
 		sys::legit_bot->aim_pos(this->scroll_spawn_pos, spos);
-		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 87 }, 500));
+		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 87 }, 75));
 		return 0;
 	}
 	else
@@ -414,7 +430,7 @@ bool sys::c_scrollbot::walk_to_start_after_2(uint64_t self)
 	{
 		/*need to get closer*/
 		sys::legit_bot->aim_pos(this->scroll_spawn_pos, spos);
-		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 87 }, 500));
+		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 87 }, 75));
 		return 0;
 	}
 	else
@@ -436,11 +452,12 @@ bool sys::c_scrollbot::walk_back_to_start(uint64_t self)
 	{
 		/*need to get closer*/
 		sys::legit_bot->aim_pos(this->scroll_spawn_pos, spos);
-		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 87 }, 500));
+		if (!sys::key_q->thread_working) sys::key_q->add(new sys::s_key_input({ 87 }, 75));
 		return 0;
 	}
 	else
 	{
+		sdk::util::log->b("back at start!");
 		this->walked_back = 1;
 		return 1;
 	}

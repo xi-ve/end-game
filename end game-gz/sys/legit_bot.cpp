@@ -633,8 +633,6 @@ void sys::c_legit_bot::rskill()
 	for (std::string::size_type i = 0; i < cur_anim.length(); ++i) std::cout << std::tolower(cur_anim[i], loc);
 	auto cur_anim_lower = loc.c_str();
 
-	sdk::util::log->b("running skills : sp %i anim %s", msp, cur_anim_lower);
-
 	for (auto&& a : this->skills)
 	{
 		if (strstr(cur_anim_lower, "stop") || strstr(cur_anim_lower, "end")) { return; }
